@@ -1,0 +1,11 @@
+/* 
+  Localizable.strings
+  zScanner
+
+  Created by Jakub Skořepa on 20/07/2019.
+  Copyright © 2019 Institut klinické a experimentální medicíny. All rights reserved.
+*/
+
+// MARK: - Login
+"LOGIN_USERNAME_PLACEHOLDER" = "login";
+"LOGIN_PASSWORD_PLACEHOLDER" = "heslo";

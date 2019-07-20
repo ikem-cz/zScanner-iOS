@@ -1,0 +1,72 @@
+//
+//  NativeAPI.swift
+//  zScanner
+//
+//  Created by Jakub Skořepa on 29/06/2019.
+//  Copyright © 2019 Institut klinické a experimentální medicíny. All rights reserved.
+//
+
+import Foundation
+
+struct NativeAPI: API {
+    
+    func process<R, D>(_ request: R, with callback: @escaping (RequestStatus<D>) -> Void) where R : Request, D : Decodable, D == R.DataType {
+        callback(.loading)
+        
+        guard Reachability.isConnectedToNetwork() else {
+            callback(.error(RequestError(.noInternetConnection)))
+            return
+        }
+        
+        let urlString: String
+        switch request {
+        case let encoded as ParametersURLEncoded:
+            urlString = encoded.url
+        default:
+            urlString = request.endpoint.url
+        }
+        
+        guard let url = URL(string: urlString) else {
+            callback(.error(RequestError(.dataCorruptedError)))
+            return
+        }
+        
+        let urlRequest = NSMutableURLRequest(url: url)
+        urlRequest.httpMethod = request.method.rawValue
+        
+        let session = URLSession.shared
+        let task = session.dataTask(
+            with: urlRequest as URLRequest,
+            completionHandler: { (data, response, error) in
+                if let error = error {
+                    callback(.error(RequestError(.serverError(error))))
+                    return
+                }
+                
+                // handle HTTP errors here
+                if let httpResponse = response as? HTTPURLResponse {
+                    let statusCode = httpResponse.statusCode
+                    
+                    if statusCode < 200 || statusCode >= 300 {
+                        callback(.error(RequestError(.serverError(HTTPError(errorCode: statusCode)))))
+                        return
+                    }
+                }
+                
+                guard let data = data, !data.isEmpty else {
+                    callback(.error(RequestError(.noData)))
+                    return
+                }
+                
+                do {
+                    let decoder = JSONDecoder()
+                    let objects = try decoder.decode(D.self, from: data)
+                    callback(.success(data: objects))
+                } catch {
+                    callback(.error(RequestError(.jsonParserError)))
+                }
+            }
+        )
+        task.resume()
+    }
+}
