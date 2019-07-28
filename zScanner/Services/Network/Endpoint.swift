@@ -13,6 +13,7 @@ protocol Endpoint {
     var rawValue: String { get }
 }
 
+//MARK: -
 enum Environment {
     case production
     case testing

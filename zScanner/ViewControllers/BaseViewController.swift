@@ -15,7 +15,7 @@ protocol BaseCoordinator: class {
 // MARK: -
 class BaseViewController: PluggableViewController {
     
-    // MARK: - Instance part
+    // MARK: Instance part
     private unowned let coordinator: BaseCoordinator
     
     init(coordinator: BaseCoordinator, services: [ViewControllerService] = []) {
@@ -29,7 +29,7 @@ class BaseViewController: PluggableViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Properties
+    // MARK: Properties
     private let injectedServices: [ViewControllerService]
     
     override var services: [ViewControllerService] {
@@ -42,7 +42,7 @@ class BaseViewController: PluggableViewController {
     var statusBarStyle: UIStatusBarStyle { return .default }
     var navigationBarTintColor: UIColor? { return nil }
     
-    // MARK: - ViewController's lifecycle
+    // MARK: ViewController's lifecycle
     override func loadView() {
         view = UIView()
         view.backgroundColor = .white
@@ -55,7 +55,7 @@ class BaseViewController: PluggableViewController {
         configureNavigationBarButtons()
     }
     
-    // MARK: - Helpers
+    // MARK: Helpers
     private func configureNavigationBarButtons() {
         guard let navigationController = navigationController else { return }
         

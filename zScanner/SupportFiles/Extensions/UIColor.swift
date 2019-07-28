@@ -23,4 +23,8 @@ extension UIColor {
     static var primary: UIColor {
         return UIColor(hex: 0xe2001a)
     }
+    
+    static var onPrimary: UIColor {
+        return UIColor(hex: 0xffffff)
+    }
 }

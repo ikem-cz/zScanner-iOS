@@ -16,30 +16,36 @@ class AppCoordinator: Coordinator {
         super.init(window: window, navigationController: nil)
     }
     
-    // MARK: - Inteface
+    // MARK: Inteface
     func begin() {
         startLoginCoordinator()
     }
     
-    // MARK: - Helpers
+    // MARK: Helpers
     private func startLoginCoordinator() {
         let coordinator = LoginCoordinator(flowDelegate: self, window: window)
         addChildCoordinator(coordinator)
         coordinator.begin()
     }
     
-    private func startMainCoordinator() {
-        //        let coordinator = MainCoordinator(flowDelegate: self, window: window)
-        //        addChildCoordinator(coordinator)
-        //        coordinator.begin()
+    private func startDocumentsCoordinator() {
+        let coordinator = DocumentsCoordinator(flowDelegate: self, window: window)
+        addChildCoordinator(coordinator)
+        coordinator.begin()
     }
 }
 
-// MARK: - MainFlowDelegate implementation
-//extension AppCoordinator: MainFlowDelegate {}
-
+// MARK: - LoginFlowDelegate implementation
 extension AppCoordinator: LoginFlowDelegate {
     func successfulLogin() {
-        startMainCoordinator()
+        startDocumentsCoordinator()
+    }
+}
+
+// MARK: - DocumentsFlowDelegate implementation
+extension AppCoordinator: DocumentsFlowDelegate {
+    func createNewDocument(with mode: DocumentMode) {
+        // TODO: Implement
+        print(mode.title)
     }
 }

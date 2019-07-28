@@ -12,6 +12,7 @@ protocol API {
     func process<R, D>(_ request: R, with callback: @escaping (RequestStatus<D>) -> Void) where R: Request, D: Decodable, D == R.DataType
 }
 
+//MARK: -
 enum HTTPMethod: String {
     case get     = "GET"
     case post    = "POST"
@@ -19,8 +20,10 @@ enum HTTPMethod: String {
     case delete  = "DELETE"
 }
 
+//MARK: -
 typealias Parameters = [String: Any]
 
+//MARK: -
 typealias HTTPHeaders = [String: String]
 
 

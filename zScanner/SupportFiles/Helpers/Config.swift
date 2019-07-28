@@ -9,8 +9,8 @@
 import Foundation
 
 enum Config {
-    static let productionURL: String = ""
-    static let testingURL: String = ""
+    static let productionURL: String = "https://tempra.ikem.seacat"
+    static let testingURL: String = "https://desolate-meadow-62603.herokuapp.com/api-zscanner/v3"
     
-    static let currentEnvironment: Environment = .production
+    static let currentEnvironment: Environment = .testing
 }

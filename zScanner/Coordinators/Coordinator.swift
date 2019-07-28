@@ -25,7 +25,7 @@ class Coordinator {
         self.navigationController = navigationController
     }
     
-    // MARK: - Child coordinators
+    // MARK: Child coordinators
     func addChildCoordinator(_ coordinator: Coordinator) {
         childCoordinators.append(coordinator)
     }
@@ -37,7 +37,7 @@ class Coordinator {
         }
     }
     
-    // MARK: - View controllers
+    // MARK: View controllers
     func push(_ viewController: UIViewController, animated: Bool = true) {
         viewControllers.append(viewController)
         if let navigationController = navigationController {
@@ -67,7 +67,7 @@ class Coordinator {
         viewControllers.removeLast(viewControllers.count - 1 - innerIndex)
     }
     
-    //MARK: - Helpers
+    //MARK: Helpers
     private func changeWindowControllerTo(_ navigationController: UINavigationController) {
         window.rootViewController = navigationController
         window.makeKeyAndVisible()

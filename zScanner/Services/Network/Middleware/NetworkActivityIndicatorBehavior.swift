@@ -21,6 +21,7 @@ class ActivityIndicatorState {
     }
 }
 
+//MARK: - RequestBehavior implementation
 class NetworkActivityIndicatorBehavior: RequestBehavior {
     
     let state = ActivityIndicatorState.shared

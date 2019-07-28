@@ -12,6 +12,24 @@
 		BD000CB222E3B38B001EE38A /* UITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CB122E3B38B001EE38A /* UITextField.swift */; };
 		BD000CC622E3B764001EE38A /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BD000CC522E3B764001EE38A /* Launch Screen.storyboard */; };
 		BD000CC922E3B78A001EE38A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD000CCB22E3B78A001EE38A /* Localizable.strings */; };
+		BD000CD122E497B9001EE38A /* LoginDomainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CD022E497B9001EE38A /* LoginDomainModel.swift */; };
+		BD000CD522E49845001EE38A /* TextFieldViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CD422E49845001EE38A /* TextFieldViewModel.swift */; };
+		BD000CD722E4996F001EE38A /* PasswordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CD622E4996F001EE38A /* PasswordViewModel.swift */; };
+		BD000CD922E49A1D001EE38A /* UsernameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CD822E49A1D001EE38A /* UsernameViewModel.swift */; };
+		BD000CDB22E4AD61001EE38A /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CDA22E4AD61001EE38A /* PrimaryButton.swift */; };
+		BD000CDE22E4CE6C001EE38A /* DocumentsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CDD22E4CE6C001EE38A /* DocumentsListViewController.swift */; };
+		BD000CE122E4FB5A001EE38A /* DocumentsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CE022E4FB5A001EE38A /* DocumentsListViewModel.swift */; };
+		BD2B9E7622EDBFF400FFCD3B /* NewDocumentCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2B9E7522EDBFF400FFCD3B /* NewDocumentCoordinator.swift */; };
+		BD2B9E7922EDC11E00FFCD3B /* IkemNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2B9E7822EDC11E00FFCD3B /* IkemNetworkManager.swift */; };
+		BD2B9E7B22EDC15000FFCD3B /* IkemNetworkManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2B9E7A22EDC15000FFCD3B /* IkemNetworkManaging.swift */; };
+		BD2B9E7E22EDC1B700FFCD3B /* DocumentTypeNetworkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2B9E7D22EDC1B700FFCD3B /* DocumentTypeNetworkModel.swift */; };
+		BD2B9E8122EDC1FA00FFCD3B /* DocumentTypeDomainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2B9E8022EDC1FA00FFCD3B /* DocumentTypeDomainModel.swift */; };
+		BD2B9E8422EDCC2500FFCD3B /* DocumentTypesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2B9E8322EDCC2500FFCD3B /* DocumentTypesRequest.swift */; };
+		BD2B9E8622EDCD0900FFCD3B /* IkemEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2B9E8522EDCD0900FFCD3B /* IkemEndpoint.swift */; };
+		BD2B9E8822EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2B9E8722EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift */; };
+		BD2F209022EBA33600534916 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2F208F22EBA33600534916 /* Database.swift */; };
+		BD2F209222EBA7D300534916 /* RealmDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2F209122EBA7D300534916 /* RealmDatabase.swift */; };
+		BD2F209422EBB49000534916 /* DocumentsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2F209322EBB49000534916 /* DocumentsCoordinator.swift */; };
 		BD59A05D22E36A8100FA9CD0 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A05C22E36A8100FA9CD0 /* Coordinator.swift */; };
 		BD59A06022E36AD100FA9CD0 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A05F22E36AD100FA9CD0 /* BaseViewController.swift */; };
 		BD59A06422E36CB200FA9CD0 /* BackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A06322E36CB200FA9CD0 /* BackButton.swift */; };
@@ -36,16 +54,38 @@
 		BD59A0AB22E3819600FA9CD0 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A0AA22E3819600FA9CD0 /* LoginViewModel.swift */; };
 		BD59A0AD22E395AF00FA9CD0 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A0AC22E395AF00FA9CD0 /* UIColor.swift */; };
 		BD59A0AF22E3966700FA9CD0 /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A0AE22E3966700FA9CD0 /* UIFont.swift */; };
+		BD85C93822E502A3004DC76E /* DocumentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD85C93722E502A3004DC76E /* DocumentViewModel.swift */; };
 		BDBDF4DD22C8016700183BBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBDF4DC22C8016700183BBF /* AppDelegate.swift */; };
 		BDBDF4E422C8016800183BBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BDBDF4E322C8016800183BBF /* Assets.xcassets */; };
+		BDC4A3E022E5004900D1CF6A /* DocumentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC4A3DF22E5004900D1CF6A /* DocumentTableViewCell.swift */; };
+		BDC4A3E322E5008800D1CF6A /* DocumentDomainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC4A3E222E5008800D1CF6A /* DocumentDomainModel.swift */; };
+		BDFC478522E907F200F312F0 /* DocumentDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFC478422E907F200F312F0 /* DocumentDatabaseModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A36199925677978CD669378A /* Pods-zScanner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zScanner.debug.xcconfig"; path = "Target Support Files/Pods-zScanner/Pods-zScanner.debug.xcconfig"; sourceTree = "<group>"; };
 		BD000CAD22E3AA6F001EE38A /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		BD000CB122E3B38B001EE38A /* UITextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextField.swift; sourceTree = "<group>"; };
-		BD000CC522E3B764001EE38A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "../../../../../../../System/Volumes/Data/Users/skorepa/ikem/zscanner-ios/zScanner/SupportFiles/Resources/Launch Screen.storyboard"; sourceTree = "<group>"; };
+		BD000CC522E3B764001EE38A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		BD000CCA22E3B78A001EE38A /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
+		BD000CD022E497B9001EE38A /* LoginDomainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDomainModel.swift; sourceTree = "<group>"; };
+		BD000CD422E49845001EE38A /* TextFieldViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldViewModel.swift; sourceTree = "<group>"; };
+		BD000CD622E4996F001EE38A /* PasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordViewModel.swift; sourceTree = "<group>"; };
+		BD000CD822E49A1D001EE38A /* UsernameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameViewModel.swift; sourceTree = "<group>"; };
+		BD000CDA22E4AD61001EE38A /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
+		BD000CDD22E4CE6C001EE38A /* DocumentsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsListViewController.swift; sourceTree = "<group>"; };
+		BD000CE022E4FB5A001EE38A /* DocumentsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsListViewModel.swift; sourceTree = "<group>"; };
+		BD2B9E7522EDBFF400FFCD3B /* NewDocumentCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDocumentCoordinator.swift; sourceTree = "<group>"; };
+		BD2B9E7822EDC11E00FFCD3B /* IkemNetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IkemNetworkManager.swift; sourceTree = "<group>"; };
+		BD2B9E7A22EDC15000FFCD3B /* IkemNetworkManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IkemNetworkManaging.swift; sourceTree = "<group>"; };
+		BD2B9E7D22EDC1B700FFCD3B /* DocumentTypeNetworkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentTypeNetworkModel.swift; sourceTree = "<group>"; };
+		BD2B9E8022EDC1FA00FFCD3B /* DocumentTypeDomainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentTypeDomainModel.swift; sourceTree = "<group>"; };
+		BD2B9E8322EDCC2500FFCD3B /* DocumentTypesRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentTypesRequest.swift; sourceTree = "<group>"; };
+		BD2B9E8522EDCD0900FFCD3B /* IkemEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IkemEndpoint.swift; sourceTree = "<group>"; };
+		BD2B9E8722EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DcumentTypeDatabaseModel.swift; sourceTree = "<group>"; };
+		BD2F208F22EBA33600534916 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
+		BD2F209122EBA7D300534916 /* RealmDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmDatabase.swift; sourceTree = "<group>"; };
+		BD2F209322EBB49000534916 /* DocumentsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsCoordinator.swift; sourceTree = "<group>"; };
 		BD59A05C22E36A8100FA9CD0 /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		BD59A05F22E36AD100FA9CD0 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		BD59A06322E36CB200FA9CD0 /* BackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackButton.swift; sourceTree = "<group>"; };
@@ -70,10 +110,14 @@
 		BD59A0AA22E3819600FA9CD0 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		BD59A0AC22E395AF00FA9CD0 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		BD59A0AE22E3966700FA9CD0 /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
+		BD85C93722E502A3004DC76E /* DocumentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentViewModel.swift; sourceTree = "<group>"; };
 		BDBDF4D922C8016700183BBF /* zScanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = zScanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDBDF4DC22C8016700183BBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BDBDF4E322C8016800183BBF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BDBDF4E822C8016800183BBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BDC4A3DF22E5004900D1CF6A /* DocumentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentTableViewCell.swift; sourceTree = "<group>"; };
+		BDC4A3E222E5008800D1CF6A /* DocumentDomainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDomainModel.swift; sourceTree = "<group>"; };
+		BDFC478422E907F200F312F0 /* DocumentDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDatabaseModel.swift; sourceTree = "<group>"; };
 		EA0AB6A19E0BFFBACC7952B9 /* Pods_zScanner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_zScanner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F88012237377830FF8D3A234 /* Pods-zScanner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zScanner.release.xcconfig"; path = "Target Support Files/Pods-zScanner/Pods-zScanner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -98,12 +142,120 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		BD000CCC22E49791001EE38A /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				BD2B9E7F22EDC1E500FFCD3B /* NewDocument */,
+				BD000CCD22E4979D001EE38A /* Login */,
+				BDC4A3E122E5007300D1CF6A /* Documents */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		BD000CCD22E4979D001EE38A /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				BD000CD022E497B9001EE38A /* LoginDomainModel.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		BD000CD222E497EF001EE38A /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				BD59A0AA22E3819600FA9CD0 /* LoginViewModel.swift */,
+				BD000CD822E49A1D001EE38A /* UsernameViewModel.swift */,
+				BD000CD622E4996F001EE38A /* PasswordViewModel.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		BD000CD322E4981E001EE38A /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				BD000CD422E49845001EE38A /* TextFieldViewModel.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		BD000CDC22E4CE3E001EE38A /* Documents */ = {
+			isa = PBXGroup;
+			children = (
+				BD000CDD22E4CE6C001EE38A /* DocumentsListViewController.swift */,
+			);
+			path = Documents;
+			sourceTree = "<group>";
+		};
+		BD000CDF22E4FB3F001EE38A /* Documents */ = {
+			isa = PBXGroup;
+			children = (
+				BD000CE022E4FB5A001EE38A /* DocumentsListViewModel.swift */,
+				BD85C93722E502A3004DC76E /* DocumentViewModel.swift */,
+			);
+			path = Documents;
+			sourceTree = "<group>";
+		};
+		BD2B9E7422EDBEC700FFCD3B /* NewDocument */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = NewDocument;
+			sourceTree = "<group>";
+		};
+		BD2B9E7722EDC10300FFCD3B /* Ikem */ = {
+			isa = PBXGroup;
+			children = (
+				BD2B9E7A22EDC15000FFCD3B /* IkemNetworkManaging.swift */,
+				BD2B9E7822EDC11E00FFCD3B /* IkemNetworkManager.swift */,
+				BD2B9E8522EDCD0900FFCD3B /* IkemEndpoint.swift */,
+				BD2B9E8222EDCBFD00FFCD3B /* Requests */,
+				BD2B9E7C22EDC1A000FFCD3B /* Model */,
+			);
+			path = Ikem;
+			sourceTree = "<group>";
+		};
+		BD2B9E7C22EDC1A000FFCD3B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				BD2B9E7D22EDC1B700FFCD3B /* DocumentTypeNetworkModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		BD2B9E7F22EDC1E500FFCD3B /* NewDocument */ = {
+			isa = PBXGroup;
+			children = (
+				BD2B9E8022EDC1FA00FFCD3B /* DocumentTypeDomainModel.swift */,
+				BD2B9E8722EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift */,
+			);
+			path = NewDocument;
+			sourceTree = "<group>";
+		};
+		BD2B9E8222EDCBFD00FFCD3B /* Requests */ = {
+			isa = PBXGroup;
+			children = (
+				BD2B9E8322EDCC2500FFCD3B /* DocumentTypesRequest.swift */,
+			);
+			path = Requests;
+			sourceTree = "<group>";
+		};
+		BD2F208E22EBA32500534916 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				BD2F208F22EBA33600534916 /* Database.swift */,
+				BD2F209122EBA7D300534916 /* RealmDatabase.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
 		BD59A05B22E36A6A00FA9CD0 /* Coordinators */ = {
 			isa = PBXGroup;
 			children = (
 				BD59A05C22E36A8100FA9CD0 /* Coordinator.swift */,
 				BD59A0A222E371E200FA9CD0 /* AppCoordinator.swift */,
 				BD59A0A422E378BB00FA9CD0 /* LoginCoordinator.swift */,
+				BD2F209322EBB49000534916 /* DocumentsCoordinator.swift */,
+				BD2B9E7522EDBFF400FFCD3B /* NewDocumentCoordinator.swift */,
 			);
 			path = Coordinators;
 			sourceTree = "<group>";
@@ -113,6 +265,8 @@
 			children = (
 				BD59A05F22E36AD100FA9CD0 /* BaseViewController.swift */,
 				BD59A0A622E380B300FA9CD0 /* Login */,
+				BD000CDC22E4CE3E001EE38A /* Documents */,
+				BD2B9E7422EDBEC700FFCD3B /* NewDocument */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -121,6 +275,7 @@
 			isa = PBXGroup;
 			children = (
 				BD59A06222E36C9300FA9CD0 /* Buttons */,
+				BDC4A3DE22E5003400D1CF6A /* Documents */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -129,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				BD59A06322E36CB200FA9CD0 /* BackButton.swift */,
+				BD000CDA22E4AD61001EE38A /* PrimaryButton.swift */,
 			);
 			path = Buttons;
 			sourceTree = "<group>";
@@ -190,6 +346,7 @@
 		BD59A07822E36EB600FA9CD0 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				BD2F208E22EBA32500534916 /* Storage */,
 				BD59A07B22E36EF900FA9CD0 /* Network */,
 			);
 			path = Services;
@@ -198,11 +355,12 @@
 		BD59A07B22E36EF900FA9CD0 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				BD2B9E7722EDC10300FFCD3B /* Ikem */,
 				BD59A08322E36EF900FA9CD0 /* Reachability.swift */,
 				BD59A08B22E36EF900FA9CD0 /* RequestStatus.swift */,
 				BD59A08F22E36EF900FA9CD0 /* Endpoint.swift */,
+				BD59A08722E36EF900FA9CD0 /* Request.swift */,
 				BD59A08822E36EF900FA9CD0 /* API */,
-				BD59A08422E36EF900FA9CD0 /* Requests */,
 				BD59A07C22E36EF900FA9CD0 /* Middleware */,
 			);
 			path = Network;
@@ -215,14 +373,6 @@
 				BD59A07E22E36EF900FA9CD0 /* NetworkActivityIndicatorBehavior.swift */,
 			);
 			path = Middleware;
-			sourceTree = "<group>";
-		};
-		BD59A08422E36EF900FA9CD0 /* Requests */ = {
-			isa = PBXGroup;
-			children = (
-				BD59A08722E36EF900FA9CD0 /* Request.swift */,
-			);
-			path = Requests;
 			sourceTree = "<group>";
 		};
 		BD59A08822E36EF900FA9CD0 /* API */ = {
@@ -245,7 +395,9 @@
 		BD59A0A922E3818200FA9CD0 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				BD59A0AA22E3819600FA9CD0 /* LoginViewModel.swift */,
+				BD000CD322E4981E001EE38A /* Components */,
+				BD000CD222E497EF001EE38A /* Login */,
+				BD000CDF22E4FB3F001EE38A /* Documents */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -277,9 +429,27 @@
 				BD59A05E22E36AA800FA9CD0 /* ViewControllers */,
 				BD59A0A922E3818200FA9CD0 /* ViewModels */,
 				BD59A06122E36C7B00FA9CD0 /* Views */,
+				BD000CCC22E49791001EE38A /* Model */,
 				BD59A06522E36CFC00FA9CD0 /* SupportFiles */,
 			);
 			path = zScanner;
+			sourceTree = "<group>";
+		};
+		BDC4A3DE22E5003400D1CF6A /* Documents */ = {
+			isa = PBXGroup;
+			children = (
+				BDC4A3DF22E5004900D1CF6A /* DocumentTableViewCell.swift */,
+			);
+			path = Documents;
+			sourceTree = "<group>";
+		};
+		BDC4A3E122E5007300D1CF6A /* Documents */ = {
+			isa = PBXGroup;
+			children = (
+				BDC4A3E222E5008800D1CF6A /* DocumentDomainModel.swift */,
+				BDFC478422E907F200F312F0 /* DocumentDatabaseModel.swift */,
+			);
+			path = Documents;
 			sourceTree = "<group>";
 		};
 		D4DE2251B900A2B980815005 /* Pods */ = {
@@ -333,6 +503,7 @@
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				en,
 				Base,
 				cs,
 			);
@@ -407,27 +578,49 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD59A0AB22E3819600FA9CD0 /* LoginViewModel.swift in Sources */,
+				BDC4A3E022E5004900D1CF6A /* DocumentTableViewCell.swift in Sources */,
+				BD2B9E8422EDCC2500FFCD3B /* DocumentTypesRequest.swift in Sources */,
+				BD2B9E7B22EDC15000FFCD3B /* IkemNetworkManaging.swift in Sources */,
+				BD000CD122E497B9001EE38A /* LoginDomainModel.swift in Sources */,
 				BD59A06422E36CB200FA9CD0 /* BackButton.swift in Sources */,
 				BD000CB222E3B38B001EE38A /* UITextField.swift in Sources */,
 				BD59A09122E36EF900FA9CD0 /* NetworkActivityIndicatorBehavior.swift in Sources */,
+				BD2B9E8622EDCD0900FFCD3B /* IkemEndpoint.swift in Sources */,
 				BD59A06D22E36D2A00FA9CD0 /* PluggableViewController.swift in Sources */,
 				BD59A06022E36AD100FA9CD0 /* BaseViewController.swift in Sources */,
 				BD59A07322E36DB000FA9CD0 /* String.swift in Sources */,
+				BD2B9E7922EDC11E00FFCD3B /* IkemNetworkManager.swift in Sources */,
 				BD59A06B22E36D2400FA9CD0 /* Closures.swift in Sources */,
+				BD2B9E8122EDC1FA00FFCD3B /* DocumentTypeDomainModel.swift in Sources */,
 				BD59A09B22E36EF900FA9CD0 /* RequestStatus.swift in Sources */,
 				BDBDF4DD22C8016700183BBF /* AppDelegate.swift in Sources */,
 				BD59A07122E36D8800FA9CD0 /* Array.swift in Sources */,
 				BD59A0A522E378BC00FA9CD0 /* LoginCoordinator.swift in Sources */,
 				BD59A0A822E380C400FA9CD0 /* LoginViewController.swift in Sources */,
+				BD000CDB22E4AD61001EE38A /* PrimaryButton.swift in Sources */,
+				BDC4A3E322E5008800D1CF6A /* DocumentDomainModel.swift in Sources */,
 				BD59A09922E36EF900FA9CD0 /* NativeAPI.swift in Sources */,
+				BD2B9E8822EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift in Sources */,
 				BD59A0AD22E395AF00FA9CD0 /* UIColor.swift in Sources */,
 				BD59A09022E36EF900FA9CD0 /* RequestBehavior.swift in Sources */,
+				BD2F209222EBA7D300534916 /* RealmDatabase.swift in Sources */,
+				BDFC478522E907F200F312F0 /* DocumentDatabaseModel.swift in Sources */,
 				BD59A09A22E36EF900FA9CD0 /* API.swift in Sources */,
+				BD85C93822E502A3004DC76E /* DocumentViewModel.swift in Sources */,
+				BD000CDE22E4CE6C001EE38A /* DocumentsListViewController.swift in Sources */,
+				BD2B9E7E22EDC1B700FFCD3B /* DocumentTypeNetworkModel.swift in Sources */,
+				BD2F209022EBA33600534916 /* Database.swift in Sources */,
+				BD2B9E7622EDBFF400FFCD3B /* NewDocumentCoordinator.swift in Sources */,
 				BD59A0A322E371E200FA9CD0 /* AppCoordinator.swift in Sources */,
+				BD000CE122E4FB5A001EE38A /* DocumentsListViewModel.swift in Sources */,
+				BD000CD722E4996F001EE38A /* PasswordViewModel.swift in Sources */,
 				BD59A09822E36EF900FA9CD0 /* Request.swift in Sources */,
 				BD59A0AF22E3966700FA9CD0 /* UIFont.swift in Sources */,
 				BD59A07622E36DEE00FA9CD0 /* UITableView.swift in Sources */,
+				BD000CD922E49A1D001EE38A /* UsernameViewModel.swift in Sources */,
 				BD000CAE22E3AA6F001EE38A /* UIViewController.swift in Sources */,
+				BD000CD522E49845001EE38A /* TextFieldViewModel.swift in Sources */,
+				BD2F209422EBB49000534916 /* DocumentsCoordinator.swift in Sources */,
 				BD59A06C22E36D2A00FA9CD0 /* ViewControllerService.swift in Sources */,
 				BD59A0A022E3707E00FA9CD0 /* Config.swift in Sources */,
 				BD59A09522E36EF900FA9CD0 /* Reachability.swift in Sources */,
@@ -445,7 +638,6 @@
 				BD000CCA22E3B78A001EE38A /* cs */,
 			);
 			name = Localizable.strings;
-			path = "../../../../../../../System/Volumes/Data/Users/skorepa/ikem/zscanner-ios/zScanner/SupportFiles/Resources";
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

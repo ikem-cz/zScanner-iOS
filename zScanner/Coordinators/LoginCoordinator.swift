@@ -23,18 +23,28 @@ class LoginCoordinator: Coordinator {
         super.init(window: window)
     }
     
+    //MARK: Interface
     func begin() {
         showLogin()
     }
     
     // MARK: Navigation methods
     private func showLogin() {
-        let viewController = LoginViewController(viewModel: LoginViewModel(), coordinator: self)
+        let viewController = LoginViewController(viewModel:
+            LoginViewModel(model:
+                LoginDomainModel(
+                    username: "",
+                    password: ""
+                )
+            ),
+            coordinator: self
+        )
         push(viewController)
     }
     
 }
 
+//MARK: - LoginViewDelegate implementation
 extension LoginCoordinator: LoginViewDelegate {
     func successfulLogin() {
         flowDelegate.successfulLogin()

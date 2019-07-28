@@ -7,5 +7,16 @@
 */
 
 // MARK: - Login
-"LOGIN_USERNAME_PLACEHOLDER" = "login";
-"LOGIN_PASSWORD_PLACEHOLDER" = "heslo";
+"login.username.placeholder" = "login";
+"login.password.placeholder" = "heslo";
+"login.button.title"= "Přihlásit";
+
+// MARK: - Document type
+"documentMode.doc.name" = "Dokument";
+"documentMode.exam.name" = "Vyšetření";
+"documentMode.photo.name" = "Fotografie";
+
+// MARK: - Documents List
+"document.screen.title" = "zScanner";
+"document.modeSelector.cancel" = "Zrušit";
+"document.modeSelector.title" = "Zvolte typ záznamu";

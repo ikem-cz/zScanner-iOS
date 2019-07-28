@@ -17,10 +17,12 @@ protocol Request {
     var headers: HTTPHeaders { get set }
 }
 
+//MARK: -
 protocol ParametersURLEncoded {
     var url: String { get }
 }
 
+//MARK: - Default implementation
 extension ParametersURLEncoded where Self: Request {
     var url: String {
         var url = endpoint.url

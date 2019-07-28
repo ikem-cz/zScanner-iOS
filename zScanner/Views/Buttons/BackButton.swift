@@ -15,7 +15,7 @@ protocol BackButtonDelegate {
 // MARK: -
 class BackButton: UIBarButtonItem {
     
-    // MARK: - Instance part
+    // MARK: Instance part
     var delegate: BackButtonDelegate?
     
     override init() {
@@ -28,7 +28,7 @@ class BackButton: UIBarButtonItem {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Helpers
+    // MARK: Helpers
     private func setup() {
         image = #imageLiteral(resourceName: "backButton")
         action = #selector(didClick)

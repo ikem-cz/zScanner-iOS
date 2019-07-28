@@ -8,6 +8,8 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 protocol LoginViewDelegate: BaseCoordinator {
     func successfulLogin()
@@ -15,7 +17,7 @@ protocol LoginViewDelegate: BaseCoordinator {
 
 class LoginViewController: BaseViewController {
 
-    // MARK: - Instance part
+    // MARK: Instance part
     private unowned let coordinator: LoginViewDelegate
     private let viewModel: LoginViewModel
     
@@ -31,7 +33,47 @@ class LoginViewController: BaseViewController {
         setupView()
     }
     
-    // MARK: - Helpers
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupBindings()
+    }
+    
+    // MARK: Helpers
+    
+    private let disposeBag = DisposeBag()
+    
+    private func setupBindings() {
+        usernameTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.usernameField.value)
+            .disposed(by: disposeBag)
+        
+        passwordTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.passwordField.value)
+            .disposed(by: disposeBag)
+        
+        viewModel.isValid.bind(to: loginButton.rx.isEnabled).disposed(by: disposeBag)
+        
+        loginButton.rx.tap.do(onNext: { [unowned self] in
+            self.usernameTextField.resignFirstResponder()
+            self.passwordTextField.resignFirstResponder()
+        })
+        .subscribe(onNext: { [unowned self] in
+            self.viewModel.signin()
+        }).disposed(by: disposeBag)
+        
+        viewModel.status.subscribe(onNext: { [unowned self] status in
+            switch status {
+            case .success:
+               self.coordinator.successfulLogin()
+            default:
+                break
+            }
+        }).disposed(by: disposeBag)
+    }
+    
     private func setupView() {
         view.addSubview(container)
         
@@ -62,8 +104,15 @@ class LoginViewController: BaseViewController {
         container.addSubview(passwordTextField)
         passwordTextField.snp.makeConstraints { make in
             make.top.equalTo(usernameTextField.snp.bottom).offset(8)
-            make.bottom.centerX.equalToSuperview()
+            make.centerX.equalToSuperview()
             make.right.left.equalToSuperview()
+        }
+        
+        container.addSubview(loginButton)
+        loginButton.snp.makeConstraints { make in
+            make.top.equalTo(passwordTextField.snp.bottom).offset(8)
+            make.bottom.centerX.equalToSuperview()
+            make.right.left.equalToSuperview().inset(20)
         }
         
         titleLabel.text = "zScanner"
@@ -86,7 +135,7 @@ class LoginViewController: BaseViewController {
     private lazy var usernameTextField: UITextField = {
         let textField = UITextField()
         textField.textContentType = .username
-        textField.placeholder = "LOGIN_USERNAME_PLACEHOLDER".localized
+        textField.placeholder = "login.username.placeholder".localized
         textField.setBottomBorder()
         return textField
     }()
@@ -95,9 +144,15 @@ class LoginViewController: BaseViewController {
         let textField = UITextField()
         textField.textContentType = .password
         textField.isSecureTextEntry = true
-        textField.placeholder = "LOGIN_PASSWORD_PLACEHOLDER".localized
+        textField.placeholder = "login.password.placeholder".localized
         textField.setBottomBorder()
         return textField
+    }()
+    
+    private lazy var loginButton: PrimaryButton = {
+        let button = PrimaryButton()
+        button.setTitle("login.button.title".localized, for: .normal)
+        return button
     }()
     
     private lazy var container: UIView = {

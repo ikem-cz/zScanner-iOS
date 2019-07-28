@@ -15,6 +15,7 @@ protocol RequestBehavior {
     func afterError(_ error: RequestError)
 }
 
+//MARK: -
 extension RequestBehavior {
     var additionalHeaders: [String: String] { return [:] }
     func beforeSend() {}
@@ -22,8 +23,10 @@ extension RequestBehavior {
     func afterError(_ error: RequestError) {}
 }
 
+//MARK: -
 struct EmptyRequestBehavior: RequestBehavior { }
 
+//MARK: -
 struct CombinedRequestBehavior: RequestBehavior {
     
     let behaviors: [RequestBehavior]
