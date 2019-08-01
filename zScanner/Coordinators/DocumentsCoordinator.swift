@@ -46,6 +46,7 @@ class DocumentsCoordinator: Coordinator {
     private let api: API = NativeAPI()
     private let ikemNetworkManager: IkemNetworkManaging
     private let database: Database = try! Realm()
+    private let tracker: Tracker = FirebaseAnalytics()
     
     private func fetchDocumentTypes(callback: @escaping EmptyClosure) {
         ikemNetworkManager.getDocumentTypes { [weak self] requestStatus in
@@ -77,6 +78,7 @@ class DocumentsCoordinator: Coordinator {
 // MARK: - DocumentsListCoordinator implementation
 extension DocumentsCoordinator: DocumentsListCoordinator {
     func createNewDocument(with mode: DocumentMode) {
+        tracker.track(.documentModeSelected(mode))
         flowDelegate.createNewDocument(with: mode)
     }
 }

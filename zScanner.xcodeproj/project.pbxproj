@@ -55,6 +55,10 @@
 		BD59A0AD22E395AF00FA9CD0 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A0AC22E395AF00FA9CD0 /* UIColor.swift */; };
 		BD59A0AF22E3966700FA9CD0 /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A0AE22E3966700FA9CD0 /* UIFont.swift */; };
 		BD85C93822E502A3004DC76E /* DocumentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD85C93722E502A3004DC76E /* DocumentViewModel.swift */; };
+		BDA25B1C22EF979A006DA7E4 /* Tracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDA25B1B22EF979A006DA7E4 /* Tracker.swift */; };
+		BDA25B1E22EF99E6006DA7E4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDA25B1D22EF99E6006DA7E4 /* GoogleService-Info.plist */; };
+		BDA25B2022EF9C33006DA7E4 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDA25B1F22EF9C33006DA7E4 /* Event.swift */; };
+		BDA25B2322EF9D7A006DA7E4 /* FirebaseAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDA25B2222EF9D7A006DA7E4 /* FirebaseAnalytics.swift */; };
 		BDBDF4DD22C8016700183BBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBDF4DC22C8016700183BBF /* AppDelegate.swift */; };
 		BDBDF4E422C8016800183BBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BDBDF4E322C8016800183BBF /* Assets.xcassets */; };
 		BDC4A3E022E5004900D1CF6A /* DocumentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC4A3DF22E5004900D1CF6A /* DocumentTableViewCell.swift */; };
@@ -111,6 +115,10 @@
 		BD59A0AC22E395AF00FA9CD0 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		BD59A0AE22E3966700FA9CD0 /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
 		BD85C93722E502A3004DC76E /* DocumentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentViewModel.swift; sourceTree = "<group>"; };
+		BDA25B1B22EF979A006DA7E4 /* Tracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tracker.swift; sourceTree = "<group>"; };
+		BDA25B1D22EF99E6006DA7E4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BDA25B1F22EF9C33006DA7E4 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		BDA25B2222EF9D7A006DA7E4 /* FirebaseAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAnalytics.swift; sourceTree = "<group>"; };
 		BDBDF4D922C8016700183BBF /* zScanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = zScanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDBDF4DC22C8016700183BBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BDBDF4E322C8016800183BBF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -293,6 +301,7 @@
 			isa = PBXGroup;
 			children = (
 				BDBDF4E822C8016800183BBF /* Info.plist */,
+				BDA25B1D22EF99E6006DA7E4 /* GoogleService-Info.plist */,
 				BD59A06E22E36D4200FA9CD0 /* Resources */,
 				BD59A06F22E36D6A00FA9CD0 /* Extensions */,
 				BD59A06622E36D0800FA9CD0 /* Helpers */,
@@ -346,8 +355,9 @@
 		BD59A07822E36EB600FA9CD0 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				BD2F208E22EBA32500534916 /* Storage */,
 				BD59A07B22E36EF900FA9CD0 /* Network */,
+				BD2F208E22EBA32500534916 /* Storage */,
+				BDA25B1A22EF9785006DA7E4 /* Tracking */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -400,6 +410,24 @@
 				BD000CDF22E4FB3F001EE38A /* Documents */,
 			);
 			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		BDA25B1A22EF9785006DA7E4 /* Tracking */ = {
+			isa = PBXGroup;
+			children = (
+				BDA25B2122EF9D58006DA7E4 /* GoogleAnalytics */,
+				BDA25B1B22EF979A006DA7E4 /* Tracker.swift */,
+				BDA25B1F22EF9C33006DA7E4 /* Event.swift */,
+			);
+			path = Tracking;
+			sourceTree = "<group>";
+		};
+		BDA25B2122EF9D58006DA7E4 /* GoogleAnalytics */ = {
+			isa = PBXGroup;
+			children = (
+				BDA25B2222EF9D7A006DA7E4 /* FirebaseAnalytics.swift */,
+			);
+			path = GoogleAnalytics;
 			sourceTree = "<group>";
 		};
 		BDBDF4D022C8016700183BBF = {
@@ -523,6 +551,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD000CC622E3B764001EE38A /* Launch Screen.storyboard in Resources */,
+				BDA25B1E22EF99E6006DA7E4 /* GoogleService-Info.plist in Resources */,
 				BD000CC922E3B78A001EE38A /* Localizable.strings in Resources */,
 				BDBDF4E422C8016800183BBF /* Assets.xcassets in Resources */,
 			);
@@ -599,8 +628,10 @@
 				BD59A0A822E380C400FA9CD0 /* LoginViewController.swift in Sources */,
 				BD000CDB22E4AD61001EE38A /* PrimaryButton.swift in Sources */,
 				BDC4A3E322E5008800D1CF6A /* DocumentDomainModel.swift in Sources */,
+				BDA25B1C22EF979A006DA7E4 /* Tracker.swift in Sources */,
 				BD59A09922E36EF900FA9CD0 /* NativeAPI.swift in Sources */,
 				BD2B9E8822EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift in Sources */,
+				BDA25B2022EF9C33006DA7E4 /* Event.swift in Sources */,
 				BD59A0AD22E395AF00FA9CD0 /* UIColor.swift in Sources */,
 				BD59A09022E36EF900FA9CD0 /* RequestBehavior.swift in Sources */,
 				BD2F209222EBA7D300534916 /* RealmDatabase.swift in Sources */,
@@ -620,6 +651,7 @@
 				BD000CD922E49A1D001EE38A /* UsernameViewModel.swift in Sources */,
 				BD000CAE22E3AA6F001EE38A /* UIViewController.swift in Sources */,
 				BD000CD522E49845001EE38A /* TextFieldViewModel.swift in Sources */,
+				BDA25B2322EF9D7A006DA7E4 /* FirebaseAnalytics.swift in Sources */,
 				BD2F209422EBB49000534916 /* DocumentsCoordinator.swift in Sources */,
 				BD59A06C22E36D2A00FA9CD0 /* ViewControllerService.swift in Sources */,
 				BD59A0A022E3707E00FA9CD0 /* Config.swift in Sources */,
@@ -776,7 +808,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = cz.ikem.zScanner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -795,7 +827,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = cz.ikem.zScanner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
