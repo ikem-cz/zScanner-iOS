@@ -9,9 +9,7 @@
 import UIKit
 import RealmSwift
 
-protocol DocumentsFlowDelegate: FlowDelegate {
-    func createNewDocument(with mode: DocumentMode)
-}
+protocol DocumentsFlowDelegate: FlowDelegate {}
 
 // MARK: -
 class DocumentsCoordinator: Coordinator {
@@ -26,20 +24,26 @@ class DocumentsCoordinator: Coordinator {
         super.init(window: window)
     }
     
-    //MARK: Interface
+    // MARK: Interface
     func begin() {
         fetchDocumentTypes { [weak self] in
             DispatchQueue.main.async {
-                self?.showDocumentsList()
+                self?.showDocumentsListScreen()
             }
         }
     }
     
     // MARK: Navigation methods
-    private func showDocumentsList() {
+    private func showDocumentsListScreen() {
         let viewModel = DocumentsListViewModel(database: database)
         let viewController = DocumentsListViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
+    }
+    
+    private func runNewDocumentFlow(with mode: DocumentMode) {
+        guard let coordinator = NewDocumentCoordinator(for: mode, flowDelegate: self, window: window, navigationController: navigationController) else { return }
+        addChildCoordinator(coordinator)
+        coordinator.begin()
     }
     
     // MARK: Helpers
@@ -79,6 +83,9 @@ class DocumentsCoordinator: Coordinator {
 extension DocumentsCoordinator: DocumentsListCoordinator {
     func createNewDocument(with mode: DocumentMode) {
         tracker.track(.documentModeSelected(mode))
-        flowDelegate.createNewDocument(with: mode)
+        runNewDocumentFlow(with: mode)
     }
 }
+
+// MARK: - NewDocumentFlowDelegate implementation
+extension DocumentsCoordinator: NewDocumentFlowDelegate {}

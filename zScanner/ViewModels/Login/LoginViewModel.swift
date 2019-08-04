@@ -23,8 +23,8 @@ class LoginViewModel {
     var model: LoginDomainModel
     private let disposeBag = DisposeBag()
     
-    let usernameField = UsernameViewModel()
-    let passwordField = PasswordViewModel()
+    let usernameField = TextInputField(title: "login.username.title".localized, validator: { !$0.isEmpty })
+    let passwordField = ProtectedTextInputField(title: "login.password.title".localized, validator: { !$0.isEmpty })
     
     let status = BehaviorRelay<State>(value: .awaitingInteraction)
     
@@ -40,8 +40,8 @@ class LoginViewModel {
     //MARK: Interface
     func signin() {
         // update model
-        model.username = usernameField.value.value
-        model.password = passwordField.value.value
+        model.username = usernameField.text.value
+        model.password = passwordField.text.value
         
         status.accept(.success)
     

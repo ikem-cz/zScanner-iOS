@@ -7,8 +7,8 @@
 */
 
 // MARK: - Login
-"login.username.placeholder" = "login";
-"login.password.placeholder" = "heslo";
+"login.username.title" = "login";
+"login.password.title" = "heslo";
 "login.button.title"= "Přihlásit";
 
 // MARK: - Document type
@@ -20,3 +20,10 @@
 "document.screen.title" = "zScanner";
 "document.modeSelector.cancel" = "Zrušit";
 "document.modeSelector.title" = "Zvolte typ záznamu";
+
+// MARK: - New Document
+"form.listPicker.title" = "Typ dokumentu";
+"form.listPicker.unselected" = "Vybrat";
+"form.documentDecription.title" = "Název (nepovinný)";
+"form.dateTimePicker.title" = "Platnost";
+"form.dateTimePicker.unselected" = "Vybrat";

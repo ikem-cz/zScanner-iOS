@@ -13,9 +13,6 @@
 		BD000CC622E3B764001EE38A /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BD000CC522E3B764001EE38A /* Launch Screen.storyboard */; };
 		BD000CC922E3B78A001EE38A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BD000CCB22E3B78A001EE38A /* Localizable.strings */; };
 		BD000CD122E497B9001EE38A /* LoginDomainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CD022E497B9001EE38A /* LoginDomainModel.swift */; };
-		BD000CD522E49845001EE38A /* TextFieldViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CD422E49845001EE38A /* TextFieldViewModel.swift */; };
-		BD000CD722E4996F001EE38A /* PasswordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CD622E4996F001EE38A /* PasswordViewModel.swift */; };
-		BD000CD922E49A1D001EE38A /* UsernameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CD822E49A1D001EE38A /* UsernameViewModel.swift */; };
 		BD000CDB22E4AD61001EE38A /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CDA22E4AD61001EE38A /* PrimaryButton.swift */; };
 		BD000CDE22E4CE6C001EE38A /* DocumentsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CDD22E4CE6C001EE38A /* DocumentsListViewController.swift */; };
 		BD000CE122E4FB5A001EE38A /* DocumentsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CE022E4FB5A001EE38A /* DocumentsListViewModel.swift */; };
@@ -27,9 +24,13 @@
 		BD2B9E8422EDCC2500FFCD3B /* DocumentTypesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2B9E8322EDCC2500FFCD3B /* DocumentTypesRequest.swift */; };
 		BD2B9E8622EDCD0900FFCD3B /* IkemEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2B9E8522EDCD0900FFCD3B /* IkemEndpoint.swift */; };
 		BD2B9E8822EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2B9E8722EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift */; };
+		BD2C5F8222F378A20023D097 /* NewDocumentTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2C5F8122F378A20023D097 /* NewDocumentTypeViewController.swift */; };
 		BD2F209022EBA33600534916 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2F208F22EBA33600534916 /* Database.swift */; };
 		BD2F209222EBA7D300534916 /* RealmDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2F209122EBA7D300534916 /* RealmDatabase.swift */; };
 		BD2F209422EBB49000534916 /* DocumentsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2F209322EBB49000534916 /* DocumentsCoordinator.swift */; };
+		BD389A2522F70170002F935F /* NewDocumentTypeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD389A2422F70170002F935F /* NewDocumentTypeViewModel.swift */; };
+		BD389A2722F70596002F935F /* FormField.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD389A2622F70596002F935F /* FormField.swift */; };
+		BD389A2A22F7093B002F935F /* FolderDomainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD389A2922F7093B002F935F /* FolderDomainModel.swift */; };
 		BD59A05D22E36A8100FA9CD0 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A05C22E36A8100FA9CD0 /* Coordinator.swift */; };
 		BD59A06022E36AD100FA9CD0 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A05F22E36AD100FA9CD0 /* BaseViewController.swift */; };
 		BD59A06422E36CB200FA9CD0 /* BackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A06322E36CB200FA9CD0 /* BackButton.swift */; };
@@ -73,9 +74,6 @@
 		BD000CC522E3B764001EE38A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		BD000CCA22E3B78A001EE38A /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		BD000CD022E497B9001EE38A /* LoginDomainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDomainModel.swift; sourceTree = "<group>"; };
-		BD000CD422E49845001EE38A /* TextFieldViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldViewModel.swift; sourceTree = "<group>"; };
-		BD000CD622E4996F001EE38A /* PasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordViewModel.swift; sourceTree = "<group>"; };
-		BD000CD822E49A1D001EE38A /* UsernameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameViewModel.swift; sourceTree = "<group>"; };
 		BD000CDA22E4AD61001EE38A /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
 		BD000CDD22E4CE6C001EE38A /* DocumentsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsListViewController.swift; sourceTree = "<group>"; };
 		BD000CE022E4FB5A001EE38A /* DocumentsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsListViewModel.swift; sourceTree = "<group>"; };
@@ -87,9 +85,13 @@
 		BD2B9E8322EDCC2500FFCD3B /* DocumentTypesRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentTypesRequest.swift; sourceTree = "<group>"; };
 		BD2B9E8522EDCD0900FFCD3B /* IkemEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IkemEndpoint.swift; sourceTree = "<group>"; };
 		BD2B9E8722EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DcumentTypeDatabaseModel.swift; sourceTree = "<group>"; };
+		BD2C5F8122F378A20023D097 /* NewDocumentTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDocumentTypeViewController.swift; sourceTree = "<group>"; };
 		BD2F208F22EBA33600534916 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		BD2F209122EBA7D300534916 /* RealmDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmDatabase.swift; sourceTree = "<group>"; };
 		BD2F209322EBB49000534916 /* DocumentsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsCoordinator.swift; sourceTree = "<group>"; };
+		BD389A2422F70170002F935F /* NewDocumentTypeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDocumentTypeViewModel.swift; sourceTree = "<group>"; };
+		BD389A2622F70596002F935F /* FormField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormField.swift; sourceTree = "<group>"; };
+		BD389A2922F7093B002F935F /* FolderDomainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderDomainModel.swift; sourceTree = "<group>"; };
 		BD59A05C22E36A8100FA9CD0 /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		BD59A05F22E36AD100FA9CD0 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		BD59A06322E36CB200FA9CD0 /* BackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackButton.swift; sourceTree = "<group>"; };
@@ -153,9 +155,11 @@
 		BD000CCC22E49791001EE38A /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				BD000CD322E4981E001EE38A /* Components */,
 				BD2B9E7F22EDC1E500FFCD3B /* NewDocument */,
 				BD000CCD22E4979D001EE38A /* Login */,
 				BDC4A3E122E5007300D1CF6A /* Documents */,
+				BD389A2822F708E0002F935F /* Folder */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -172,8 +176,6 @@
 			isa = PBXGroup;
 			children = (
 				BD59A0AA22E3819600FA9CD0 /* LoginViewModel.swift */,
-				BD000CD822E49A1D001EE38A /* UsernameViewModel.swift */,
-				BD000CD622E4996F001EE38A /* PasswordViewModel.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -181,7 +183,7 @@
 		BD000CD322E4981E001EE38A /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				BD000CD422E49845001EE38A /* TextFieldViewModel.swift */,
+				BD389A2622F70596002F935F /* FormField.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -206,6 +208,7 @@
 		BD2B9E7422EDBEC700FFCD3B /* NewDocument */ = {
 			isa = PBXGroup;
 			children = (
+				BD2C5F8122F378A20023D097 /* NewDocumentTypeViewController.swift */,
 			);
 			path = NewDocument;
 			sourceTree = "<group>";
@@ -254,6 +257,22 @@
 				BD2F209122EBA7D300534916 /* RealmDatabase.swift */,
 			);
 			path = Storage;
+			sourceTree = "<group>";
+		};
+		BD389A2322F70148002F935F /* NewDocument */ = {
+			isa = PBXGroup;
+			children = (
+				BD389A2422F70170002F935F /* NewDocumentTypeViewModel.swift */,
+			);
+			path = NewDocument;
+			sourceTree = "<group>";
+		};
+		BD389A2822F708E0002F935F /* Folder */ = {
+			isa = PBXGroup;
+			children = (
+				BD389A2922F7093B002F935F /* FolderDomainModel.swift */,
+			);
+			path = Folder;
 			sourceTree = "<group>";
 		};
 		BD59A05B22E36A6A00FA9CD0 /* Coordinators */ = {
@@ -405,9 +424,9 @@
 		BD59A0A922E3818200FA9CD0 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				BD000CD322E4981E001EE38A /* Components */,
 				BD000CD222E497EF001EE38A /* Login */,
 				BD000CDF22E4FB3F001EE38A /* Documents */,
+				BD389A2322F70148002F935F /* NewDocument */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -610,8 +629,10 @@
 				BDC4A3E022E5004900D1CF6A /* DocumentTableViewCell.swift in Sources */,
 				BD2B9E8422EDCC2500FFCD3B /* DocumentTypesRequest.swift in Sources */,
 				BD2B9E7B22EDC15000FFCD3B /* IkemNetworkManaging.swift in Sources */,
+				BD2C5F8222F378A20023D097 /* NewDocumentTypeViewController.swift in Sources */,
 				BD000CD122E497B9001EE38A /* LoginDomainModel.swift in Sources */,
 				BD59A06422E36CB200FA9CD0 /* BackButton.swift in Sources */,
+				BD389A2A22F7093B002F935F /* FolderDomainModel.swift in Sources */,
 				BD000CB222E3B38B001EE38A /* UITextField.swift in Sources */,
 				BD59A09122E36EF900FA9CD0 /* NetworkActivityIndicatorBehavior.swift in Sources */,
 				BD2B9E8622EDCD0900FFCD3B /* IkemEndpoint.swift in Sources */,
@@ -637,20 +658,19 @@
 				BD2F209222EBA7D300534916 /* RealmDatabase.swift in Sources */,
 				BDFC478522E907F200F312F0 /* DocumentDatabaseModel.swift in Sources */,
 				BD59A09A22E36EF900FA9CD0 /* API.swift in Sources */,
+				BD389A2522F70170002F935F /* NewDocumentTypeViewModel.swift in Sources */,
 				BD85C93822E502A3004DC76E /* DocumentViewModel.swift in Sources */,
 				BD000CDE22E4CE6C001EE38A /* DocumentsListViewController.swift in Sources */,
+				BD389A2722F70596002F935F /* FormField.swift in Sources */,
 				BD2B9E7E22EDC1B700FFCD3B /* DocumentTypeNetworkModel.swift in Sources */,
 				BD2F209022EBA33600534916 /* Database.swift in Sources */,
 				BD2B9E7622EDBFF400FFCD3B /* NewDocumentCoordinator.swift in Sources */,
 				BD59A0A322E371E200FA9CD0 /* AppCoordinator.swift in Sources */,
 				BD000CE122E4FB5A001EE38A /* DocumentsListViewModel.swift in Sources */,
-				BD000CD722E4996F001EE38A /* PasswordViewModel.swift in Sources */,
 				BD59A09822E36EF900FA9CD0 /* Request.swift in Sources */,
 				BD59A0AF22E3966700FA9CD0 /* UIFont.swift in Sources */,
 				BD59A07622E36DEE00FA9CD0 /* UITableView.swift in Sources */,
-				BD000CD922E49A1D001EE38A /* UsernameViewModel.swift in Sources */,
 				BD000CAE22E3AA6F001EE38A /* UIViewController.swift in Sources */,
-				BD000CD522E49845001EE38A /* TextFieldViewModel.swift in Sources */,
 				BDA25B2322EF9D7A006DA7E4 /* FirebaseAnalytics.swift in Sources */,
 				BD2F209422EBB49000534916 /* DocumentsCoordinator.swift in Sources */,
 				BD59A06C22E36D2A00FA9CD0 /* ViewControllerService.swift in Sources */,

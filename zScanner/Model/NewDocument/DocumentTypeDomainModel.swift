@@ -19,12 +19,19 @@ enum DocumentMode: String {
     }
 }
 
-//MARK: -
+// MARK: -
 struct DocumentTypeDomainModel {
     var id: String
     var name: String
     var mode: DocumentMode
 }
 
-//MARK: -
+// MARK: ListItem implementation
+extension DocumentTypeDomainModel: ListItem {
+    var title: String {
+        return name
+    }
+}
+
+// MARK: -
 typealias DocumentDict = [DocumentMode: [DocumentTypeDomainModel]]

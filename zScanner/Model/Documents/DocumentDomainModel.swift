@@ -17,3 +17,21 @@ struct DocumentDomainModel {
     var notes: String
     var pages: [UIImage]
 }
+
+extension DocumentDomainModel {
+    static var emptyDocument: DocumentDomainModel {
+        return DocumentDomainModel(
+            id: "",
+            folderId: "",
+            type: DocumentTypeDomainModel(
+                id: "",
+                name: "",
+                mode: .undefined
+            ),
+            created: Date(),
+            name: "",
+            notes: "",
+            pages: []
+        )
+    }
+}

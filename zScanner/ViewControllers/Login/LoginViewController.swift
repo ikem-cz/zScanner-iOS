@@ -46,13 +46,15 @@ class LoginViewController: BaseViewController {
     private func setupBindings() {
         usernameTextField.rx.text
             .orEmpty
-            .bind(to: viewModel.usernameField.value)
+            .bind(to: viewModel.usernameField.text)
             .disposed(by: disposeBag)
+        usernameTextField.placeholder = viewModel.usernameField.title
         
         passwordTextField.rx.text
             .orEmpty
-            .bind(to: viewModel.passwordField.value)
+            .bind(to: viewModel.passwordField.text)
             .disposed(by: disposeBag)
+        passwordTextField.placeholder = viewModel.passwordField.title
         
         viewModel.isValid.bind(to: loginButton.rx.isEnabled).disposed(by: disposeBag)
         
@@ -135,7 +137,6 @@ class LoginViewController: BaseViewController {
     private lazy var usernameTextField: UITextField = {
         let textField = UITextField()
         textField.textContentType = .username
-        textField.placeholder = "login.username.placeholder".localized
         textField.setBottomBorder()
         return textField
     }()
@@ -144,7 +145,6 @@ class LoginViewController: BaseViewController {
         let textField = UITextField()
         textField.textContentType = .password
         textField.isSecureTextEntry = true
-        textField.placeholder = "login.password.placeholder".localized
         textField.setBottomBorder()
         return textField
     }()

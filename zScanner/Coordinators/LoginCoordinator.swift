@@ -25,11 +25,11 @@ class LoginCoordinator: Coordinator {
     
     //MARK: Interface
     func begin() {
-        showLogin()
+        showLoginScreen()
     }
     
     // MARK: Navigation methods
-    private func showLogin() {
+    private func showLoginScreen() {
         let viewController = LoginViewController(viewModel:
             LoginViewModel(model:
                 LoginDomainModel(
