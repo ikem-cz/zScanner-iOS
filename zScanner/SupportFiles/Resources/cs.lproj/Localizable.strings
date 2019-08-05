@@ -22,6 +22,9 @@
 "document.modeSelector.title" = "Zvolte typ záznamu";
 
 // MARK: - New Document
+"newDocumentType.screen.title" = "Dokument - vlastnosti záznamu";
+"newDocumentType.button.title" = "Další";
+
 "form.listPicker.title" = "Typ dokumentu";
 "form.listPicker.unselected" = "Vybrat";
 "form.documentDecription.title" = "Název (nepovinný)";

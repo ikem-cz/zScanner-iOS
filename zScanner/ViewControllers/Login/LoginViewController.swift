@@ -44,29 +44,29 @@ class LoginViewController: BaseViewController {
     private let disposeBag = DisposeBag()
     
     private func setupBindings() {
+        usernameTextField.placeholder = viewModel.usernameField.title
         usernameTextField.rx.text
             .orEmpty
             .bind(to: viewModel.usernameField.text)
             .disposed(by: disposeBag)
-        usernameTextField.placeholder = viewModel.usernameField.title
         
+        passwordTextField.placeholder = viewModel.passwordField.title
         passwordTextField.rx.text
             .orEmpty
             .bind(to: viewModel.passwordField.text)
             .disposed(by: disposeBag)
-        passwordTextField.placeholder = viewModel.passwordField.title
         
         viewModel.isValid.bind(to: loginButton.rx.isEnabled).disposed(by: disposeBag)
         
-        loginButton.rx.tap.do(onNext: { [unowned self] in
+        loginButton.rx.tap.do(onNext: {
             self.usernameTextField.resignFirstResponder()
             self.passwordTextField.resignFirstResponder()
         })
-        .subscribe(onNext: { [unowned self] in
+        .subscribe(onNext: {
             self.viewModel.signin()
         }).disposed(by: disposeBag)
         
-        viewModel.status.subscribe(onNext: { [unowned self] status in
+        viewModel.status.subscribe(onNext: { status in
             switch status {
             case .success:
                self.coordinator.successfulLogin()
@@ -80,7 +80,8 @@ class LoginViewController: BaseViewController {
         view.addSubview(container)
         
         container.snp.makeConstraints { make in
-            make.center.equalTo(safeArea)
+            make.centerX.equalTo(safeArea)
+            make.centerY.equalTo(safeArea).offset(-100)
             make.width.equalTo(200)
         }
         
@@ -98,21 +99,21 @@ class LoginViewController: BaseViewController {
         
         container.addSubview(usernameTextField)
         usernameTextField.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(8)
+            make.top.equalTo(titleLabel.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
             make.right.left.equalToSuperview()
         }
         
         container.addSubview(passwordTextField)
         passwordTextField.snp.makeConstraints { make in
-            make.top.equalTo(usernameTextField.snp.bottom).offset(8)
+            make.top.equalTo(usernameTextField.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
             make.right.left.equalToSuperview()
         }
         
         container.addSubview(loginButton)
         loginButton.snp.makeConstraints { make in
-            make.top.equalTo(passwordTextField.snp.bottom).offset(8)
+            make.top.equalTo(passwordTextField.snp.bottom).offset(40)
             make.bottom.centerX.equalToSuperview()
             make.right.left.equalToSuperview().inset(20)
         }

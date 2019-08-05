@@ -43,6 +43,25 @@ class NewDocumentCoordinator: Coordinator {
         showCurrentStep()
     }
     
+    func saveFields(_ fields: [FormField]) {
+        for field in fields {
+            switch field {
+            case let textField as TextInputField:
+                newDocument.notes = textField.text.value
+            case let datePicker as DateTimePickerField:
+                if let date = datePicker.date.value {
+                    newDocument.date = date
+                }
+            case let listPicker as ListPickerField<DocumentTypeDomainModel>:
+                if let type = listPicker.selected.value {
+                    newDocument.type = type
+                }
+            default:
+                break
+            }
+        }
+    }
+    
     // MARK: Helepers
     private let database: Database = try! Realm()
     
@@ -72,12 +91,28 @@ class NewDocumentCoordinator: Coordinator {
     
     private func showPhotosSelectionScreen() {
         
+        if newDocument.type.mode == .undefined {
+            newDocument.type = DocumentTypeDomainModel(id: "photo", name: "Fotografie", mode: .photo)
+            newDocument.notes = "O stran"
+        }
+        
         // TODO: Implement
         newDocument.pages = []
         resolveNextStep()
     }
     
+    private func showListItemSelectionScreen<T: ListItem>(for list: ListPickerField<T>) {
+        let viewController = ListItemSelectionViewController(viewModel: list, coordinator: self)
+        push(viewController)
+    }
+    
     private func finish() {
+        let databaseDocument = DocumentDatabaseModel(document: newDocument)
+        database.saveObject(databaseDocument)
+        
+        // TODO: Fix the routing logic to present the last view controller of parent coordinator
+        navigationController?.popToRootViewController(animated: true)
+        
         flowDelegate.coordinatorDidFinish(self)
     }
     
@@ -110,4 +145,15 @@ class NewDocumentCoordinator: Coordinator {
 }
 
 // MARK: - NewDocumentTypeCoordinator implementation
-extension NewDocumentCoordinator: NewDocumentTypeCoordinator {}
+extension NewDocumentCoordinator: NewDocumentTypeCoordinator {
+    
+    func showNextStep() {
+        resolveNextStep()
+    }
+    
+    func showSelector<T: ListItem>(for list: ListPickerField<T>) {
+        showListItemSelectionScreen(for: list)
+    }
+}
+
+extension NewDocumentCoordinator: ListItemSelectionCoordinator {}

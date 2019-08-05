@@ -31,15 +31,20 @@ class DocumentTableViewCell: UITableViewCell {
     
     //MARK: Interface
     func setup(with document: DocumentViewModel) {
-        titleLabel.text = document.document.folderId
-        detailLabel.text = document.document.name
+        titleLabel.text = document.document.type.title
+        detailLabel.text = document.document.notes
     }
     
     //MARK: Helpers
     private func setupView() {
+        selectionStyle = .none
+        
+        preservesSuperviewLayoutMargins = true
+        contentView.preservesSuperviewLayoutMargins = true
+        
         contentView.addSubview(textContainer)
         textContainer.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(8)
+            make.edges.equalTo(contentView.snp.margins)
         }
         
         textContainer.addSubview(titleLabel)

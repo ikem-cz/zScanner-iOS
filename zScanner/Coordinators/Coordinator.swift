@@ -92,5 +92,8 @@ extension Coordinator: BaseCoordinator {
 extension Coordinator: FlowDelegate {
     func coordinatorDidFinish(_ coordinator: Coordinator) {
         removeChildCoordinator(coordinator)
+        
+        // TODO: Remove after implementing photo picker. For demo purpose only
+        navigationController?.viewControllers.last?.viewWillAppear(true)
     }
 }

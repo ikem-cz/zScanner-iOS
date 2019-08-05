@@ -55,6 +55,10 @@
 		BD59A0AB22E3819600FA9CD0 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A0AA22E3819600FA9CD0 /* LoginViewModel.swift */; };
 		BD59A0AD22E395AF00FA9CD0 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A0AC22E395AF00FA9CD0 /* UIColor.swift */; };
 		BD59A0AF22E3966700FA9CD0 /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A0AE22E3966700FA9CD0 /* UIFont.swift */; };
+		BD80224522F82604009B8B69 /* FormFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD80224422F82604009B8B69 /* FormFieldTableViewCell.swift */; };
+		BD80224722F82C03009B8B69 /* TextInputTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD80224622F82C03009B8B69 /* TextInputTableViewCell.swift */; };
+		BD80224922F880F8009B8B69 /* ListItemSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD80224822F880F8009B8B69 /* ListItemSelectionViewController.swift */; };
+		BD80224D22F8B9E8009B8B69 /* DateTimePickerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD80224C22F8B9E8009B8B69 /* DateTimePickerTableViewCell.swift */; };
 		BD85C93822E502A3004DC76E /* DocumentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD85C93722E502A3004DC76E /* DocumentViewModel.swift */; };
 		BDA25B1C22EF979A006DA7E4 /* Tracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDA25B1B22EF979A006DA7E4 /* Tracker.swift */; };
 		BDA25B1E22EF99E6006DA7E4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDA25B1D22EF99E6006DA7E4 /* GoogleService-Info.plist */; };
@@ -64,6 +68,7 @@
 		BDBDF4E422C8016800183BBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BDBDF4E322C8016800183BBF /* Assets.xcassets */; };
 		BDC4A3E022E5004900D1CF6A /* DocumentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC4A3DF22E5004900D1CF6A /* DocumentTableViewCell.swift */; };
 		BDC4A3E322E5008800D1CF6A /* DocumentDomainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC4A3E222E5008800D1CF6A /* DocumentDomainModel.swift */; };
+		BDD3C0F122F8CBAF008406EA /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD3C0F022F8CBAF008406EA /* Date.swift */; };
 		BDFC478522E907F200F312F0 /* DocumentDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFC478422E907F200F312F0 /* DocumentDatabaseModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -116,6 +121,10 @@
 		BD59A0AA22E3819600FA9CD0 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		BD59A0AC22E395AF00FA9CD0 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		BD59A0AE22E3966700FA9CD0 /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
+		BD80224422F82604009B8B69 /* FormFieldTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormFieldTableViewCell.swift; sourceTree = "<group>"; };
+		BD80224622F82C03009B8B69 /* TextInputTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputTableViewCell.swift; sourceTree = "<group>"; };
+		BD80224822F880F8009B8B69 /* ListItemSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItemSelectionViewController.swift; sourceTree = "<group>"; };
+		BD80224C22F8B9E8009B8B69 /* DateTimePickerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimePickerTableViewCell.swift; sourceTree = "<group>"; };
 		BD85C93722E502A3004DC76E /* DocumentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentViewModel.swift; sourceTree = "<group>"; };
 		BDA25B1B22EF979A006DA7E4 /* Tracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tracker.swift; sourceTree = "<group>"; };
 		BDA25B1D22EF99E6006DA7E4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -127,6 +136,7 @@
 		BDBDF4E822C8016800183BBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDC4A3DF22E5004900D1CF6A /* DocumentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentTableViewCell.swift; sourceTree = "<group>"; };
 		BDC4A3E222E5008800D1CF6A /* DocumentDomainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDomainModel.swift; sourceTree = "<group>"; };
+		BDD3C0F022F8CBAF008406EA /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		BDFC478422E907F200F312F0 /* DocumentDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDatabaseModel.swift; sourceTree = "<group>"; };
 		EA0AB6A19E0BFFBACC7952B9 /* Pods_zScanner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_zScanner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F88012237377830FF8D3A234 /* Pods-zScanner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zScanner.release.xcconfig"; path = "Target Support Files/Pods-zScanner/Pods-zScanner.release.xcconfig"; sourceTree = "<group>"; };
@@ -209,6 +219,7 @@
 			isa = PBXGroup;
 			children = (
 				BD2C5F8122F378A20023D097 /* NewDocumentTypeViewController.swift */,
+				BD80224822F880F8009B8B69 /* ListItemSelectionViewController.swift */,
 			);
 			path = NewDocument;
 			sourceTree = "<group>";
@@ -303,6 +314,7 @@
 			children = (
 				BD59A06222E36C9300FA9CD0 /* Buttons */,
 				BDC4A3DE22E5003400D1CF6A /* Documents */,
+				BD80224322F825B5009B8B69 /* NewDocument */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -361,6 +373,7 @@
 			isa = PBXGroup;
 			children = (
 				BD59A07022E36D8800FA9CD0 /* Array.swift */,
+				BDD3C0F022F8CBAF008406EA /* Date.swift */,
 				BD59A07222E36DB000FA9CD0 /* String.swift */,
 				BD59A07522E36DEE00FA9CD0 /* UITableView.swift */,
 				BD59A0AC22E395AF00FA9CD0 /* UIColor.swift */,
@@ -429,6 +442,16 @@
 				BD389A2322F70148002F935F /* NewDocument */,
 			);
 			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		BD80224322F825B5009B8B69 /* NewDocument */ = {
+			isa = PBXGroup;
+			children = (
+				BD80224422F82604009B8B69 /* FormFieldTableViewCell.swift */,
+				BD80224622F82C03009B8B69 /* TextInputTableViewCell.swift */,
+				BD80224C22F8B9E8009B8B69 /* DateTimePickerTableViewCell.swift */,
+			);
+			path = NewDocument;
 			sourceTree = "<group>";
 		};
 		BDA25B1A22EF9785006DA7E4 /* Tracking */ = {
@@ -630,6 +653,8 @@
 				BD2B9E8422EDCC2500FFCD3B /* DocumentTypesRequest.swift in Sources */,
 				BD2B9E7B22EDC15000FFCD3B /* IkemNetworkManaging.swift in Sources */,
 				BD2C5F8222F378A20023D097 /* NewDocumentTypeViewController.swift in Sources */,
+				BDD3C0F122F8CBAF008406EA /* Date.swift in Sources */,
+				BD80224722F82C03009B8B69 /* TextInputTableViewCell.swift in Sources */,
 				BD000CD122E497B9001EE38A /* LoginDomainModel.swift in Sources */,
 				BD59A06422E36CB200FA9CD0 /* BackButton.swift in Sources */,
 				BD389A2A22F7093B002F935F /* FolderDomainModel.swift in Sources */,
@@ -664,6 +689,7 @@
 				BD389A2722F70596002F935F /* FormField.swift in Sources */,
 				BD2B9E7E22EDC1B700FFCD3B /* DocumentTypeNetworkModel.swift in Sources */,
 				BD2F209022EBA33600534916 /* Database.swift in Sources */,
+				BD80224522F82604009B8B69 /* FormFieldTableViewCell.swift in Sources */,
 				BD2B9E7622EDBFF400FFCD3B /* NewDocumentCoordinator.swift in Sources */,
 				BD59A0A322E371E200FA9CD0 /* AppCoordinator.swift in Sources */,
 				BD000CE122E4FB5A001EE38A /* DocumentsListViewModel.swift in Sources */,
@@ -671,6 +697,7 @@
 				BD59A0AF22E3966700FA9CD0 /* UIFont.swift in Sources */,
 				BD59A07622E36DEE00FA9CD0 /* UITableView.swift in Sources */,
 				BD000CAE22E3AA6F001EE38A /* UIViewController.swift in Sources */,
+				BD80224922F880F8009B8B69 /* ListItemSelectionViewController.swift in Sources */,
 				BDA25B2322EF9D7A006DA7E4 /* FirebaseAnalytics.swift in Sources */,
 				BD2F209422EBB49000534916 /* DocumentsCoordinator.swift in Sources */,
 				BD59A06C22E36D2A00FA9CD0 /* ViewControllerService.swift in Sources */,
@@ -678,6 +705,7 @@
 				BD59A09522E36EF900FA9CD0 /* Reachability.swift in Sources */,
 				BD59A05D22E36A8100FA9CD0 /* Coordinator.swift in Sources */,
 				BD59A09E22E36EF900FA9CD0 /* Endpoint.swift in Sources */,
+				BD80224D22F8B9E8009B8B69 /* DateTimePickerTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

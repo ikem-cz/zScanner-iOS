@@ -15,7 +15,8 @@ class DocumentDatabaseModel: Object {
     @objc dynamic var folderId = ""
     @objc dynamic var documentMode = ""
     @objc dynamic var documentType = ""
-    @objc dynamic var created = Date()
+    @objc dynamic var documentTypeName = ""
+    @objc dynamic var date = Date()
     @objc dynamic var name = ""
     @objc dynamic var notes = ""
     let pages = List<String>()
@@ -27,7 +28,8 @@ class DocumentDatabaseModel: Object {
         self.folderId = document.folderId
         self.documentMode = document.type.mode.rawValue
         self.documentType = document.type.id
-        self.created = document.created
+        self.documentTypeName = document.type.name
+        self.date = document.date
         self.name = document.name
         self.notes = document.notes
         
@@ -47,10 +49,10 @@ extension DocumentDatabaseModel {
             folderId: folderId,
             type: DocumentTypeDomainModel(
                 id: documentType,
-                name: "",
+                name: documentTypeName,
                 mode: DocumentMode(rawValue: documentMode)!
             ),
-            created: created,
+            date: date,
             name: name,
             notes: notes,
             pages: []

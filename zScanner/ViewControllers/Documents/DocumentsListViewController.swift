@@ -33,6 +33,13 @@ class DocumentsListViewController: BaseViewController {
         setupView()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        viewModel.reloadRocuments()
+        tableView.reloadData()
+    }
+    
     override var rightBarButtonItems: [UIBarButtonItem] {
         return [
             UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newDocument))
@@ -82,6 +89,7 @@ class DocumentsListViewController: BaseViewController {
         tableView.dataSource = self
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 80
+        tableView.tableFooterView = UIView()
         return tableView
     }()
 }

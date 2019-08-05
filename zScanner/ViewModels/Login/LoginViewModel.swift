@@ -21,7 +21,6 @@ class LoginViewModel {
  
     //MARK: Instance part
     var model: LoginDomainModel
-    private let disposeBag = DisposeBag()
     
     let usernameField = TextInputField(title: "login.username.title".localized, validator: { !$0.isEmpty })
     let passwordField = ProtectedTextInputField(title: "login.password.title".localized, validator: { !$0.isEmpty })

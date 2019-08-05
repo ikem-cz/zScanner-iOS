@@ -26,10 +26,10 @@ class ListPickerField<T: ListItem>: FormField {
     
     var title: String
     var value: Observable<String> {
-        selected.map({ $0?.title ?? "form.listPicker.unselected".localized }).asObservable()
+        return selected.map({ $0?.title ?? "form.listPicker.unselected".localized }).asObservable()
     }
     var isValid: Observable<Bool> {
-        selected.map({ $0 != nil }).asObservable()
+        return selected.map({ $0 != nil }).asObservable()
     }
     
     var list: [T]
@@ -46,10 +46,10 @@ class TextInputField: FormField {
 
     var title: String
     var value: Observable<String> {
-        text.asObservable()
+        return text.asObservable()
     }
     var isValid: Observable<Bool> {
-        text.map({ self.validator($0) }).asObservable()
+        return text.map({ self.validator($0) }).asObservable()
     }
     
     let text = BehaviorRelay<String>(value: "")
@@ -71,23 +71,37 @@ class ProtectedTextInputField: TextInputField {
 class DateTimePickerField: FormField {
     var title: String
     var value: Observable<String> {
-        date.map({
+        return date.map({
             guard let date = $0 else { return "form.listPicker.unselected".localized }
             return self.formatter.string(from: date)
         }).asObservable()
     }
     
     var isValid: Observable<Bool> {
-        date.map({ self.validator($0) }).asObservable()
+        return date.map({ self.validator($0) }).asObservable()
     }
     
-    let date = BehaviorRelay<Date?>(value: Date())
+    let date = BehaviorRelay<Date?>(value: nil)
     let formatter: DateFormatter
     let validator: (Date?) -> Bool
     
-    init(title: String, formatter: DateFormatter, validator: @escaping (Date?) -> Bool) {
+    init(title: String, validator: @escaping (Date?) -> Bool) {
         self.title = title
-        self.formatter = formatter
         self.validator = validator
+        self.formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+    }
+}
+
+class DateTimePickerPlaceholder: FormField {
+    var title = ""
+    var value = Observable<String>.empty()
+    var isValid = Observable<Bool>.just(true)
+    
+    let date: DateTimePickerField
+    
+    init(for date: DateTimePickerField) {
+        self.date = date
     }
 }

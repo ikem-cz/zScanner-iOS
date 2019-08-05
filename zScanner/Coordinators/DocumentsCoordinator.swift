@@ -73,9 +73,12 @@ class DocumentsCoordinator: Coordinator {
     }
     
     private func storeDocumentTypes(_ types: [DocumentTypeDomainModel]) {
-        types
-            .map({ DocumentTypeDatabaseModel(documentType: $0) })
-            .forEach({ database.saveObject($0) })
+        DispatchQueue.main.async {
+            self.database.deleteAll(of: DocumentTypeDatabaseModel.self)
+            types
+                .map({ DocumentTypeDatabaseModel(documentType: $0) })
+                .forEach({ self.database.saveObject($0) })
+        }
     }
 }
 

@@ -12,7 +12,7 @@ struct DocumentDomainModel {
     var id: String
     var folderId: String
     var type: DocumentTypeDomainModel
-    var created: Date
+    var date: Date
     var name: String
     var notes: String
     var pages: [UIImage]
@@ -21,14 +21,14 @@ struct DocumentDomainModel {
 extension DocumentDomainModel {
     static var emptyDocument: DocumentDomainModel {
         return DocumentDomainModel(
-            id: "",
+            id: UUID().uuidString,
             folderId: "",
             type: DocumentTypeDomainModel(
                 id: "",
                 name: "",
                 mode: .undefined
             ),
-            created: Date(),
+            date: Date(),
             name: "",
             notes: "",
             pages: []

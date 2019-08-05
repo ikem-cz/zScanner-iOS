@@ -34,10 +34,8 @@ extension Realm: Database {
     }
     
     func saveObject<T>(_ object: T) where T: Storable {
-        DispatchQueue.main.async {
-            try! self.write {
-                self.add(object as! Object)
-            }
+        try! self.write {
+            self.add(object as! Object)
         }
     }
     

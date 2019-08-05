@@ -23,15 +23,18 @@ class DocumentsListViewModel {
         setupDocuments()
     }
     
+    func reloadRocuments() {
+       documents = database.loadObjects(DocumentDatabaseModel.self, predicate: nil, sorted: nil).map({ DocumentViewModel(document: $0.toDomainModel()) })
+    }
+    
     //MARK: Helpers
     private func setupDocuments() {
-        self.documents = self.database.loadObjects(DocumentDatabaseModel.self, predicate: nil, sorted: nil)
-            .map({ DocumentViewModel(document: $0.toDomainModel()) })
+        reloadRocuments()
         
-        self.documentModes = Array(Set(
-            self.database.loadObjects(DocumentTypeDatabaseModel.self, predicate: nil, sorted: nil)
+        documentModes = Array(Set(
+            database.loadObjects(DocumentTypeDatabaseModel.self, predicate: nil, sorted: nil)
                 .map({ $0.mode })
         ))
-        self.documentModes.append(.photo)
+        documentModes.append(.photo)
     }
 }
