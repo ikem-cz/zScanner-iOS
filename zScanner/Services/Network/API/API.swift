@@ -21,7 +21,7 @@ enum HTTPMethod: String {
 }
 
 //MARK: -
-typealias Parameters = [String: Any]
+typealias Parameters = Encodable
 
 //MARK: -
 typealias HTTPHeaders = [String: String]

@@ -66,9 +66,12 @@
 		BDA25B2322EF9D7A006DA7E4 /* FirebaseAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDA25B2222EF9D7A006DA7E4 /* FirebaseAnalytics.swift */; };
 		BDBDF4DD22C8016700183BBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBDF4DC22C8016700183BBF /* AppDelegate.swift */; };
 		BDBDF4E422C8016800183BBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BDBDF4E322C8016800183BBF /* Assets.xcassets */; };
+		BDBE340622FA3A50000F8498 /* Encodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBE340522FA3A50000F8498 /* Encodable.swift */; };
 		BDC4A3E022E5004900D1CF6A /* DocumentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC4A3DF22E5004900D1CF6A /* DocumentTableViewCell.swift */; };
 		BDC4A3E322E5008800D1CF6A /* DocumentDomainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC4A3E222E5008800D1CF6A /* DocumentDomainModel.swift */; };
 		BDD3C0F122F8CBAF008406EA /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD3C0F022F8CBAF008406EA /* Date.swift */; };
+		BDEA570B22FA2828004C48F0 /* SubmitRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEA570A22FA2828004C48F0 /* SubmitRequest.swift */; };
+		BDEA570D22FA2CD9004C48F0 /* DocumentNetworkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEA570C22FA2CD9004C48F0 /* DocumentNetworkModel.swift */; };
 		BDFC478522E907F200F312F0 /* DocumentDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFC478422E907F200F312F0 /* DocumentDatabaseModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -134,9 +137,12 @@
 		BDBDF4DC22C8016700183BBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BDBDF4E322C8016800183BBF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BDBDF4E822C8016800183BBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BDBE340522FA3A50000F8498 /* Encodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encodable.swift; sourceTree = "<group>"; };
 		BDC4A3DF22E5004900D1CF6A /* DocumentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentTableViewCell.swift; sourceTree = "<group>"; };
 		BDC4A3E222E5008800D1CF6A /* DocumentDomainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDomainModel.swift; sourceTree = "<group>"; };
 		BDD3C0F022F8CBAF008406EA /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
+		BDEA570A22FA2828004C48F0 /* SubmitRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmitRequest.swift; sourceTree = "<group>"; };
+		BDEA570C22FA2CD9004C48F0 /* DocumentNetworkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentNetworkModel.swift; sourceTree = "<group>"; };
 		BDFC478422E907F200F312F0 /* DocumentDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDatabaseModel.swift; sourceTree = "<group>"; };
 		EA0AB6A19E0BFFBACC7952B9 /* Pods_zScanner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_zScanner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F88012237377830FF8D3A234 /* Pods-zScanner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zScanner.release.xcconfig"; path = "Target Support Files/Pods-zScanner/Pods-zScanner.release.xcconfig"; sourceTree = "<group>"; };
@@ -240,6 +246,7 @@
 			isa = PBXGroup;
 			children = (
 				BD2B9E7D22EDC1B700FFCD3B /* DocumentTypeNetworkModel.swift */,
+				BDEA570C22FA2CD9004C48F0 /* DocumentNetworkModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -257,6 +264,7 @@
 			isa = PBXGroup;
 			children = (
 				BD2B9E8322EDCC2500FFCD3B /* DocumentTypesRequest.swift */,
+				BDEA570A22FA2828004C48F0 /* SubmitRequest.swift */,
 			);
 			path = Requests;
 			sourceTree = "<group>";
@@ -374,6 +382,7 @@
 			children = (
 				BD59A07022E36D8800FA9CD0 /* Array.swift */,
 				BDD3C0F022F8CBAF008406EA /* Date.swift */,
+				BDBE340522FA3A50000F8498 /* Encodable.swift */,
 				BD59A07222E36DB000FA9CD0 /* String.swift */,
 				BD59A07522E36DEE00FA9CD0 /* UITableView.swift */,
 				BD59A0AC22E395AF00FA9CD0 /* UIColor.swift */,
@@ -649,6 +658,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD59A0AB22E3819600FA9CD0 /* LoginViewModel.swift in Sources */,
+				BDEA570B22FA2828004C48F0 /* SubmitRequest.swift in Sources */,
 				BDC4A3E022E5004900D1CF6A /* DocumentTableViewCell.swift in Sources */,
 				BD2B9E8422EDCC2500FFCD3B /* DocumentTypesRequest.swift in Sources */,
 				BD2B9E7B22EDC15000FFCD3B /* IkemNetworkManaging.swift in Sources */,
@@ -666,6 +676,7 @@
 				BD59A07322E36DB000FA9CD0 /* String.swift in Sources */,
 				BD2B9E7922EDC11E00FFCD3B /* IkemNetworkManager.swift in Sources */,
 				BD59A06B22E36D2400FA9CD0 /* Closures.swift in Sources */,
+				BDEA570D22FA2CD9004C48F0 /* DocumentNetworkModel.swift in Sources */,
 				BD2B9E8122EDC1FA00FFCD3B /* DocumentTypeDomainModel.swift in Sources */,
 				BD59A09B22E36EF900FA9CD0 /* RequestStatus.swift in Sources */,
 				BDBDF4DD22C8016700183BBF /* AppDelegate.swift in Sources */,
@@ -687,6 +698,7 @@
 				BD85C93822E502A3004DC76E /* DocumentViewModel.swift in Sources */,
 				BD000CDE22E4CE6C001EE38A /* DocumentsListViewController.swift in Sources */,
 				BD389A2722F70596002F935F /* FormField.swift in Sources */,
+				BDBE340622FA3A50000F8498 /* Encodable.swift in Sources */,
 				BD2B9E7E22EDC1B700FFCD3B /* DocumentTypeNetworkModel.swift in Sources */,
 				BD2F209022EBA33600534916 /* Database.swift in Sources */,
 				BD80224522F82604009B8B69 /* FormFieldTableViewCell.swift in Sources */,

@@ -40,4 +40,25 @@ class IkemNetworkManager: IkemNetworkManaging {
             }
         })
     }
+    
+    func uploadDocument(_ document: DocumentNetworkModel, callback: @escaping RequestClosure<EmptyResponse>) {
+        var request = SubmitReuest(document: document)
+        
+        request.headers.merge(
+            requestBehavior.additionalHeaders,
+            uniquingKeysWith: { (current, _) in current }
+        )
+        
+        requestBehavior.beforeSend()
+        
+        api.process(request, with: { [weak self] requestStatus in
+            callback(requestStatus)
+            
+            switch requestStatus {
+                case .loading: break
+                case .success: self?.requestBehavior.afterSuccess()
+                case .error(let error): self?.requestBehavior.afterError(error)
+            }
+        })
+    }
 }

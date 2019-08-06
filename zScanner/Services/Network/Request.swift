@@ -17,6 +17,9 @@ protocol Request {
     var headers: HTTPHeaders { get set }
 }
 
+// MARK: -
+struct EmptyResponse: Decodable {}
+
 //MARK: -
 protocol ParametersURLEncoded {
     var url: String { get }
@@ -28,7 +31,7 @@ extension ParametersURLEncoded where Self: Request {
         var url = endpoint.url
         
         // Add parameters to url
-        if let parameters = parameters {
+        if let parameters = parameters as? [String: Any] {
             let parameters = parameters.map({ (key, value) -> String in "\(key)=\(value)" }).joined(separator: "&")
             url += "?" + parameters
         }
@@ -37,3 +40,5 @@ extension ParametersURLEncoded where Self: Request {
     }
 }
 
+// MARK: -
+protocol ParametersJsonEncoded {}

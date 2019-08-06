@@ -33,6 +33,11 @@ struct NativeAPI: API {
         
         let urlRequest = NSMutableURLRequest(url: url)
         urlRequest.httpMethod = request.method.rawValue
+        request.headers.forEach({ urlRequest.addValue($0.value, forHTTPHeaderField: $0.key) })
+        
+        if request is ParametersJsonEncoded {
+            urlRequest.httpBody = request.parameters?.toJSONData()
+        }
         
         let session = URLSession.shared
         let task = session.dataTask(
@@ -51,6 +56,11 @@ struct NativeAPI: API {
                         callback(.error(RequestError(.serverError(HTTPError(errorCode: statusCode)))))
                         return
                     }
+                }
+                
+                if D.self is EmptyResponse.Type {
+                    callback(.success(data: EmptyResponse() as! D))
+                    return
                 }
                 
                 guard let data = data, !data.isEmpty else {

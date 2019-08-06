@@ -10,6 +10,7 @@ import Foundation
 
 enum IkemEndpoint: String, Endpoint {
     case documentTypes = "/documenttypes"
+    case submitDocument = "/documents/summary"
     
     var url: String {
         return baseUrl + self.rawValue

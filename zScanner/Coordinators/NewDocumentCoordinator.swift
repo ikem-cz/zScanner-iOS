@@ -64,6 +64,7 @@ class NewDocumentCoordinator: Coordinator {
     
     // MARK: Helepers
     private let database: Database = try! Realm()
+    private let networkManager: IkemNetworkManaging = IkemNetworkManager(api: NativeAPI())
     
     private func showCurrentStep() {
         switch currentStep {
@@ -109,6 +110,11 @@ class NewDocumentCoordinator: Coordinator {
     private func finish() {
         let databaseDocument = DocumentDatabaseModel(document: newDocument)
         database.saveObject(databaseDocument)
+        
+        let networkDocument = DocumentNetworkModel(from: newDocument)
+        networkManager.uploadDocument(networkDocument, callback: {
+            print($0)
+        })
         
         // TODO: Fix the routing logic to present the last view controller of parent coordinator
         navigationController?.popToRootViewController(animated: true)

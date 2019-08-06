@@ -72,8 +72,7 @@ class DateTimePickerField: FormField {
     var title: String
     var value: Observable<String> {
         return date.map({
-            guard let date = $0 else { return "form.listPicker.unselected".localized }
-            return self.formatter.string(from: date)
+            return $0?.dateTimeString ?? "form.listPicker.unselected".localized
         }).asObservable()
     }
     
@@ -82,15 +81,11 @@ class DateTimePickerField: FormField {
     }
     
     let date = BehaviorRelay<Date?>(value: nil)
-    let formatter: DateFormatter
     let validator: (Date?) -> Bool
     
     init(title: String, validator: @escaping (Date?) -> Bool) {
         self.title = title
         self.validator = validator
-        self.formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
     }
 }
 

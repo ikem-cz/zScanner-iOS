@@ -13,4 +13,10 @@ protocol IkemNetworkManaging {
     /// Fetch all document subtypes
     /// - Parameter callback: Closure for async request status update
     func getDocumentTypes(callback: @escaping RequestClosure<[DocumentTypeNetworkModel]>)
+    
+    
+    /// Upload document to server
+    /// - Parameter document: New document to upload
+    /// - Parameter callback: Closure for async request status update
+    func uploadDocument(_ document: DocumentNetworkModel, callback: @escaping RequestClosure<EmptyResponse>)
 }
