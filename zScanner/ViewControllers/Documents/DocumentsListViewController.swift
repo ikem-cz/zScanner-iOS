@@ -27,26 +27,55 @@ class DocumentsListViewController: BaseViewController {
         super.init(coordinator: coordinator)
     }
     
+    // MARK: Lifecycle
     override func loadView() {
         super.loadView()
         
         setupView()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        viewModel.reloadRocuments()
-        tableView.reloadData()
+        setupBindings()
     }
     
     override var rightBarButtonItems: [UIBarButtonItem] {
-        return [
-            UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newDocument))
-        ]
+        return rightBarButtons
+    }
+    
+    // MARK: Interface
+    func insertNewDocument(document: DocumentViewModel) {
+        viewModel.insertNewDocument(document)
+        tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .fade)
     }
     
     // MARK: Helpers
+    private let disposeBag = DisposeBag()
+    private var rightBarButtons: [UIBarButtonItem] = [] {
+        didSet {
+            navigationItem.rightBarButtonItems = rightBarButtons
+        }
+    }
+    
+    private func setupBindings() {
+        viewModel.documentModesState.asObserver().subscribe(onNext: { [unowned self] status in
+            DispatchQueue.main.async {
+                switch status {
+                case .awaitingInteraction:
+                    self.rightBarButtons = []
+                case .loading:
+                    self.rightBarButtons = [self.loadingItem]
+                case .success:
+                    self.rightBarButtons = [self.addButton]
+                case .error:
+                    self.rightBarButtons = []
+                    // TODO: Show error dialog
+                }
+            }
+        }).disposed(by: disposeBag)
+    }
+    
     @objc private func newDocument() {
         showDocumentModePicker()
     }
@@ -82,6 +111,16 @@ class DocumentsListViewController: BaseViewController {
             make.edges.equalToSuperview()
         }
     }
+    
+    private lazy var addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newDocument))
+    
+    private lazy var loadingItem: UIBarButtonItem = {
+        let loading = UIActivityIndicatorView(style: .gray)
+        loading.startAnimating()
+        let button = UIBarButtonItem(customView: loading)
+        button.isEnabled = false
+        return button
+    }()
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()

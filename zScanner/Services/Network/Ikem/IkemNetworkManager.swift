@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import RxSwift
 
 class IkemNetworkManager: IkemNetworkManaging {
     
@@ -20,45 +21,63 @@ class IkemNetworkManager: IkemNetworkManaging {
     }
     
     // MARK: Interface
-    func getDocumentTypes(callback: @escaping RequestClosure<[DocumentTypeNetworkModel]>) {
-        var request = DocumentTypesRequest()
-        
-        request.headers.merge(
-            requestBehavior.additionalHeaders,
-            uniquingKeysWith: { (current, _) in current }
-        )
-        
-        requestBehavior.beforeSend()
-        
-        api.process(request, with: { [weak self] requestStatus in
-            callback(requestStatus)
+    func getDocumentTypes() -> Observable<RequestStatus<[DocumentTypeNetworkModel]>> {
+        return Observable.create { observer -> Disposable in
+            var request = DocumentTypesRequest()
             
-            switch requestStatus {
-                case .loading: break
-                case .success: self?.requestBehavior.afterSuccess()
-                case .error(let error): self?.requestBehavior.afterError(error)
-            }
-        })
+            request.headers.merge(
+                self.requestBehavior.additionalHeaders,
+                uniquingKeysWith: { (current, _) in current }
+            )
+            
+            self.requestBehavior.beforeSend()
+            
+            self.api.process(request, with: { [weak self] requestStatus in
+                observer.onNext(requestStatus)
+                
+                switch requestStatus {
+                case .loading:
+                    break
+                case .success:
+                    self?.requestBehavior.afterSuccess()
+                    observer.onCompleted()
+                case .error(let error):
+                    self?.requestBehavior.afterError(error)
+                    observer.onError(error)
+                }
+            })
+            
+            return Disposables.create()
+        }
     }
     
-    func uploadDocument(_ document: DocumentNetworkModel, callback: @escaping RequestClosure<EmptyResponse>) {
-        var request = SubmitReuest(document: document)
-        
-        request.headers.merge(
-            requestBehavior.additionalHeaders,
-            uniquingKeysWith: { (current, _) in current }
-        )
-        
-        requestBehavior.beforeSend()
-        
-        api.process(request, with: { [weak self] requestStatus in
-            callback(requestStatus)
+    func uploadDocument(_ document: DocumentNetworkModel) -> Observable<RequestStatus<EmptyResponse>> {
+        return Observable.create { observer -> Disposable in
+            var request = SubmitReuest(document: document)
             
-            switch requestStatus {
-                case .loading: break
-                case .success: self?.requestBehavior.afterSuccess()
-                case .error(let error): self?.requestBehavior.afterError(error)
-            }
-        })
+            request.headers.merge(
+                self.requestBehavior.additionalHeaders,
+                uniquingKeysWith: { (current, _) in current }
+            )
+            
+            self.requestBehavior.beforeSend()
+            
+            self.api.process(request, with: { [weak self] requestStatus in
+                observer.onNext(requestStatus)
+                
+                switch requestStatus {
+                case .loading:
+                    break
+                case .success:
+                    self?.requestBehavior.afterSuccess()
+                    observer.onCompleted()
+                case .error(let error):
+                    self?.requestBehavior.afterError(error)
+                    observer.onError(error)
+                }
+            })
+            
+            return Disposables.create()
+        }
     }
 }

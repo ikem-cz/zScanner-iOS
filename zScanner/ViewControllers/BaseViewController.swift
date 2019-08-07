@@ -36,7 +36,7 @@ class BaseViewController: PluggableViewController {
         return super.services + injectedServices
     }
     
-    var leftBarButtonItems: [UIBarButtonItem] { return [] }
+    var leftBarButtonItems: [UIBarButtonItem] { return [] } 
     var rightBarButtonItems: [UIBarButtonItem] { return [] }
     var statusBarColor: UIColor { return .clear }
     var statusBarStyle: UIStatusBarStyle { return .default }
@@ -59,6 +59,8 @@ class BaseViewController: PluggableViewController {
     private func configureNavigationBarButtons() {
         guard let navigationController = navigationController else { return }
         
+        // TODO: set deleate to catch before pop()
+        navigationController.interactivePopGestureRecognizer?.delegate = nil
         navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItems = leftBarButtonItems
         navigationItem.rightBarButtonItems = rightBarButtonItems

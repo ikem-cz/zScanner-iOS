@@ -49,7 +49,7 @@ class NewDocumentTypeViewController: BaseViewController {
     private func showDateTimePicker(for indexPath: IndexPath, date: DateTimePickerField) {
         tableView.beginUpdates()
         let newIndex = indexPath.row + 1
-        viewModel.addDateTimePicerPlaceholder(at: newIndex, for: date)
+        viewModel.addDateTimePickerPlaceholder(at: newIndex, for: date)
         let index = IndexPath(row: newIndex, section: indexPath.section)
         tableView.insertRows(at: [index], with: .fade)
         tableView.endUpdates()
@@ -60,7 +60,7 @@ class NewDocumentTypeViewController: BaseViewController {
     private func hideDateTimePicker() {
         tableView.beginUpdates()
         if let index = pickerIndexPath {
-            viewModel.removeDateTimePicerPlaceholder()
+            viewModel.removeDateTimePickerPlaceholder()
             tableView.deleteRows(at: [index], with: .fade)
         }
         tableView.endUpdates()

@@ -29,11 +29,11 @@ class NewDocumentTypeViewModel {
     
     var isValid = Observable<Bool>.just(false)
     
-    func addDateTimePicerPlaceholder(at index: Int, for date: DateTimePickerField) {
+    func addDateTimePickerPlaceholder(at index: Int, for date: DateTimePickerField) {
         fields.insert(DateTimePickerPlaceholder(for: date), at: index)
     }
     
-    func removeDateTimePicerPlaceholder() {
+    func removeDateTimePickerPlaceholder() {
         fields.removeAll(where: { $0 is DateTimePickerPlaceholder })
     }
     
@@ -50,7 +50,7 @@ class NewDocumentTypeViewModel {
         case .document, .examination:
             return [
                 ListPickerField<DocumentTypeDomainModel>(title: "form.listPicker.title".localized, list: documentTypes),
-                TextInputField(title: "form.documentDecription.title".localized, validator: { !$0.isEmpty }),
+                TextInputField(title: "form.documentDecription.title".localized, validator: { _ in true }),
                 DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil && $0! > Date() }),
             ]
         case .photo, .undefined:

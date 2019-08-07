@@ -11,30 +11,76 @@ import RxSwift
 import RxRelay
 
 class DocumentsListViewModel {
+    enum DocumentModesState {
+        case awaitingInteraction
+        case loading
+        case success
+        case error(Error)
+    }
     
     //MARK: Instance part
     private let database: Database
+    private let ikemNetworkManager: IkemNetworkManaging
+    
     private(set) var documents: [DocumentViewModel] = []
     private(set) var documentModes: [DocumentMode] = []
     
-    init(database: Database) {
+    init(database: Database, ikemNetworkManager: IkemNetworkManaging) {
         self.database = database
+        self.ikemNetworkManager = ikemNetworkManager
         
         setupDocuments()
+        fetchDocumentTypes()
     }
     
-    func reloadRocuments() {
-       documents = database.loadObjects(DocumentDatabaseModel.self, predicate: nil, sorted: nil).map({ DocumentViewModel(document: $0.toDomainModel()) })
+    //MARK: Interface
+    let documentModesState = BehaviorSubject<DocumentModesState>(value: .awaitingInteraction)
+    
+    func insertNewDocument(_ document: DocumentViewModel) {
+        documents.insert(document, at: 0)
     }
     
     //MARK: Helpers
+    let disposeBag = DisposeBag()
+    
     private func setupDocuments() {
-        reloadRocuments()
-        
-        documentModes = Array(Set(
-            database.loadObjects(DocumentTypeDatabaseModel.self, predicate: nil, sorted: nil)
-                .map({ $0.mode })
-        ))
+        documents = database
+            .loadObjects(DocumentDatabaseModel.self, predicate: nil, sorted: nil)
+            .map({ DocumentViewModel(document: $0.toDomainModel()) })
+            .reversed()
+    }
+    
+    private func fetchDocumentTypes() {
+        ikemNetworkManager.getDocumentTypes().subscribe(onNext: { [weak self] requestStatus in
+            switch requestStatus {
+            case .loading:
+                self?.documentModesState.onNext(.loading)
+                
+            case .success(data: let networkModel):
+                let documents = networkModel.map({ $0.toDomainModel() })
+                
+                self?.storeDocumentTypes(documents)
+                self?.storeDocumentModes(from: documents)
+                
+                self?.documentModesState.onNext(.success)
+
+            case .error(let error):
+                self?.documentModesState.onNext(.error(error))
+            }
+        }).disposed(by: disposeBag)
+    }
+    
+    private func storeDocumentModes(from documentTypes: [DocumentTypeDomainModel]) {
+        documentModes = Array(Set(documentTypes.map({ $0.mode })))
         documentModes.append(.photo)
+    }
+    
+    private func storeDocumentTypes(_ types: [DocumentTypeDomainModel]) {
+        DispatchQueue.main.async {
+            self.database.deleteAll(of: DocumentTypeDatabaseModel.self)
+            types
+                .map({ DocumentTypeDatabaseModel(documentType: $0) })
+                .forEach({ self.database.saveObject($0) })
+        }
     }
 }

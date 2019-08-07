@@ -9,7 +9,9 @@
 import UIKit
 import RealmSwift
 
-protocol NewDocumentFlowDelegate: FlowDelegate {}
+protocol NewDocumentFlowDelegate: FlowDelegate {
+    func newDocumentCreated(_ documentViewModel: DocumentViewModel)
+}
 
 class NewDocumentCoordinator: Coordinator {
     enum Step: Equatable {
@@ -64,7 +66,7 @@ class NewDocumentCoordinator: Coordinator {
     
     // MARK: Helepers
     private let database: Database = try! Realm()
-    private let networkManager: IkemNetworkManaging = IkemNetworkManager(api: NativeAPI())
+    private let ikemNetworkManager: IkemNetworkManaging = IkemNetworkManager(api: NativeAPI())
     
     private func showCurrentStep() {
         switch currentStep {
@@ -108,17 +110,15 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func finish() {
+
         let databaseDocument = DocumentDatabaseModel(document: newDocument)
         database.saveObject(databaseDocument)
         
-        let networkDocument = DocumentNetworkModel(from: newDocument)
-        networkManager.uploadDocument(networkDocument, callback: {
-            print($0)
-        })
+        let documentViewModel = DocumentViewModel(document: newDocument)
+        documentViewModel.uploadDocument(with: ikemNetworkManager)
         
-        // TODO: Fix the routing logic to present the last view controller of parent coordinator
-        navigationController?.popToRootViewController(animated: true)
-        
+        popAll()
+        flowDelegate.newDocumentCreated(documentViewModel)
         flowDelegate.coordinatorDidFinish(self)
     }
     

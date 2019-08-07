@@ -15,7 +15,7 @@ protocol FlowDelegate: class {
 // MARK: -
 class Coordinator {
     private var childCoordinators: [Coordinator] = []
-    private var viewControllers: [UIViewController] = []
+    private(set) var viewControllers: [UIViewController] = []
     
     let window: UIWindow
     var navigationController: UINavigationController?
@@ -60,11 +60,28 @@ class Coordinator {
             let index = navigationStack.firstIndex(of: viewController),
             index < navigationStack.count - 1
             else {
+                assertionFailure("ViewController is not present on navigationStack")
                 return
         }
         let innerIndex = viewControllers.firstIndex(of: viewController) ?? 0
         let _ = navigationController?.popToViewController(viewController, animated: animated)
         viewControllers.removeLast(viewControllers.count - 1 - innerIndex)
+    }
+    
+    func popAll(animated: Bool = true) {
+        guard
+            let navigationStack = navigationController?.viewControllers,
+            let firstManagedViewController = viewControllers.first,
+            let index = navigationStack.firstIndex(of: firstManagedViewController),
+            index > 0
+        else {
+            return
+        }
+        
+        let previousIndex = index - 1
+        let viewController = navigationStack[previousIndex]
+        let _ = navigationController?.popToViewController(viewController, animated: animated)
+        viewControllers = []
     }
     
     //MARK: Helpers
@@ -92,8 +109,5 @@ extension Coordinator: BaseCoordinator {
 extension Coordinator: FlowDelegate {
     func coordinatorDidFinish(_ coordinator: Coordinator) {
         removeChildCoordinator(coordinator)
-        
-        // TODO: Remove after implementing photo picker. For demo purpose only
-        navigationController?.viewControllers.last?.viewWillAppear(true)
     }
 }

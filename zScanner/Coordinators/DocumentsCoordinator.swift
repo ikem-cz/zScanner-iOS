@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import RxSwift
 
 protocol DocumentsFlowDelegate: FlowDelegate {}
 
@@ -26,16 +27,12 @@ class DocumentsCoordinator: Coordinator {
     
     // MARK: Interface
     func begin() {
-        fetchDocumentTypes { [weak self] in
-            DispatchQueue.main.async {
-                self?.showDocumentsListScreen()
-            }
-        }
+        showDocumentsListScreen()
     }
     
     // MARK: Navigation methods
     private func showDocumentsListScreen() {
-        let viewModel = DocumentsListViewModel(database: database)
+        let viewModel = DocumentsListViewModel(database: database, ikemNetworkManager: ikemNetworkManager)
         let viewController = DocumentsListViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
@@ -51,35 +48,6 @@ class DocumentsCoordinator: Coordinator {
     private let ikemNetworkManager: IkemNetworkManaging
     private let database: Database = try! Realm()
     private let tracker: Tracker = FirebaseAnalytics()
-    
-    private func fetchDocumentTypes(callback: @escaping EmptyClosure) {
-        ikemNetworkManager.getDocumentTypes { [weak self] requestStatus in
-            switch requestStatus {
-            case .success(data: let networkModel):
-                let types = networkModel.map({
-                    DocumentTypeDomainModel(
-                        id: $0.type,
-                        name: $0.display,
-                        mode: DocumentMode.init(rawValue: $0.mode) ?? .undefined
-                    )
-                })
-                self?.storeDocumentTypes(types)
-                callback()
-            default:
-                // TODO: maybe use some other cases?
-                break
-            }
-        }
-    }
-    
-    private func storeDocumentTypes(_ types: [DocumentTypeDomainModel]) {
-        DispatchQueue.main.async {
-            self.database.deleteAll(of: DocumentTypeDatabaseModel.self)
-            types
-                .map({ DocumentTypeDatabaseModel(documentType: $0) })
-                .forEach({ self.database.saveObject($0) })
-        }
-    }
 }
 
 // MARK: - DocumentsListCoordinator implementation
@@ -91,4 +59,13 @@ extension DocumentsCoordinator: DocumentsListCoordinator {
 }
 
 // MARK: - NewDocumentFlowDelegate implementation
-extension DocumentsCoordinator: NewDocumentFlowDelegate {}
+extension DocumentsCoordinator: NewDocumentFlowDelegate {
+    func newDocumentCreated(_ documentViewModel: DocumentViewModel) {
+        guard let list = viewControllers.last as? DocumentsListViewController else {
+            assertionFailure()
+            return
+        }
+        
+        list.insertNewDocument(document: documentViewModel)
+    }
+}

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RxSwift
 
 class DocumentTableViewCell: UITableViewCell {
     
@@ -27,15 +28,38 @@ class DocumentTableViewCell: UITableViewCell {
         
         titleLabel.text = nil
         detailLabel.text = nil
+        disposeBag = DisposeBag()
     }
     
     //MARK: Interface
     func setup(with document: DocumentViewModel) {
-        titleLabel.text = document.document.type.title
-        detailLabel.text = document.document.notes
+        // Make sure the label will keep the space even when empty while respecting the dynamic font size
+        titleLabel.text = document.document.type.title.isEmpty ? " " : document.document.type.title
+        detailLabel.text = document.document.notes.isEmpty ? " " : document.document.notes
+        document.documentUploadStatus.subscribe(onNext: { [weak self] status in
+            DispatchQueue.main.async {
+                switch status {
+                case .awaitingInteraction:
+                    self?.indicator.stopAnimating()
+                    self?.successImageView.isHidden = true
+                case .progress:
+                    self?.indicator.startAnimating()
+                    self?.successImageView.isHidden = true
+                case .success:
+                    self?.indicator.stopAnimating()
+                    self?.successImageView.isHidden = false
+                case .failed:
+                    self?.indicator.stopAnimating()
+                    self?.successImageView.isHidden = true
+                    // TODO: Handle error
+                }
+            }
+        }).disposed(by: disposeBag)
     }
     
     //MARK: Helpers
+    private var disposeBag = DisposeBag()
+    
     private func setupView() {
         selectionStyle = .none
         
@@ -44,18 +68,40 @@ class DocumentTableViewCell: UITableViewCell {
         
         contentView.addSubview(textContainer)
         textContainer.snp.makeConstraints { make in
-            make.edges.equalTo(contentView.snp.margins)
+            make.top.equalTo(contentView.snp.topMargin)
+            make.bottom.equalTo(contentView.snp.bottomMargin)
+            make.left.equalTo(contentView.snp.leftMargin)
         }
         
         textContainer.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.top.right.left.equalToSuperview()
+            make.height.equalTo(21)
         }
         
         textContainer.addSubview(detailLabel)
         detailLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(4)
             make.right.left.bottom.equalToSuperview()
+            make.height.equalTo(18)
+        }
+        
+        contentView.addSubview(loadingContainer)
+        loadingContainer.snp.makeConstraints { make in
+            make.right.equalTo(contentView.snp.rightMargin)
+            make.left.equalTo(textContainer.snp.right).offset(8)
+            make.width.height.equalTo(30)
+            make.centerY.equalToSuperview()
+        }
+
+        loadingContainer.addSubview(indicator)
+        indicator.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        loadingContainer.addSubview(successImageView)
+        successImageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
     
@@ -73,5 +119,20 @@ class DocumentTableViewCell: UITableViewCell {
         return label
     }()
     
-    private var textContainer: UIView = UIView()
+    private var indicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .gray)
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
+    
+    private var successImageView: UIImageView = {
+        let image = UIImageView()
+        image.contentMode = .scaleAspectFit
+        image.image = #imageLiteral(resourceName: "icons8-checkmark")
+        return image
+    }()
+    
+    private var textContainer = UIView()
+    
+    private var loadingContainer = UIView()
 }
