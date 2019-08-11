@@ -45,28 +45,9 @@ class NewDocumentCoordinator: Coordinator {
         showCurrentStep()
     }
     
-    func saveFields(_ fields: [FormField]) {
-        for field in fields {
-            switch field {
-            case let textField as TextInputField:
-                newDocument.notes = textField.text.value
-            case let datePicker as DateTimePickerField:
-                if let date = datePicker.date.value {
-                    newDocument.date = date
-                }
-            case let listPicker as ListPickerField<DocumentTypeDomainModel>:
-                if let type = listPicker.selected.value {
-                    newDocument.type = type
-                }
-            default:
-                break
-            }
-        }
-    }
-    
     // MARK: Helepers
     private let database: Database = try! Realm()
-    private let ikemNetworkManager: IkemNetworkManaging = IkemNetworkManager(api: NativeAPI())
+    private let networkManager: NetworkManager = IkemNetworkManager(api: NativeAPI())
     
     private func showCurrentStep() {
         switch currentStep {
@@ -80,10 +61,9 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func showFolderSelectionScreen() {
-        
-        // TODO: Implement
-        newDocument.folderId = "1234"
-        resolveNextStep()
+        let viewModel = NewDocumentFolderViewModel(database: database, networkManager: networkManager)
+        let viewController = NewDocumentFolderViewController(viewModel: viewModel, coordinator: self)
+        push(viewController)
     }
     
     private func showDocumentTypeSelectionScreen() {
@@ -115,7 +95,7 @@ class NewDocumentCoordinator: Coordinator {
         database.saveObject(databaseDocument)
         
         let documentViewModel = DocumentViewModel(document: newDocument)
-        documentViewModel.uploadDocument(with: ikemNetworkManager)
+        documentViewModel.uploadDocument(with: networkManager)
         
         popAll()
         flowDelegate.newDocumentCreated(documentViewModel)
@@ -151,15 +131,42 @@ class NewDocumentCoordinator: Coordinator {
 }
 
 // MARK: - NewDocumentTypeCoordinator implementation
-extension NewDocumentCoordinator: NewDocumentTypeCoordinator {
-    
+extension NewDocumentCoordinator: NewDocumentFolderCoordinator {
     func showNextStep() {
         resolveNextStep()
     }
     
-    func showSelector<T: ListItem>(for list: ListPickerField<T>) {
-        showListItemSelectionScreen(for: list)
+    func saveFolder(_ folder: FolderDomainModel) {
+        newDocument.folder = folder
+        let databaseFolder = FolderDatabaseModel(folder: folder)
+        FolderDatabaseModel.updateLastUsage(of: databaseFolder)
     }
 }
 
+// MARK: - NewDocumentTypeCoordinator implementation
+extension NewDocumentCoordinator: NewDocumentTypeCoordinator {
+    func showSelector<T: ListItem>(for list: ListPickerField<T>) {
+        showListItemSelectionScreen(for: list)
+    }
+    
+    func saveFields(_ fields: [FormField]) {
+        for field in fields {
+            switch field {
+            case let textField as TextInputField:
+                newDocument.notes = textField.text.value
+            case let datePicker as DateTimePickerField:
+                if let date = datePicker.date.value {
+                    newDocument.date = date
+                }
+            case let listPicker as ListPickerField<DocumentTypeDomainModel>:
+                if let type = listPicker.selected.value {
+                    newDocument.type = type
+                }
+            default:
+                break
+            }
+        }
+    }
+}
+// MARK: - ListItemSelectionCoordinator implementation
 extension NewDocumentCoordinator: ListItemSelectionCoordinator {}

@@ -1,0 +1,223 @@
+//
+//  NewDocumentFolderViewController.swift
+//  zScanner
+//
+//  Created by Jakub Skořepa on 10/08/2019.
+//  Copyright © 2019 Institut klinické a experimentální medicíny. All rights reserved.
+//
+
+import UIKit
+import RxSwift
+
+protocol NewDocumentFolderCoordinator: BaseCoordinator {
+    func saveFolder(_ folder: FolderDomainModel)
+    func showNextStep()
+}
+
+// MARK: -
+class NewDocumentFolderViewController: BaseViewController {
+    
+    // MARK: Instance part
+    private unowned let coordinator: NewDocumentFolderCoordinator
+    private let viewModel: NewDocumentFolderViewModel
+    
+    init(viewModel: NewDocumentFolderViewModel, coordinator: NewDocumentFolderCoordinator) {
+        self.coordinator = coordinator
+        self.viewModel = viewModel
+        
+        super.init(coordinator: coordinator)
+    }
+    
+    // MARK: Lifecycle
+    override func loadView() {
+        super.loadView()
+        
+        setupView()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupBindings()
+    }
+    
+    override var rightBarButtonItems: [UIBarButtonItem] {
+        return [
+            UIBarButtonItem(image: #imageLiteral(resourceName: "barcode"), style: .plain, target: self, action: #selector(scanBarcode))
+        ]
+    }
+    
+    // MARK: Helpers
+    enum Section: String {
+        case searchResults
+        case history
+        
+        var title: String {
+            switch self {
+                case .searchResults: return "newDocumentFolder.searchResults.title".localized
+                case .history: return "newDocumentFolder.searchHistory.title".localized
+            }
+        }
+    }
+    
+    private var sections: [Section] = []
+    private let disposeBag = DisposeBag()
+    
+    @objc private func scanBarcode() {
+        presentScanner()
+    }
+    
+    private func setupBindings() {
+        viewModel.searchResults
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let section = self?.sections.firstIndex(of: .searchResults) else { return }
+                self?.tableView.reloadSections([section], with: .fade)
+            }).disposed(by: disposeBag)
+        
+        viewModel.isLoading
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] loading in
+                self?.searchBar.isLoading = loading
+            }).disposed(by: disposeBag)
+    }
+    
+    private func presentScanner() {
+        let scanner = ScannerViewController(viewModel: viewModel, delegate: self)
+        present(scanner, animated: true, completion: nil)
+    }
+    
+    private func setupView() {
+        navigationItem.title = "newDocumentFolder.screen.title".localized
+        
+        view.addSubview(searchBar)
+        searchBar.snp.makeConstraints { make in
+            make.top.right.left.equalTo(safeArea)
+            make.height.equalTo(56) // Default searchBar height
+        }
+        
+        view.addSubview(tableView)
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(searchBar.snp.bottom)
+            make.right.bottom.left.equalToSuperview()
+        }
+        
+        if !viewModel.history.isEmpty {
+            sections.append(.history)
+        }
+    }
+    
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView(frame: CGRect.zero, style: .grouped)
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 44
+        tableView.tableFooterView = UIView()
+        tableView.backgroundColor = .white
+        tableView.registerCell(FolderTableViewCell.self)
+        return tableView
+    }()
+    
+    private lazy var searchBar: UISearchBar = {
+        let search = UISearchBar()
+        search.delegate = self
+        search.placeholder = "newDocumentFolder.searchBar.title".localized
+        search.sizeToFit()
+        return search
+    }()
+}
+
+// MARK: - UITableViewDataSource implementation
+extension NewDocumentFolderViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return sections.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let section = sections[section]
+        switch section {
+        case .searchResults:
+            return try! viewModel.searchResults.value().count
+        case .history:
+            return viewModel.history.count
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let section = sections[indexPath.section]
+        
+        let folder: FolderDomainModel
+        
+        switch section {
+        case .searchResults:
+            folder = try! viewModel.searchResults.value()[indexPath.row]
+        case .history:
+            folder = viewModel.history[indexPath.row]
+        }
+        
+        let cell = tableView.dequeueCell(FolderTableViewCell.self)
+        cell.setup(with: folder)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return sections[section].title
+    }
+}
+
+// MARK: - UITableViewDelegate implementation
+extension NewDocumentFolderViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let section = sections[indexPath.section]
+        
+        let item: FolderDomainModel
+        
+        switch section {
+        case .searchResults:
+            item = try! viewModel.searchResults.value()[indexPath.row]
+        case .history:
+            item = viewModel.history[indexPath.row]
+        }
+        
+        coordinator.saveFolder(item)
+        coordinator.showNextStep()
+    }
+}
+
+// MARK: - UISearchBarDelegate implementation
+extension NewDocumentFolderViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        viewModel.search(query: searchText)
+        
+        if searchText.isEmpty {
+            // Remove section if present
+            if let index = sections.firstIndex(of: .searchResults) {
+                sections.remove(at: index)
+                tableView.deleteSections([index], with: .fade)
+            }
+        } else {
+            // Insert section if missing
+            if sections.contains(.searchResults) == false {
+                let index = 0
+                sections.insert(.searchResults, at: index)
+                tableView.insertSections([index], with: .fade)
+            }
+        }
+    }
+}
+
+// MARK: - ScannerDelegate implementation
+extension NewDocumentFolderViewController: ScannerDelegate {
+    func close() {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func failed() {
+        dismiss(animated: true) { [weak self] in
+            let alert = UIAlertController(title: "newDocumentFolder.scanFailedAlert.title".localized, message: "newDocumentFolder.scanFailedAlert.message".localized, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "alert.okButton.title".localized, style: .default))
+            self?.present(alert, animated: true)
+        }
+    }
+}

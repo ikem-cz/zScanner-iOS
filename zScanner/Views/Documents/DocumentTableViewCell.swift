@@ -36,8 +36,9 @@ class DocumentTableViewCell: UITableViewCell {
         // Make sure the label will keep the space even when empty while respecting the dynamic font size
         titleLabel.text = document.document.type.title.isEmpty ? " " : document.document.type.title
         detailLabel.text = document.document.notes.isEmpty ? " " : document.document.notes
-        document.documentUploadStatus.subscribe(onNext: { [weak self] status in
-            DispatchQueue.main.async {
+        document.documentUploadStatus
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] status in
                 switch status {
                 case .awaitingInteraction:
                     self?.indicator.stopAnimating()
@@ -53,8 +54,7 @@ class DocumentTableViewCell: UITableViewCell {
                     self?.successImageView.isHidden = true
                     // TODO: Handle error
                 }
-            }
-        }).disposed(by: disposeBag)
+            }).disposed(by: disposeBag)
     }
     
     //MARK: Helpers
@@ -128,7 +128,7 @@ class DocumentTableViewCell: UITableViewCell {
     private var successImageView: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
-        image.image = #imageLiteral(resourceName: "icons8-checkmark")
+        image.image = #imageLiteral(resourceName: "checkmark")
         return image
     }()
     

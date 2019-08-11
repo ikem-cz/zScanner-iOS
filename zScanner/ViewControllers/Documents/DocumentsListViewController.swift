@@ -59,8 +59,10 @@ class DocumentsListViewController: BaseViewController {
     }
     
     private func setupBindings() {
-        viewModel.documentModesState.asObserver().subscribe(onNext: { [unowned self] status in
-            DispatchQueue.main.async {
+        viewModel.documentModesState
+            .asObserver()
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [unowned self] status in
                 switch status {
                 case .awaitingInteraction:
                     self.rightBarButtons = []
@@ -72,8 +74,8 @@ class DocumentsListViewController: BaseViewController {
                     self.rightBarButtons = []
                     // TODO: Show error dialog
                 }
-            }
-        }).disposed(by: disposeBag)
+            })
+            .disposed(by: disposeBag)
     }
     
     @objc private func newDocument() {

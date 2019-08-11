@@ -12,7 +12,7 @@ protocol Storable {}
 
 // MARK: -
 protocol Database {
-    func loadObjects<T: Storable>(_ type: T.Type, predicate: NSPredicate?, sorted: Sorted?) -> [T]
+    func loadObjects<T: Storable>(_ type: T.Type) -> [T]
     func loadObject<T: Storable>(_ type: T.Type, withId id: String) -> T?
     func saveObject<T: Storable>(_ object: T)
     func deleteAll<T: Storable>(of type: T.Type)

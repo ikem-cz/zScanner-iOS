@@ -8,4 +8,8 @@
 
 import Foundation
 
-struct FolderDomainModel {}
+struct FolderDomainModel {
+    var externalId : String
+    var id : String
+    var name: String
+}

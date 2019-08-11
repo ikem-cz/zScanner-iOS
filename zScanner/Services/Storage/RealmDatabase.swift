@@ -15,17 +15,8 @@ extension Object: Storable {}
 // MARK: -
 extension Realm: Database {
     
-    func loadObjects<T>(_ type: T.Type, predicate: NSPredicate?, sorted: Sorted?) -> [T] where T: Storable {
-        var objects = self.objects(type as! Object.Type)
-        
-        if let predicate = predicate {
-            objects = objects.filter(predicate)
-        }
-        
-        if let sorted = sorted {
-            objects = objects.sorted(byKeyPath: sorted.key, ascending: sorted.ascending)
-        }
-        
+    func loadObjects<T>(_ type: T.Type) -> [T] where T: Storable {
+        let objects = self.objects(type as! Object.Type)
         return Array(objects) as! [T]
     }
     

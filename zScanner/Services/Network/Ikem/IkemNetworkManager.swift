@@ -9,7 +9,7 @@
 import Foundation
 import RxSwift
 
-class IkemNetworkManager: IkemNetworkManaging {
+class IkemNetworkManager: NetworkManager {
     
     // MARK: Instance part
     private let api: API
@@ -54,6 +54,66 @@ class IkemNetworkManager: IkemNetworkManaging {
     func uploadDocument(_ document: DocumentNetworkModel) -> Observable<RequestStatus<EmptyResponse>> {
         return Observable.create { observer -> Disposable in
             var request = SubmitReuest(document: document)
+            
+            request.headers.merge(
+                self.requestBehavior.additionalHeaders,
+                uniquingKeysWith: { (current, _) in current }
+            )
+            
+            self.requestBehavior.beforeSend()
+            
+            self.api.process(request, with: { [weak self] requestStatus in
+                observer.onNext(requestStatus)
+                
+                switch requestStatus {
+                case .loading:
+                    break
+                case .success:
+                    self?.requestBehavior.afterSuccess()
+                    observer.onCompleted()
+                case .error(let error):
+                    self?.requestBehavior.afterError(error)
+                    observer.onError(error)
+                }
+            })
+            
+            return Disposables.create()
+        }
+    }
+    
+    func searchFolders(with query: String) -> Observable<RequestStatus<[FolderNetworkModel]>> {
+        return Observable.create { observer -> Disposable in
+            var request = SearchFoldersRequest(query: query)
+            
+            request.headers.merge(
+                self.requestBehavior.additionalHeaders,
+                uniquingKeysWith: { (current, _) in current }
+            )
+            
+            self.requestBehavior.beforeSend()
+            
+            self.api.process(request, with: { [weak self] requestStatus in
+                observer.onNext(requestStatus)
+                
+                switch requestStatus {
+                case .loading:
+                    break
+                case .success:
+                    self?.requestBehavior.afterSuccess()
+                    observer.onCompleted()
+                case .error(let error):
+                    self?.requestBehavior.afterError(error)
+                    observer.onError(error)
+                }
+            })
+            
+            return Disposables.create()
+        }
+    }
+    
+    func getFolder(with id: String) -> Observable<RequestStatus<FolderNetworkModel>> {
+        return Observable.create { observer -> Disposable in
+            var request = GetFolderRequest(with: id)
             
             request.headers.merge(
                 self.requestBehavior.additionalHeaders,

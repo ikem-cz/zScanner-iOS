@@ -20,7 +20,7 @@ class DocumentsCoordinator: Coordinator {
     
     init(flowDelegate: DocumentsFlowDelegate, window: UIWindow) {
         self.flowDelegate = flowDelegate
-        self.ikemNetworkManager = IkemNetworkManager(api: api)
+        self.networkManager = IkemNetworkManager(api: api)
         
         super.init(window: window)
     }
@@ -32,7 +32,7 @@ class DocumentsCoordinator: Coordinator {
     
     // MARK: Navigation methods
     private func showDocumentsListScreen() {
-        let viewModel = DocumentsListViewModel(database: database, ikemNetworkManager: ikemNetworkManager)
+        let viewModel = DocumentsListViewModel(database: database, ikemNetworkManager: networkManager)
         let viewController = DocumentsListViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
@@ -45,7 +45,7 @@ class DocumentsCoordinator: Coordinator {
     
     // MARK: Helpers
     private let api: API = NativeAPI()
-    private let ikemNetworkManager: IkemNetworkManaging
+    private let networkManager: NetworkManager
     private let database: Database = try! Realm()
     private let tracker: Tracker = FirebaseAnalytics()
 }

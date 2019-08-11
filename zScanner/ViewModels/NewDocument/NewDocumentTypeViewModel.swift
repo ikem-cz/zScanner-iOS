@@ -40,7 +40,7 @@ class NewDocumentTypeViewModel {
     // MARK: Helpers
     private func fields(for mode: DocumentMode) -> [FormField] {
         var documentTypes: [DocumentTypeDomainModel] {
-            return database.loadObjects(DocumentTypeDatabaseModel.self, predicate: nil, sorted: nil)
+            return database.loadObjects(DocumentTypeDatabaseModel.self)
                 .map({ $0.toDomainModel() })
                 .filter({ $0.mode == mode })
                 .sorted(by: { $0.name < $1.name })

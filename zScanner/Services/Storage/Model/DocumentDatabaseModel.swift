@@ -12,26 +12,28 @@ import RealmSwift
 
 class DocumentDatabaseModel: Object {
     @objc dynamic var id = ""
-    @objc dynamic var folderId = ""
     @objc dynamic var documentMode = ""
     @objc dynamic var documentType = ""
     @objc dynamic var documentTypeName = ""
     @objc dynamic var date = Date()
     @objc dynamic var name = ""
     @objc dynamic var notes = ""
+    @objc dynamic var folder: FolderDatabaseModel?
     let pages = List<String>()
     
     convenience init(document: DocumentDomainModel) {
         self.init()
         
         self.id = document.id
-        self.folderId = document.folderId
         self.documentMode = document.type.mode.rawValue
         self.documentType = document.type.id
         self.documentTypeName = document.type.name
         self.date = document.date
         self.name = document.name
         self.notes = document.notes
+        
+        let realm = try! Realm()
+        self.folder = realm.loadObject(FolderDatabaseModel.self, withId: document.folder.id) ?? FolderDatabaseModel(folder: document.folder)
         
         // TODO: convert image into filePath
     }
@@ -46,7 +48,7 @@ extension DocumentDatabaseModel {
     func toDomainModel() -> DocumentDomainModel {
         return DocumentDomainModel(
             id: id,
-            folderId: folderId,
+            folder: folder!.toDomainModel(),
             type: DocumentTypeDomainModel(
                 id: documentType,
                 name: documentTypeName,

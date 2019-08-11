@@ -20,14 +20,14 @@ class DocumentsListViewModel {
     
     //MARK: Instance part
     private let database: Database
-    private let ikemNetworkManager: IkemNetworkManaging
+    private let networkManager: NetworkManager
     
     private(set) var documents: [DocumentViewModel] = []
     private(set) var documentModes: [DocumentMode] = []
     
-    init(database: Database, ikemNetworkManager: IkemNetworkManaging) {
+    init(database: Database, ikemNetworkManager: NetworkManager) {
         self.database = database
-        self.ikemNetworkManager = ikemNetworkManager
+        self.networkManager = ikemNetworkManager
         
         setupDocuments()
         fetchDocumentTypes()
@@ -45,13 +45,13 @@ class DocumentsListViewModel {
     
     private func setupDocuments() {
         documents = database
-            .loadObjects(DocumentDatabaseModel.self, predicate: nil, sorted: nil)
+            .loadObjects(DocumentDatabaseModel.self)
             .map({ DocumentViewModel(document: $0.toDomainModel()) })
             .reversed()
     }
     
     private func fetchDocumentTypes() {
-        ikemNetworkManager.getDocumentTypes().subscribe(onNext: { [weak self] requestStatus in
+        networkManager.getDocumentTypes().subscribe(onNext: { [weak self] requestStatus in
             switch requestStatus {
             case .loading:
                 self?.documentModesState.onNext(.loading)

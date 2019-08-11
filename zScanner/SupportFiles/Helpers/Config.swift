@@ -13,4 +13,5 @@ enum Config {
     static let testingURL: String = "https://desolate-meadow-62603.herokuapp.com/api-zscanner/v3"
     
     static let currentEnvironment: Environment = .testing
+    static let folderUsageHistoryCount = 3
 }

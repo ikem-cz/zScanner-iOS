@@ -21,7 +21,7 @@ struct NativeAPI: API {
         let urlString: String
         switch request {
         case let encoded as ParametersURLEncoded:
-            urlString = encoded.url
+            urlString = encoded.encodedUrl
         default:
             urlString = request.endpoint.url
         }

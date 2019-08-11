@@ -22,12 +22,12 @@ struct EmptyResponse: Decodable {}
 
 //MARK: -
 protocol ParametersURLEncoded {
-    var url: String { get }
+    var encodedUrl: String { get }
 }
 
 //MARK: - Default implementation
 extension ParametersURLEncoded where Self: Request {
-    var url: String {
+    var encodedUrl: String {
         var url = endpoint.url
         
         // Add parameters to url

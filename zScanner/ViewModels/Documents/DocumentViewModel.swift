@@ -18,7 +18,7 @@ class DocumentViewModel {
     }
     
     // MARK: Instance part
-    var ikemNetworkManager: IkemNetworkManaging?
+    var networkManager: NetworkManager?
     let document: DocumentDomainModel
     let documentUploadStatus = BehaviorSubject<DocumentUploadStatus>(value: .awaitingInteraction)
     
@@ -28,8 +28,8 @@ class DocumentViewModel {
     }
     
     // MARK: Interface
-    func uploadDocument(with networkManager: IkemNetworkManaging) {
-        self.ikemNetworkManager = networkManager
+    func uploadDocument(with networkManager: NetworkManager) {
+        self.networkManager = networkManager
         
         documentUploadStatus.onNext(.progress(0))
         

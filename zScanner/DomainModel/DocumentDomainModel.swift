@@ -10,7 +10,7 @@ import UIKit
 
 struct DocumentDomainModel {
     var id: String
-    var folderId: String
+    var folder: FolderDomainModel
     var type: DocumentTypeDomainModel
     var date: Date
     var name: String
@@ -22,7 +22,11 @@ extension DocumentDomainModel {
     static var emptyDocument: DocumentDomainModel {
         return DocumentDomainModel(
             id: UUID().uuidString,
-            folderId: "",
+            folder: FolderDomainModel(
+                externalId: "",
+                id: "",
+                name: ""
+            ),
             type: DocumentTypeDomainModel(
                 id: "",
                 name: "",

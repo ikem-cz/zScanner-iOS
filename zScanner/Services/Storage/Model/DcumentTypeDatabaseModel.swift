@@ -21,6 +21,9 @@ class DocumentTypeDatabaseModel: Object {
         self.name = documentType.name
         self.mode = documentType.mode
     }
+    override class func primaryKey() -> String {
+        return "id"
+    }
     
     var mode: DocumentMode {
         get { return DocumentMode(rawValue: _mode)! }

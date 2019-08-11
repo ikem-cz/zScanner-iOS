@@ -11,6 +11,8 @@ import Foundation
 enum IkemEndpoint: String, Endpoint {
     case documentTypes = "/documenttypes"
     case submitDocument = "/documents/summary"
+    case folderSearch = "/folders/search"
+    case folderDecode = "/folders/decode"
     
     var url: String {
         return baseUrl + self.rawValue

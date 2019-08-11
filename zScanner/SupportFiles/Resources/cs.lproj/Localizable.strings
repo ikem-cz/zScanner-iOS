@@ -6,6 +6,9 @@
   Copyright © 2019 Institut klinické a experimentální medicíny. All rights reserved.
 */
 
+// MARK: - Alert
+"alert.okButton.title" = "OK";
+
 // MARK: - Login
 "login.username.title" = "login";
 "login.password.title" = "heslo";
@@ -22,6 +25,13 @@
 "document.modeSelector.title" = "Zvolte typ záznamu";
 
 // MARK: - New Document
+"newDocumentFolder.screen.title" = "Dokument - výběr pacienta";
+"newDocumentFolder.searchBar.title" = "Rodné číslo, příjmení nebo jméno..";
+"newDocumentFolder.searchResults.title" = "Výsledky hledání";
+"newDocumentFolder.searchHistory.title" = "Historie hledání";
+"newDocumentFolder.scanFailedAlert.title" = "Chyba kamery";
+"newDocumentFolder.scanFailedAlert.message" = "Kamera není dostupná, zkontrolujte prosím nastavení.";
+
 "newDocumentType.screen.title" = "Dokument - vlastnosti záznamu";
 "newDocumentType.button.title" = "Další";
 
