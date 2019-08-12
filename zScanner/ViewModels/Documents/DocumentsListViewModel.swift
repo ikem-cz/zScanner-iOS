@@ -39,7 +39,10 @@ class DocumentsListViewModel {
     func insertNewDocument(_ document: DocumentViewModel) {
         documents.insert(document, at: 0)
     }
-    
+    func deleteHistory() {
+        database.deleteAll(of: DocumentDatabaseModel.self)
+        setupDocuments()
+    }
     //MARK: Helpers
     let disposeBag = DisposeBag()
     

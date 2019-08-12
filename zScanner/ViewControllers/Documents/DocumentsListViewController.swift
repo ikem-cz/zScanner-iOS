@@ -14,11 +14,17 @@ protocol DocumentsListCoordinator: BaseCoordinator {
     func createNewDocument(with mode: DocumentMode)
 }
 
+protocol DrawerDelegate {
+    func showDrawer()
+}
+
 class DocumentsListViewController: BaseViewController {
     
     // MARK: - Instance part
     private unowned let coordinator: DocumentsListCoordinator
     private let viewModel: DocumentsListViewModel
+    
+    var drawerDelegate: DrawerDelegate!
     
     init(viewModel: DocumentsListViewModel, coordinator: DocumentsListCoordinator) {
         self.coordinator = coordinator
@@ -38,6 +44,12 @@ class DocumentsListViewController: BaseViewController {
         super.viewDidLoad()
         
         setupBindings()
+    }
+    
+    override var leftBarButtonItems: [UIBarButtonItem] {
+        return [
+            UIBarButtonItem(image: UIImage(named:"menuIcon"),style: .plain, target: self, action: #selector(hamburgerTap))
+        ]
     }
     
     override var rightBarButtonItems: [UIBarButtonItem] {
@@ -80,6 +92,9 @@ class DocumentsListViewController: BaseViewController {
     
     @objc private func newDocument() {
         showDocumentModePicker()
+    }
+    @objc private func hamburgerTap() {
+        showDrawer()
     }
     
     private func showDocumentModePicker() {
@@ -133,6 +148,9 @@ class DocumentsListViewController: BaseViewController {
         tableView.tableFooterView = UIView()
         return tableView
     }()
+    private func showDrawer() {
+        drawerDelegate.showDrawer()
+    }
 }
 
 //MARK: - UITableViewDataSource implementation

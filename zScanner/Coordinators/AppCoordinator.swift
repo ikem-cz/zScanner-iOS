@@ -18,8 +18,8 @@ class AppCoordinator: Coordinator {
     
     // MARK: Inteface
     func begin() {
-        startLoginCoordinator()
-//        startDocumentsCoordinator()
+  //      startLoginCoordinator()
+      startDocumentsCoordinator()
     }
     
     // MARK: Helpers
@@ -45,4 +45,10 @@ extension AppCoordinator: LoginFlowDelegate {
 
 // MARK: - DocumentsFlowDelegate implementation
 extension AppCoordinator: DocumentsFlowDelegate {
+    func logout() {
+        startLoginCoordinator()
+    }
+    func refreshDocumentsList() {
+        startDocumentsCoordinator()
+    }
 }
