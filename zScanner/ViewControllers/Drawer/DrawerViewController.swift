@@ -9,12 +9,11 @@
 import UIKit
 
 protocol DrawerCoordinator: BaseCoordinator {
-    func closeDrawer()
+    func closeMenu()
     func logout()
     func deleteHistory()
     func showAbout()
 }
-
 
 class DrawerViewController: BaseViewController {
     private unowned let coordinator: DrawerCoordinator
@@ -36,7 +35,6 @@ class DrawerViewController: BaseViewController {
         "drawer.deleteHistory.title".localized,
         "drawer.aboutApp.title".localized
     ]
-
     
     private lazy var drawerLogo: UIImageView = {
         let imageView = UIImageView()
@@ -44,6 +42,7 @@ class DrawerViewController: BaseViewController {
         imageView.contentMode = UIView.ContentMode.scaleAspectFit
         return imageView
     }()
+    
     private lazy var drawerTopLabel: UILabel = {
         let label = UILabel()
         label.text = "zScanner"
@@ -51,17 +50,16 @@ class DrawerViewController: BaseViewController {
         label.font = label.font.withSize(25)
         return label
     }()
-    private lazy var topStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [drawerLogo,drawerTopLabel])
-        stackView.axis = .vertical
-        stackView.alignment = .top
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.spacing = 10
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.spacing = UIStackView.spacingUseSystem
-
-        stackView.addBackground(color: .primary)
-        return stackView
+    
+    private lazy var topView: UIView = {
+        let topView = UIView()
+        
+        topView.addSubview(drawerLogo)
+        topView.addSubview(drawerTopLabel)
+        topView.translatesAutoresizingMaskIntoConstraints = false
+        topView.backgroundColor = .primary
+        
+        return topView
     }()
   
     private func drawerMakeMenuButtons (_ names: [String]) -> [DrawerMenuButton] {
@@ -70,13 +68,14 @@ class DrawerViewController: BaseViewController {
         for drawerMenuItem in drawerMenuItems {
             let button = DrawerMenuButton()
             button.setTitle(drawerMenuItem, for: .normal)
+            button.translatesAutoresizingMaskIntoConstraints = false
             button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
 
             drawerMenu.append(button)
         }
         return drawerMenu
-       
     }
+    
     private lazy var menuStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: drawerMakeMenuButtons(drawerMenuItems))
         stackView.axis = .vertical
@@ -85,59 +84,55 @@ class DrawerViewController: BaseViewController {
         stackView.distribution = .fill
         return stackView
     }()
-    
 
     private func setupView() {
-        view.addSubview(topStackView)
+        view.addSubview(topView)
         view.addSubview(menuStackView)
         
-        topStackView.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        // MARK: - Constraints
+        topView.snp.makeConstraints { make in
+            make.top.equalTo(self.view)
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
+        }
 
-
-        topStackView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        topStackView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        topStackView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        drawerLogo.snp.makeConstraints { make in
+            make.height.equalTo(102)
+            make.width.equalTo(114)
+            make.top.equalTo(topView).offset(40)
+            make.left.equalTo(topView).offset(20)
+        }
         
+        drawerTopLabel.snp.makeConstraints { make in
+            make.top.equalTo(drawerLogo.snp.bottom).offset(20)
+            make.left.equalTo(topView).offset(20)
+            make.right.equalTo(topView).offset(20)
+            make.bottom.equalTo(topView).offset(-20)
+        }
         
-        drawerLogo.heightAnchor.constraint(equalToConstant: 102).isActive = true
-        drawerLogo.widthAnchor.constraint(equalToConstant: 114).isActive = true
-        
-        menuStackView.topAnchor.constraint(equalTo: topStackView.bottomAnchor, constant: 15).isActive = true
-        menuStackView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15).isActive = true
-        menuStackView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 15).isActive = true
+        menuStackView.snp.makeConstraints { make in
+            make.top.equalTo(topView.snp.bottom).offset(15)
+            make.left.equalTo(view).offset(15)
+            make.right.equalTo(view).offset(15)
+        }
     }
     
-    @objc func handleMenuTap(_ sender : UIButton){
-        coordinator.closeDrawer()
+    @objc func handleMenuTap(_ sender: UIButton){
+        coordinator.closeMenu()
         switch sender.title(for: .normal) {
+            
         case drawerMenuItems[0]:
             coordinator.deleteHistory()
             coordinator.logout()
+            
         case drawerMenuItems[1]:
             coordinator.deleteHistory()
+            
         case drawerMenuItems[2]:
             coordinator.showAbout()
+            
         default:
             print("bug")
         }
-        
-    }
-    
-    func hideDrawer() {
-        view.frame = CGRect(x: -view.frame.width, y: 0, width: view.frame.width, height: view.frame.height)
-    }
-    
-    func showDrawer() {
-        view.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
-    }
-    
-}
-
-extension UIStackView {
-    func addBackground(color: UIColor) {
-        let subView = UIView(frame: bounds)
-        subView.backgroundColor = color
-        subView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        insertSubview(subView, at: 0)
     }
 }

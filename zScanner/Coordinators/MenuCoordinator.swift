@@ -23,56 +23,64 @@ class MenuCoordinator: Coordinator {
         super.init(window: window, navigationController: navigationController)
 
     }
-    private lazy var viewController: DrawerViewController = {
+    
+    private lazy var drawerViewController: DrawerViewController = {
         return DrawerViewController(coordinator: self)
     }()
     
     private lazy var blackView: UIView = {
-        let bView = UIView()
-        bView.backgroundColor = .black
-        bView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
+        let blackView = UIView()
+        blackView.backgroundColor = .black
+        blackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
         let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleDismiss))
         swipeLeftGesture.direction = .left
-        bView.addGestureRecognizer(swipeLeftGesture)
-        bView.translatesAutoresizingMaskIntoConstraints = false
-        bView.alpha = 0
-        return bView
+        blackView.addGestureRecognizer(swipeLeftGesture)
+        blackView.translatesAutoresizingMaskIntoConstraints = false
+        blackView.alpha = 0
+        return blackView
     }()
-    private lazy var width: CGFloat = {
+    
+    private lazy var menuWidth: CGFloat = {
         let width = window.frame.width * 2 / 3
         return width
     }()
 
     func begin() {
-        window.addSubview(blackView)
-        window.addSubview(viewController.view)
-        
-        
-        blackView.topAnchor.constraint(equalTo: window.topAnchor).isActive = true
-        blackView.bottomAnchor.constraint(equalTo: window.bottomAnchor).isActive = true
-        blackView.leftAnchor.constraint(equalTo: window.leftAnchor).isActive = true
-        blackView.rightAnchor.constraint(equalTo: window.rightAnchor).isActive = true
-        
-        viewController.view.frame = CGRect(x: -width, y: 0, width: width, height: window.frame.height)
+        installDrawerSreen()
     }
-    func openDrawer() {
+    
+    private func installDrawerSreen() {
+        window.addSubview(blackView)
+        window.addSubview(drawerViewController.view)
+        
+        blackView.snp.makeConstraints { make in
+            make.edges.equalTo(window)
+        }
+        
+        drawerViewController.view.frame = CGRect(x: -menuWidth, y: 0, width: menuWidth, height: window.frame.height)
+    }
+    
+    func openMenu() {
         UIView.animate(withDuration: 0.3) {
             self.blackView.alpha = 0.5
-            self.viewController.showDrawer()
+            self.drawerViewController.view.frame.origin = CGPoint(x: 0, y: 0)
         }
     }
-    func closeDrawer() {
+    
+    func closeMenu() {
         UIView.animate(withDuration: 0.3) {
             self.blackView.alpha = 0
-            self.viewController.hideDrawer()
+            self.drawerViewController.view.frame.origin = CGPoint(x: -self.drawerViewController.view.frame.width, y: 0)
         }
     }
+    
     @objc private func handleDismiss(){
-        closeDrawer()
+        closeMenu()
     }
+    
     func showAbout() {
-        let aboutVC = AboutViewController(coordinator: self)
-        push(aboutVC)
+        let aboutViewController = AboutViewController(coordinator: self)
+        push(aboutViewController)
     }
 }
 
@@ -81,6 +89,7 @@ extension MenuCoordinator: DrawerCoordinator {
     func logout() {
         flowDelegate.logout()
     }
+    
     func deleteHistory() {
         flowDelegate.deleteHistory()
     }

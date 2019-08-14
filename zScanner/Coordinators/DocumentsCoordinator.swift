@@ -28,24 +28,24 @@ class DocumentsCoordinator: Coordinator {
     }
     
     // MARK: Interface
-    private lazy var viewModel: DocumentsListViewModel = {
-        return DocumentsListViewModel(database: database, ikemNetworkManager: networkManager)
-    }()
     func begin() {
-        showDocumentsListScreen(viewModel)
-        setupMenu(viewModel)
+        showDocumentsListScreen()
+        setupMenu()
     }
     
     // MARK: Navigation methods
-    private func showDocumentsListScreen(_ viewModel: DocumentsListViewModel) {
+    private func showDocumentsListScreen() {
+        let viewModel = DocumentsListViewModel(database: database, ikemNetworkManager: networkManager)
         let viewController = DocumentsListViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
 
     }
+    
     private lazy var menuCoordinator: MenuCoordinator = {
         return MenuCoordinator(flowDelegate: self, window: window, navigationController: navigationController)
     }()
-    private func setupMenu(_ viewModel: DocumentsListViewModel) {
+    
+    private func setupMenu() {
         addChildCoordinator(menuCoordinator)
         menuCoordinator.begin()
     }
@@ -69,8 +69,8 @@ extension DocumentsCoordinator: DocumentsListCoordinator {
         tracker.track(.documentModeSelected(mode))
         runNewDocumentFlow(with: mode)
     }
-    func openDrawer() {
-        menuCoordinator.openDrawer()
+    func openMenu() {
+        menuCoordinator.openMenu()
     }
 }
 
@@ -88,10 +88,12 @@ extension DocumentsCoordinator: NewDocumentFlowDelegate {
 
 // MARK: - MenuFlowDelegate implementation
 extension DocumentsCoordinator: MenuFlowDelegate {
+    func deleteHistory() {
+        database.deleteAll(of: DocumentDatabaseModel.self)
+        database.deleteAll(of: FolderDatabaseModel.self)
+    }
+    
     func logout() {
         flowDelegate.logout()
-    }
-    func deleteHistory() {
-        viewModel.deleteHistory()
     }
 }

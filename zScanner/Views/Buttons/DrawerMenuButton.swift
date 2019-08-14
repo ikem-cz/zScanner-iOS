@@ -22,15 +22,8 @@ class DrawerMenuButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
-    open override var isEnabled: Bool{
-        didSet {
-            alpha = isEnabled ? 1.0 : 0.5
-        }
-    }
-    
     //MARK: Helpers
     private func setup() {
-        translatesAutoresizingMaskIntoConstraints = false
         contentHorizontalAlignment = .left
         setTitleColor(.primary, for: .normal)
     }

@@ -12,7 +12,7 @@ import RxSwift
 
 protocol DocumentsListCoordinator: BaseCoordinator {
     func createNewDocument(with mode: DocumentMode)
-    func openDrawer()
+    func openMenu()
 }
 
 class DocumentsListViewController: BaseViewController {
@@ -43,7 +43,7 @@ class DocumentsListViewController: BaseViewController {
     
     override var leftBarButtonItems: [UIBarButtonItem] {
         return [
-            UIBarButtonItem(image: UIImage(named:"menuIcon"),style: .plain, target: self, action: #selector(hamburgerTap))
+            UIBarButtonItem(image: UIImage(named:"menuIcon"),style: .plain, target: self, action: #selector(openMenu))
         ]
     }
     
@@ -88,8 +88,9 @@ class DocumentsListViewController: BaseViewController {
     @objc private func newDocument() {
         showDocumentModePicker()
     }
-    @objc private func hamburgerTap() {
-        showDrawer()
+    
+    @objc private func openMenu() {
+        coordinator.openMenu()
     }
     
     private func showDocumentModePicker() {
@@ -143,9 +144,6 @@ class DocumentsListViewController: BaseViewController {
         tableView.tableFooterView = UIView()
         return tableView
     }()
-    private func showDrawer() {
-        coordinator.openDrawer()
-    }
 }
 
 //MARK: - UITableViewDataSource implementation
