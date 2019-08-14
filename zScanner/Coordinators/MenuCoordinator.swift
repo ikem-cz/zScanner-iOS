@@ -15,7 +15,7 @@ protocol MenuFlowDelegate: FlowDelegate {
 
 class MenuCoordinator: Coordinator {
     
-    // MARK: - Instance part
+    // MARK: Instance part
     unowned private let flowDelegate: MenuFlowDelegate
 
     init(flowDelegate: MenuFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {

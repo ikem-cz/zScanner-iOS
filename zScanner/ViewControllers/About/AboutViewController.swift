@@ -37,7 +37,7 @@ class AboutViewController: BaseViewController {
         let label = UILabel()
         label.text = "about.header.title".localized
         label.textColor = .primary
-        label.font = label.font.withSize(30)
+        label.font = .headline
         return label
     }()
     
@@ -55,7 +55,7 @@ class AboutViewController: BaseViewController {
         label.text = "about.copyright.title".localized
         label.textAlignment = .center
         label.textColor = .primary
-        label.font = label.font.withSize(14)
+        label.font = .footnote
         return label
     }()
     
