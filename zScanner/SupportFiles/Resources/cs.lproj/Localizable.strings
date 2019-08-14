@@ -40,3 +40,15 @@
 "form.documentDecription.title" = "Název (nepovinný)";
 "form.dateTimePicker.title" = "Platnost";
 "form.dateTimePicker.unselected" = "Vybrat";
+
+// MARK: - Drawer Menu
+"drawer.header.title" = "zScanner";
+"drawer.logout.title" = "Odhlásit se";
+"drawer.deleteHistory.title" = "Odstranit historii";
+"drawer.aboutApp.title" = "O aplikaci";
+
+// MARK: - About
+"about.header.title" = "zScanner";
+"about.info.paragraph" = "Aplikace zScanner je určena k rychlému importu dokumentů vyšetření a fotodokumentace do NIS IKEM Zlatokop";
+"about.copyright.title" = "© 2019 Datové centrum IKEM";
+

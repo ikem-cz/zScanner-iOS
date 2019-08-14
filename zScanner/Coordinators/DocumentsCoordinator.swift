@@ -10,7 +10,9 @@ import UIKit
 import RealmSwift
 import RxSwift
 
-protocol DocumentsFlowDelegate: FlowDelegate {}
+protocol DocumentsFlowDelegate: FlowDelegate {
+    func logout()
+}
 
 // MARK: -
 class DocumentsCoordinator: Coordinator {
@@ -28,6 +30,7 @@ class DocumentsCoordinator: Coordinator {
     // MARK: Interface
     func begin() {
         showDocumentsListScreen()
+        setupMenu()
     }
     
     // MARK: Navigation methods
@@ -35,6 +38,15 @@ class DocumentsCoordinator: Coordinator {
         let viewModel = DocumentsListViewModel(database: database, ikemNetworkManager: networkManager)
         let viewController = DocumentsListViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
+    }
+    
+    private lazy var menuCoordinator: MenuCoordinator = {
+        return MenuCoordinator(flowDelegate: self, window: window, navigationController: navigationController)
+    }()
+    
+    private func setupMenu() {
+        addChildCoordinator(menuCoordinator)
+        menuCoordinator.begin()
     }
     
     private func runNewDocumentFlow(with mode: DocumentMode) {
@@ -56,6 +68,9 @@ extension DocumentsCoordinator: DocumentsListCoordinator {
         tracker.track(.documentModeSelected(mode))
         runNewDocumentFlow(with: mode)
     }
+    func openMenu() {
+        menuCoordinator.openMenu()
+    }
 }
 
 // MARK: - NewDocumentFlowDelegate implementation
@@ -67,5 +82,19 @@ extension DocumentsCoordinator: NewDocumentFlowDelegate {
         }
         
         list.insertNewDocument(document: documentViewModel)
+    }
+}
+
+// MARK: - MenuFlowDelegate implementation
+extension DocumentsCoordinator: MenuFlowDelegate {
+    func deleteHistory() {
+        database.deleteAll(of: DocumentDatabaseModel.self)
+        database.deleteAll(of: FolderDatabaseModel.self)
+    }
+    
+    func logout() {
+        deleteHistory()
+        flowDelegate.logout()
+        flowDelegate.coordinatorDidFinish(self)
     }
 }

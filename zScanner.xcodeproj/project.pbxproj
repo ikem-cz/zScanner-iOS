@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		434027612302212C0038A40C /* MenuCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434027602302212C0038A40C /* MenuCoordinator.swift */; };
+		43C14A0C2300EF5A00F7C24E /* DrawerMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A0B2300EF5A00F7C24E /* DrawerMenuButton.swift */; };
+		43C14A102300F07800F7C24E /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A0F2300F07800F7C24E /* AboutViewController.swift */; };
+		43C14A122300F07E00F7C24E /* DrawerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A112300F07E00F7C24E /* DrawerViewController.swift */; };
 		759FB218037CD6C9254A2406 /* Pods_zScanner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA0AB6A19E0BFFBACC7952B9 /* Pods_zScanner.framework */; };
 		BD000CAE22E3AA6F001EE38A /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CAD22E3AA6F001EE38A /* UIViewController.swift */; };
 		BD000CB222E3B38B001EE38A /* UITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CB122E3B38B001EE38A /* UITextField.swift */; };
@@ -86,6 +90,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		434027602302212C0038A40C /* MenuCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCoordinator.swift; sourceTree = "<group>"; };
+		43C14A0B2300EF5A00F7C24E /* DrawerMenuButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerMenuButton.swift; sourceTree = "<group>"; };
+		43C14A0F2300F07800F7C24E /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
+		43C14A112300F07E00F7C24E /* DrawerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerViewController.swift; sourceTree = "<group>"; };
 		A36199925677978CD669378A /* Pods-zScanner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zScanner.debug.xcconfig"; path = "Target Support Files/Pods-zScanner/Pods-zScanner.debug.xcconfig"; sourceTree = "<group>"; };
 		BD000CAD22E3AA6F001EE38A /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		BD000CB122E3B38B001EE38A /* UITextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextField.swift; sourceTree = "<group>"; };
@@ -180,6 +188,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		43C14A0D2300F05D00F7C24E /* Drawer */ = {
+			isa = PBXGroup;
+			children = (
+				43C14A112300F07E00F7C24E /* DrawerViewController.swift */,
+			);
+			path = Drawer;
+			sourceTree = "<group>";
+		};
+		43C14A0E2300F06F00F7C24E /* About */ = {
+			isa = PBXGroup;
+			children = (
+				43C14A0F2300F07800F7C24E /* AboutViewController.swift */,
+			);
+			path = About;
+			sourceTree = "<group>";
+		};
 		9B8C903859A1A873DA86CB8E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -295,6 +319,7 @@
 				BD59A0A422E378BB00FA9CD0 /* LoginCoordinator.swift */,
 				BD2F209322EBB49000534916 /* DocumentsCoordinator.swift */,
 				BD2B9E7522EDBFF400FFCD3B /* NewDocumentCoordinator.swift */,
+				434027602302212C0038A40C /* MenuCoordinator.swift */,
 			);
 			path = Coordinators;
 			sourceTree = "<group>";
@@ -303,6 +328,8 @@
 			isa = PBXGroup;
 			children = (
 				BD59A05F22E36AD100FA9CD0 /* BaseViewController.swift */,
+				43C14A0E2300F06F00F7C24E /* About */,
+				43C14A0D2300F05D00F7C24E /* Drawer */,
 				BD59A0A622E380B300FA9CD0 /* Login */,
 				BD000CDC22E4CE3E001EE38A /* Documents */,
 				BD2B9E7422EDBEC700FFCD3B /* NewDocument */,
@@ -325,6 +352,7 @@
 			children = (
 				BD59A06322E36CB200FA9CD0 /* BackButton.swift */,
 				BD000CDA22E4AD61001EE38A /* PrimaryButton.swift */,
+				43C14A0B2300EF5A00F7C24E /* DrawerMenuButton.swift */,
 			);
 			path = Buttons;
 			sourceTree = "<group>";
@@ -672,6 +700,7 @@
 				BD2B9E8622EDCD0900FFCD3B /* IkemEndpoint.swift in Sources */,
 				BD59A06D22E36D2A00FA9CD0 /* PluggableViewController.swift in Sources */,
 				BD406FDE22FF15260096693D /* FolderSearchRequest.swift in Sources */,
+				43C14A0C2300EF5A00F7C24E /* DrawerMenuButton.swift in Sources */,
 				BD59A06022E36AD100FA9CD0 /* BaseViewController.swift in Sources */,
 				BD406FDA22FF043C0096693D /* NewDocumentFolderViewModel.swift in Sources */,
 				BD59A07322E36DB000FA9CD0 /* String.swift in Sources */,
@@ -685,6 +714,7 @@
 				BDBDF4DD22C8016700183BBF /* AppDelegate.swift in Sources */,
 				BD59A07122E36D8800FA9CD0 /* Array.swift in Sources */,
 				BD59A0A522E378BC00FA9CD0 /* LoginCoordinator.swift in Sources */,
+				43C14A102300F07800F7C24E /* AboutViewController.swift in Sources */,
 				BD59A0A822E380C400FA9CD0 /* LoginViewController.swift in Sources */,
 				BD000CDB22E4AD61001EE38A /* PrimaryButton.swift in Sources */,
 				BDC4A3E322E5008800D1CF6A /* DocumentDomainModel.swift in Sources */,
@@ -715,9 +745,11 @@
 				BD59A09822E36EF900FA9CD0 /* Request.swift in Sources */,
 				BD59A0AF22E3966700FA9CD0 /* UIFont.swift in Sources */,
 				BD59A07622E36DEE00FA9CD0 /* UITableView.swift in Sources */,
+				434027612302212C0038A40C /* MenuCoordinator.swift in Sources */,
 				BD000CAE22E3AA6F001EE38A /* UIViewController.swift in Sources */,
 				BD80224922F880F8009B8B69 /* ListItemSelectionViewController.swift in Sources */,
 				BD402E7B2300D60B00049DF9 /* FolderTableViewCell.swift in Sources */,
+				43C14A122300F07E00F7C24E /* DrawerViewController.swift in Sources */,
 				BDA25B2322EF9D7A006DA7E4 /* FirebaseAnalytics.swift in Sources */,
 				BD2F209422EBB49000534916 /* DocumentsCoordinator.swift in Sources */,
 				BD59A06C22E36D2A00FA9CD0 /* ViewControllerService.swift in Sources */,

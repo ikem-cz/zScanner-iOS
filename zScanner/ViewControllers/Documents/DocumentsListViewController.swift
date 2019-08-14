@@ -12,6 +12,7 @@ import RxSwift
 
 protocol DocumentsListCoordinator: BaseCoordinator {
     func createNewDocument(with mode: DocumentMode)
+    func openMenu()
 }
 
 class DocumentsListViewController: BaseViewController {
@@ -19,7 +20,7 @@ class DocumentsListViewController: BaseViewController {
     // MARK: - Instance part
     private unowned let coordinator: DocumentsListCoordinator
     private let viewModel: DocumentsListViewModel
-    
+        
     init(viewModel: DocumentsListViewModel, coordinator: DocumentsListCoordinator) {
         self.coordinator = coordinator
         self.viewModel = viewModel
@@ -38,6 +39,12 @@ class DocumentsListViewController: BaseViewController {
         super.viewDidLoad()
         
         setupBindings()
+    }
+    
+    override var leftBarButtonItems: [UIBarButtonItem] {
+        return [
+            UIBarButtonItem(image: UIImage(named:"menuIcon"),style: .plain, target: self, action: #selector(openMenu))
+        ]
     }
     
     override var rightBarButtonItems: [UIBarButtonItem] {
@@ -80,6 +87,10 @@ class DocumentsListViewController: BaseViewController {
     
     @objc private func newDocument() {
         showDocumentModePicker()
+    }
+    
+    @objc private func openMenu() {
+        coordinator.openMenu()
     }
     
     private func showDocumentModePicker() {

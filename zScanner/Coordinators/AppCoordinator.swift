@@ -45,4 +45,7 @@ extension AppCoordinator: LoginFlowDelegate {
 
 // MARK: - DocumentsFlowDelegate implementation
 extension AppCoordinator: DocumentsFlowDelegate {
+    func logout() {
+        startLoginCoordinator()
+    }
 }
