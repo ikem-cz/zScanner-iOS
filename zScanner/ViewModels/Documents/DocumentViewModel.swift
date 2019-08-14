@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 
 class DocumentViewModel {
-    enum DocumentUploadStatus {
+    enum DocumentUploadStatus: Equatable {
         case awaitingInteraction
         case progress(Double)
         case success
@@ -18,7 +18,7 @@ class DocumentViewModel {
     }
     
     // MARK: Instance part
-    var networkManager: NetworkManager?
+    private var networkManager: NetworkManager?
     let document: DocumentDomainModel
     let documentUploadStatus = BehaviorSubject<DocumentUploadStatus>(value: .awaitingInteraction)
     
@@ -51,4 +51,10 @@ class DocumentViewModel {
     
     // MARK: Helpers
     private let disposeBag = DisposeBag()
+}
+
+extension DocumentViewModel: Equatable {
+    static func == (lhs: DocumentViewModel, rhs: DocumentViewModel) -> Bool {
+        lhs.document == rhs.document
+    }
 }

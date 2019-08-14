@@ -120,17 +120,18 @@ class DrawerViewController: BaseViewController {
     }
     
     @objc private func handleMenuTap(_ sender: UIButton) {
-        coordinator.closeMenu()
-        
         switch sender {
         case logoutButton:
             coordinator.deleteHistory()
+            coordinator.closeMenu()
             coordinator.logout()
             
         case deleteHistoryButton:
             coordinator.deleteHistory()
+            coordinator.closeMenu()
             
         case aboutButton:
+            coordinator.closeMenu()
             coordinator.showAbout()
             
         default:

@@ -18,6 +18,12 @@ struct DocumentDomainModel {
     var pages: [UIImage]
 }
 
+extension DocumentDomainModel: Equatable {
+    static func == (lhs: DocumentDomainModel, rhs: DocumentDomainModel) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
 extension DocumentDomainModel {
     static var emptyDocument: DocumentDomainModel {
         return DocumentDomainModel(

@@ -8,7 +8,6 @@
 
 import Foundation
 import RxSwift
-import RxRelay
 
 class DocumentsListViewModel {
     enum DocumentModesState {
@@ -29,7 +28,7 @@ class DocumentsListViewModel {
         self.database = database
         self.networkManager = ikemNetworkManager
         
-        setupDocuments()
+        loadDocuments()
         fetchDocumentTypes()
     }
     
@@ -40,10 +39,30 @@ class DocumentsListViewModel {
         documents.insert(document, at: 0)
     }
     
+    func updateDocuments() {
+        
+        // Find all documents with active upload
+        let activeUploadDocuments = documents.filter({
+            if let status = try? $0.documentUploadStatus.value() {
+                return status != .success
+            }
+            return false
+        })
+        
+        loadDocuments()
+        
+        // Replace all dummy* documents with active upload to show the process in UI.
+        // *dummy document is document loaded from DB without active upload process
+        for activeDocument in activeUploadDocuments {
+            let _ = documents.remove(activeDocument)
+            documents.insert(activeDocument, at: 0)
+        }
+    }
+    
     //MARK: Helpers
     let disposeBag = DisposeBag()
     
-    private func setupDocuments() {
+    private func loadDocuments() {
         documents = database
             .loadObjects(DocumentDatabaseModel.self)
             .map({ DocumentViewModel(document: $0.toDomainModel()) })

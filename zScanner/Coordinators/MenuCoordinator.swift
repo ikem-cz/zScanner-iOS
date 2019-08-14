@@ -34,6 +34,7 @@ class MenuCoordinator: Coordinator {
             self.blackView.alpha = 0.5
             self.drawerViewController.view.frame.origin = CGPoint(x: 0, y: 0)
         }
+        navigationController?.topViewController?.viewWillDisappear(true)
     }
     
     func closeMenu() {
@@ -41,6 +42,7 @@ class MenuCoordinator: Coordinator {
             self.blackView.alpha = 0
             self.drawerViewController.view.frame.origin = CGPoint(x: -self.drawerViewController.view.frame.width, y: 0)
         }
+        navigationController?.topViewController?.viewWillAppear(true)
     }
     
     // MARK: Helpers

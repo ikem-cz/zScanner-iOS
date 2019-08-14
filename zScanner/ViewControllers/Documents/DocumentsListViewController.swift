@@ -41,6 +41,13 @@ class DocumentsListViewController: BaseViewController {
         setupBindings()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        
+        viewModel.updateDocuments()
+        tableView.reloadSections([0], with: .fade)
+    }
+    
     override var leftBarButtonItems: [UIBarButtonItem] {
         return [
             UIBarButtonItem(image: UIImage(named:"menuIcon"),style: .plain, target: self, action: #selector(openMenu))
