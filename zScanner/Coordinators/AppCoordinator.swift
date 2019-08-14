@@ -18,8 +18,8 @@ class AppCoordinator: Coordinator {
     
     // MARK: Inteface
     func begin() {
-  //      startLoginCoordinator()
-      startDocumentsCoordinator()
+        startLoginCoordinator()
+//        startDocumentsCoordinator()
     }
     
     // MARK: Helpers

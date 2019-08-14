@@ -38,7 +38,6 @@ class DocumentsCoordinator: Coordinator {
         let viewModel = DocumentsListViewModel(database: database, ikemNetworkManager: networkManager)
         let viewController = DocumentsListViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
-
     }
     
     private lazy var menuCoordinator: MenuCoordinator = {
@@ -94,6 +93,8 @@ extension DocumentsCoordinator: MenuFlowDelegate {
     }
     
     func logout() {
+        deleteHistory()
         flowDelegate.logout()
+        flowDelegate.coordinatorDidFinish(self)
     }
 }

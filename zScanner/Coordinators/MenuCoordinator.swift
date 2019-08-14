@@ -14,50 +14,19 @@ protocol MenuFlowDelegate: FlowDelegate {
 }
 
 class MenuCoordinator: Coordinator {
-    // MARK: Instance part
+    
+    // MARK: - Instance part
     unowned private let flowDelegate: MenuFlowDelegate
 
     init(flowDelegate: MenuFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
         self.flowDelegate = flowDelegate
 
         super.init(window: window, navigationController: navigationController)
-
     }
     
-    private lazy var drawerViewController: DrawerViewController = {
-        return DrawerViewController(coordinator: self)
-    }()
-    
-    private lazy var blackView: UIView = {
-        let blackView = UIView()
-        blackView.backgroundColor = .black
-        blackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
-        let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleDismiss))
-        swipeLeftGesture.direction = .left
-        blackView.addGestureRecognizer(swipeLeftGesture)
-        blackView.translatesAutoresizingMaskIntoConstraints = false
-        blackView.alpha = 0
-        return blackView
-    }()
-    
-    private lazy var menuWidth: CGFloat = {
-        let width = window.frame.width * 2 / 3
-        return width
-    }()
-
+    // MARK: Interface
     func begin() {
         installDrawerSreen()
-    }
-    
-    private func installDrawerSreen() {
-        window.addSubview(blackView)
-        window.addSubview(drawerViewController.view)
-        
-        blackView.snp.makeConstraints { make in
-            make.edges.equalTo(window)
-        }
-        
-        drawerViewController.view.frame = CGRect(x: -menuWidth, y: 0, width: menuWidth, height: window.frame.height)
     }
     
     func openMenu() {
@@ -74,13 +43,45 @@ class MenuCoordinator: Coordinator {
         }
     }
     
-    @objc private func handleDismiss(){
-        closeMenu()
-    }
-    
-    func showAbout() {
+    // MARK: Helpers
+    private func showAboutScreen() {
         let aboutViewController = AboutViewController(coordinator: self)
         push(aboutViewController)
+    }
+    
+    private lazy var drawerViewController: DrawerViewController = {
+        return DrawerViewController(coordinator: self)
+    }()
+    
+    private lazy var blackView: UIView = {
+        let blackView = UIView()
+        blackView.backgroundColor = .black
+        blackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
+        let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleDismiss))
+        swipeLeftGesture.direction = .left
+        blackView.addGestureRecognizer(swipeLeftGesture)
+        blackView.alpha = 0
+        return blackView
+    }()
+    
+    private lazy var menuWidth: CGFloat = {
+        let width = window.frame.width * 2 / 3
+        return width
+    }()
+    
+    private func installDrawerSreen() {
+        window.addSubview(blackView)
+        window.addSubview(drawerViewController.view)
+        
+        blackView.snp.makeConstraints { make in
+            make.edges.equalTo(window)
+        }
+        
+        drawerViewController.view.frame = CGRect(x: -menuWidth, y: 0, width: menuWidth, height: window.frame.height)
+    }
+    
+    @objc private func handleDismiss(){
+        closeMenu()
     }
 }
 
@@ -92,5 +93,9 @@ extension MenuCoordinator: DrawerCoordinator {
     
     func deleteHistory() {
         flowDelegate.deleteHistory()
+    }
+    
+    func showAbout() {
+        showAboutScreen()
     }
 }

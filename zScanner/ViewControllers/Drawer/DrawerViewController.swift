@@ -16,6 +16,8 @@ protocol DrawerCoordinator: BaseCoordinator {
 }
 
 class DrawerViewController: BaseViewController {
+    
+    // MARK: - Instance part
     private unowned let coordinator: DrawerCoordinator
     
     init(coordinator: DrawerCoordinator) {
@@ -24,42 +26,38 @@ class DrawerViewController: BaseViewController {
         super.init(coordinator: coordinator)
     }
     
+    // MARK: Lifecycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         setupView()
     }
     
+    // MARK: Helpers
     private lazy var drawerLogo: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "menuLogo")
-        imageView.contentMode = UIView.ContentMode.scaleAspectFit
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
     private lazy var drawerTopLabel: UILabel = {
         let label = UILabel()
-        label.text = "zScanner"
+        label.text = "drawer.header.title".localized
         label.textColor = .white
-        label.font = label.font.withSize(25)
+        label.font = .headline
         return label
     }()
     
     private lazy var topView: UIView = {
         let topView = UIView()
-        
-        topView.addSubview(drawerLogo)
-        topView.addSubview(drawerTopLabel)
-        topView.translatesAutoresizingMaskIntoConstraints = false
         topView.backgroundColor = .primary
-        
         return topView
     }()
   
     private lazy var logoutButton: DrawerMenuButton = {
         var button = DrawerMenuButton()
         button.setTitle("drawer.logout.title".localized, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
         return button
     }()
@@ -67,7 +65,6 @@ class DrawerViewController: BaseViewController {
     private lazy var deleteHistoryButton: DrawerMenuButton = {
         var button = DrawerMenuButton()
         button.setTitle("drawer.deleteHistory.title".localized, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
         return button
     }()
@@ -75,53 +72,54 @@ class DrawerViewController: BaseViewController {
     private lazy var aboutButton: DrawerMenuButton = {
         var button = DrawerMenuButton()
         button.setTitle("drawer.aboutApp.title".localized, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
         return button
     }()
     
     private lazy var menuStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [logoutButton, deleteHistoryButton, aboutButton])
+        let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.spacing = 10
         stackView.distribution = .fill
         return stackView
     }()
 
     private func setupView() {
+        topView.addSubview(drawerLogo)
+        topView.addSubview(drawerTopLabel)
+        
+        menuStackView.addArrangedSubview(logoutButton)
+        menuStackView.addArrangedSubview(deleteHistoryButton)
+        menuStackView.addArrangedSubview(aboutButton)
+        
+        
         view.addSubview(topView)
         view.addSubview(menuStackView)
         
         // MARK: - Constraints
         topView.snp.makeConstraints { make in
-            make.top.equalTo(self.view)
-            make.left.equalTo(self.view)
-            make.right.equalTo(self.view)
+            make.top.left.right.equalToSuperview()
         }
 
         drawerLogo.snp.makeConstraints { make in
             make.height.equalTo(102)
             make.width.equalTo(114)
-            make.top.equalTo(topView).offset(40)
-            make.left.equalTo(topView).offset(20)
+            make.top.equalToSuperview().offset(40)
+            make.left.equalToSuperview().offset(20)
         }
         
         drawerTopLabel.snp.makeConstraints { make in
             make.top.equalTo(drawerLogo.snp.bottom).offset(20)
-            make.left.equalTo(topView).offset(20)
-            make.right.equalTo(topView).offset(20)
-            make.bottom.equalTo(topView).offset(-20)
+            make.left.right.bottom.equalToSuperview().inset(20)
         }
         
         menuStackView.snp.makeConstraints { make in
             make.top.equalTo(topView.snp.bottom).offset(15)
-            make.left.equalTo(view).offset(15)
-            make.right.equalTo(view).offset(15)
+            make.left.right.equalToSuperview().inset(15)
         }
     }
     
-    @objc func handleMenuTap(_ sender: UIButton){
+    @objc private func handleMenuTap(_ sender: UIButton) {
         coordinator.closeMenu()
         
         switch sender {
@@ -136,7 +134,7 @@ class DrawerViewController: BaseViewController {
             coordinator.showAbout()
             
         default:
-            print("bug")
+            assertionFailure()
         }
     }
 }

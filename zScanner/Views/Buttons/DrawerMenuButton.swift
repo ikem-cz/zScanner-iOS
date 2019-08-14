@@ -8,7 +8,6 @@
 
 import UIKit
 
-// MARK: -
 class DrawerMenuButton: UIButton {
     
     //MARK: Instance part

@@ -18,15 +18,17 @@ class AboutViewController: BaseViewController {
         super.init(coordinator: coordinator)
     }
     
+    // MARK: Lifecycle
     override func loadView() {
         super.loadView()
         
         setupView()
     }
     
+    // MARK: Helpers
     private lazy var drawerLogo: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "menuLogo"))
-        imageView.contentMode = UIView.ContentMode.scaleAspectFit
+        imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .primary
         return imageView
     }()
@@ -58,23 +60,26 @@ class AboutViewController: BaseViewController {
     }()
     
     private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [drawerLogo,aboutHeader, aboutParagraph, aboutCopyright])
+        let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.alignment = .center
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.spacing = 15
         return stackView
     }()
     
-    func setupView() {
+    private func setupView() {
         navigationItem.title = "drawer.aboutApp.title".localized
       
-        self.view.addSubview(stackView)
+        stackView.addArrangedSubview(drawerLogo)
+        stackView.addArrangedSubview(aboutHeader)
+        stackView.addArrangedSubview(aboutParagraph)
+        stackView.addArrangedSubview(aboutCopyright)
+
+        view.addSubview(stackView)
         
-        // MARK: - Constraints
         stackView.snp.makeConstraints { make in
-            make.center.equalTo(view)
-            make.width.equalTo(view).multipliedBy(0.85)
+            make.center.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.85)
         }
         
         drawerLogo.snp.makeConstraints { make in
