@@ -42,6 +42,15 @@ class ScannerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "X", style: .plain, target: self, action: #selector(close))
+        navigationItem.leftBarButtonItem?.tintColor = .white
+
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.isTranslucent = true
+        navigationController?.view.backgroundColor = .clear
+        
+        
         guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else { return }
         let videoInput: AVCaptureDeviceInput
         
@@ -109,14 +118,17 @@ class ScannerViewController: UIViewController {
     }()
     
     private func failed() {
-        let ac = UIAlertController(title: "Scanning not supported", message: "Your device does not support scanning a code from an item. Please use a device with a camera.", preferredStyle: .alert)
-        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        let ac = UIAlertController(title: "newDocumentFolder.scanFailedAlert.title".localized, message: "newDocumentFolder.scanFailedAlert.message".localized, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "alert.okButton.title".localized, style: .default))
         present(ac, animated: true)
-        
     }
     
     func found(code: String) {
         viewModel.getFolder(with: code)
+        delegate.close()
+    }
+    
+    @objc private func close() {
         delegate.close()
     }
     

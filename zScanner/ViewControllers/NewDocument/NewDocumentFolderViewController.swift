@@ -84,7 +84,8 @@ class NewDocumentFolderViewController: BaseViewController {
     
     private func presentScanner() {
         let scanner = ScannerViewController(viewModel: viewModel, delegate: self)
-        present(scanner, animated: true, completion: nil)
+        let navigationController = UINavigationController(rootViewController: scanner)
+        present(navigationController, animated: true, completion: nil)
     }
     
     private func setupView() {
