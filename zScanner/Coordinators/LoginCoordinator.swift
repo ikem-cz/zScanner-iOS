@@ -48,5 +48,6 @@ class LoginCoordinator: Coordinator {
 extension LoginCoordinator: LoginViewDelegate {
     func successfulLogin() {
         flowDelegate.successfulLogin()
+        flowDelegate.coordinatorDidFinish(self)
     }
 }

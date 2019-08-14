@@ -71,13 +71,13 @@ class NewDocumentTypeViewController: BaseViewController {
     private func setupBindings() {
         viewModel.isValid.bind(to: continueButton.rx.isEnabled).disposed(by: disposeBag)
         
-        continueButton.rx.tap.do(onNext: {
+        continueButton.rx.tap.do(onNext: { [unowned self] in
             self.tableView.visibleCells.forEach({ ($0 as? TextInputTableViewCell)?.enableSelection() })
             if self.pickerIndexPath != nil {
                 self.hideDateTimePicker()
             }
         })
-        .subscribe(onNext: {
+        .subscribe(onNext: { [unowned self] in
             self.coordinator.saveFields(self.viewModel.fields)
             self.coordinator.showNextStep()
         }).disposed(by: disposeBag)

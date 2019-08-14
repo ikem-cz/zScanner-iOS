@@ -34,7 +34,7 @@ class FormFieldTableViewCell: UITableViewCell {
     func setup(with formField: FormField) {
         textLabel?.text = formField.title
         
-        formField.value.subscribe(onNext: {
+        formField.value.subscribe(onNext: { [unowned self] in
             self.detailTextLabel?.text = $0
         }).disposed(by: disposeBag)
     }

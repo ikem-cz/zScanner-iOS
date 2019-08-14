@@ -58,18 +58,18 @@ class LoginViewController: BaseViewController {
         
         viewModel.isValid.bind(to: loginButton.rx.isEnabled).disposed(by: disposeBag)
         
-        loginButton.rx.tap.do(onNext: {
-            self.usernameTextField.resignFirstResponder()
-            self.passwordTextField.resignFirstResponder()
+        loginButton.rx.tap.do(onNext: { [weak self] in
+            self?.usernameTextField.resignFirstResponder()
+            self?.passwordTextField.resignFirstResponder()
         })
-        .subscribe(onNext: {
-            self.viewModel.signin()
+        .subscribe(onNext: { [weak self] in
+            self?.viewModel.signin()
         }).disposed(by: disposeBag)
         
-        viewModel.status.subscribe(onNext: { status in
+        viewModel.status.subscribe(onNext: { [weak self] status in
             switch status {
             case .success:
-               self.coordinator.successfulLogin()
+               self?.coordinator.successfulLogin()
             default:
                 break
             }

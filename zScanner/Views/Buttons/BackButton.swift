@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol BackButtonDelegate {
+protocol BackButtonDelegate: class {
     func didClickBack()
 }
 
@@ -16,7 +16,7 @@ protocol BackButtonDelegate {
 class BackButton: UIBarButtonItem {
     
     // MARK: Instance part
-    var delegate: BackButtonDelegate?
+    weak var delegate: BackButtonDelegate?
     
     override init() {
         super.init()
