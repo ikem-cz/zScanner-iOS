@@ -30,12 +30,6 @@ class DrawerViewController: BaseViewController {
         setupView()
     }
     
-    private lazy var drawerMenuItems: [String] = [
-        "drawer.logout.title".localized,
-        "drawer.deleteHistory.title".localized,
-        "drawer.aboutApp.title".localized
-    ]
-    
     private lazy var drawerLogo: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "menuLogo")
@@ -62,22 +56,32 @@ class DrawerViewController: BaseViewController {
         return topView
     }()
   
-    private func drawerMakeMenuButtons (_ names: [String]) -> [DrawerMenuButton] {
-        var drawerMenu: [DrawerMenuButton] = []
-        
-        for drawerMenuItem in drawerMenuItems {
-            let button = DrawerMenuButton()
-            button.setTitle(drawerMenuItem, for: .normal)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
-
-            drawerMenu.append(button)
-        }
-        return drawerMenu
-    }
+    private lazy var logoutButton: DrawerMenuButton = {
+        var button = DrawerMenuButton()
+        button.setTitle("drawer.logout.title".localized, for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var deleteHistoryButton: DrawerMenuButton = {
+        var button = DrawerMenuButton()
+        button.setTitle("drawer.deleteHistory.title".localized, for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var aboutButton: DrawerMenuButton = {
+        var button = DrawerMenuButton()
+        button.setTitle("drawer.aboutApp.title".localized, for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
+        return button
+    }()
     
     private lazy var menuStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: drawerMakeMenuButtons(drawerMenuItems))
+        let stackView = UIStackView(arrangedSubviews: [logoutButton, deleteHistoryButton, aboutButton])
         stackView.axis = .vertical
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.spacing = 10
@@ -119,16 +123,16 @@ class DrawerViewController: BaseViewController {
     
     @objc func handleMenuTap(_ sender: UIButton){
         coordinator.closeMenu()
-        switch sender.title(for: .normal) {
-            
-        case drawerMenuItems[0]:
+        
+        switch sender {
+        case logoutButton:
             coordinator.deleteHistory()
             coordinator.logout()
             
-        case drawerMenuItems[1]:
+        case deleteHistoryButton:
             coordinator.deleteHistory()
             
-        case drawerMenuItems[2]:
+        case aboutButton:
             coordinator.showAbout()
             
         default:
