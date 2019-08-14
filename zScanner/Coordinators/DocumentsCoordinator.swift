@@ -12,7 +12,6 @@ import RxSwift
 
 protocol DocumentsFlowDelegate: FlowDelegate {
     func logout()
-    func refreshDocumentsList()
 }
 
 // MARK: -
@@ -29,27 +28,26 @@ class DocumentsCoordinator: Coordinator {
     }
     
     // MARK: Interface
+    private lazy var viewModel: DocumentsListViewModel = {
+        return DocumentsListViewModel(database: database, ikemNetworkManager: networkManager)
+    }()
     func begin() {
-        showDocumentsListScreen()
+        showDocumentsListScreen(viewModel)
+        setupMenu(viewModel)
     }
     
     // MARK: Navigation methods
-    private func showDocumentsListScreen() {
-        let viewModel = DocumentsListViewModel(database: database, ikemNetworkManager: networkManager)
+    private func showDocumentsListScreen(_ viewModel: DocumentsListViewModel) {
         let viewController = DocumentsListViewController(viewModel: viewModel, coordinator: self)
-        let drawerViewController = DrawerViewController(viewModel: viewModel, coordinator: self)
-        
-        viewController.drawerDelegate = drawerViewController
-        viewController.addChild(drawerViewController)
-        viewController.view.addSubview(drawerViewController.view)
-        drawerViewController.didMove(toParent: viewController)
-        
         push(viewController)
 
     }
-    private func showAboutScreen() {
-        let viewController = AboutViewController(coordinator: self)
-        push(viewController)
+    private lazy var menuCoordinator: MenuCoordinator = {
+        return MenuCoordinator(flowDelegate: self, window: window, navigationController: navigationController)
+    }()
+    private func setupMenu(_ viewModel: DocumentsListViewModel) {
+        addChildCoordinator(menuCoordinator)
+        menuCoordinator.begin()
     }
     
     private func runNewDocumentFlow(with mode: DocumentMode) {
@@ -71,18 +69,8 @@ extension DocumentsCoordinator: DocumentsListCoordinator {
         tracker.track(.documentModeSelected(mode))
         runNewDocumentFlow(with: mode)
     }
-}
-
-// MARK: - DrawerCoordinator implementation
-extension DocumentsCoordinator: DrawerCoordinator {
-    func logout() {
-        flowDelegate.logout()
-    }
-    func refreshDocumentsList() {
-        flowDelegate.refreshDocumentsList()
-    }
-    func showAbout() {
-        showAboutScreen()
+    func openDrawer() {
+        menuCoordinator.openDrawer()
     }
 }
 
@@ -95,5 +83,15 @@ extension DocumentsCoordinator: NewDocumentFlowDelegate {
         }
         
         list.insertNewDocument(document: documentViewModel)
+    }
+}
+
+// MARK: - MenuFlowDelegate implementation
+extension DocumentsCoordinator: MenuFlowDelegate {
+    func logout() {
+        flowDelegate.logout()
+    }
+    func deleteHistory() {
+        viewModel.deleteHistory()
     }
 }

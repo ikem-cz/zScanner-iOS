@@ -48,7 +48,4 @@ extension AppCoordinator: DocumentsFlowDelegate {
     func logout() {
         startLoginCoordinator()
     }
-    func refreshDocumentsList() {
-        startDocumentsCoordinator()
-    }
 }

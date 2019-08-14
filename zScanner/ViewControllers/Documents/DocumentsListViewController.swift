@@ -12,10 +12,7 @@ import RxSwift
 
 protocol DocumentsListCoordinator: BaseCoordinator {
     func createNewDocument(with mode: DocumentMode)
-}
-
-protocol DrawerDelegate {
-    func showDrawer()
+    func openDrawer()
 }
 
 class DocumentsListViewController: BaseViewController {
@@ -23,9 +20,7 @@ class DocumentsListViewController: BaseViewController {
     // MARK: - Instance part
     private unowned let coordinator: DocumentsListCoordinator
     private let viewModel: DocumentsListViewModel
-    
-    var drawerDelegate: DrawerDelegate!
-    
+        
     init(viewModel: DocumentsListViewModel, coordinator: DocumentsListCoordinator) {
         self.coordinator = coordinator
         self.viewModel = viewModel
@@ -149,7 +144,7 @@ class DocumentsListViewController: BaseViewController {
         return tableView
     }()
     private func showDrawer() {
-        drawerDelegate.showDrawer()
+        coordinator.openDrawer()
     }
 }
 

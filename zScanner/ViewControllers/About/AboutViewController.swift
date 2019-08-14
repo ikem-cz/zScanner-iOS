@@ -11,10 +11,10 @@ import UIKit
 class AboutViewController: BaseViewController {
     
     // MARK: - Instance part
-    private unowned let coordinator: DocumentsCoordinator
+    private unowned let coordinator: MenuCoordinator
     
     
-    init(coordinator: DocumentsCoordinator) {
+    init(coordinator: MenuCoordinator) {
         self.coordinator = coordinator
         super.init(coordinator: coordinator)
     }

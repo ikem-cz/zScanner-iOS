@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		434027612302212C0038A40C /* MenuCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434027602302212C0038A40C /* MenuCoordinator.swift */; };
 		43C14A0C2300EF5A00F7C24E /* DrawerMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A0B2300EF5A00F7C24E /* DrawerMenuButton.swift */; };
 		43C14A102300F07800F7C24E /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A0F2300F07800F7C24E /* AboutViewController.swift */; };
 		43C14A122300F07E00F7C24E /* DrawerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A112300F07E00F7C24E /* DrawerViewController.swift */; };
@@ -89,6 +90,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		434027602302212C0038A40C /* MenuCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCoordinator.swift; sourceTree = "<group>"; };
 		43C14A0B2300EF5A00F7C24E /* DrawerMenuButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerMenuButton.swift; sourceTree = "<group>"; };
 		43C14A0F2300F07800F7C24E /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		43C14A112300F07E00F7C24E /* DrawerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerViewController.swift; sourceTree = "<group>"; };
@@ -317,6 +319,7 @@
 				BD59A0A422E378BB00FA9CD0 /* LoginCoordinator.swift */,
 				BD2F209322EBB49000534916 /* DocumentsCoordinator.swift */,
 				BD2B9E7522EDBFF400FFCD3B /* NewDocumentCoordinator.swift */,
+				434027602302212C0038A40C /* MenuCoordinator.swift */,
 			);
 			path = Coordinators;
 			sourceTree = "<group>";
@@ -742,6 +745,7 @@
 				BD59A09822E36EF900FA9CD0 /* Request.swift in Sources */,
 				BD59A0AF22E3966700FA9CD0 /* UIFont.swift in Sources */,
 				BD59A07622E36DEE00FA9CD0 /* UITableView.swift in Sources */,
+				434027612302212C0038A40C /* MenuCoordinator.swift in Sources */,
 				BD000CAE22E3AA6F001EE38A /* UIViewController.swift in Sources */,
 				BD80224922F880F8009B8B69 /* ListItemSelectionViewController.swift in Sources */,
 				BD402E7B2300D60B00049DF9 /* FolderTableViewCell.swift in Sources */,

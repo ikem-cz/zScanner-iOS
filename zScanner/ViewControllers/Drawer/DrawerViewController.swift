@@ -9,19 +9,18 @@
 import UIKit
 
 protocol DrawerCoordinator: BaseCoordinator {
+    func closeDrawer()
     func logout()
+    func deleteHistory()
     func showAbout()
-    func refreshDocumentsList()
 }
 
 
-class DrawerViewController: BaseViewController, DrawerDelegate {
+class DrawerViewController: BaseViewController {
     private unowned let coordinator: DrawerCoordinator
-    private let viewModel: DocumentsListViewModel
     
-    init(viewModel: DocumentsListViewModel, coordinator: DrawerCoordinator) {
+    init(coordinator: DrawerCoordinator) {
         self.coordinator = coordinator
-        self.viewModel = viewModel
         
         super.init(coordinator: coordinator)
     }
@@ -31,32 +30,6 @@ class DrawerViewController: BaseViewController, DrawerDelegate {
         
         setupView()
     }
-    
-    private lazy var window: UIWindow = {
-        guard let window = UIApplication.shared.keyWindow else { return UIWindow() }
-        return window
-    }()
-    private lazy var width: CGFloat = {
-        let width = window.frame.width * 2 / 3
-        return width
-    }()
-
-    private lazy var blackView: UIView = {
-        let bView = UIView()
-        bView.backgroundColor = .black
-        bView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
-        let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleDismiss))
-        swipeLeftGesture.direction = .left
-        bView.addGestureRecognizer(swipeLeftGesture)
-        bView.translatesAutoresizingMaskIntoConstraints = false
-        bView.alpha = 0
-        return bView
-    }()
-    private lazy var rootDrawerView: UIView = {
-        let rView = UIView()
-        rView.backgroundColor = .white
-        return rView
-    }()
     
     private lazy var drawerMenuItems: [String] = [
         "drawer.logout.title".localized,
@@ -115,45 +88,33 @@ class DrawerViewController: BaseViewController, DrawerDelegate {
     
 
     private func setupView() {
-        window.addSubview(blackView)
-        window.addSubview(rootDrawerView)
-        rootDrawerView.addSubview(topStackView)
-        rootDrawerView.addSubview(menuStackView)
+        view.addSubview(topStackView)
+        view.addSubview(menuStackView)
         
         topStackView.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
 
 
-        topStackView.topAnchor.constraint(equalTo: rootDrawerView.topAnchor).isActive = true
-        topStackView.leftAnchor.constraint(equalTo: rootDrawerView.leftAnchor).isActive = true
-        topStackView.rightAnchor.constraint(equalTo: rootDrawerView.rightAnchor).isActive = true
+        topStackView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        topStackView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        topStackView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         
         
         drawerLogo.heightAnchor.constraint(equalToConstant: 102).isActive = true
         drawerLogo.widthAnchor.constraint(equalToConstant: 114).isActive = true
         
         menuStackView.topAnchor.constraint(equalTo: topStackView.bottomAnchor, constant: 15).isActive = true
-        menuStackView.leftAnchor.constraint(equalTo: rootDrawerView.leftAnchor, constant: 15).isActive = true
-        menuStackView.rightAnchor.constraint(equalTo: rootDrawerView.rightAnchor, constant: 15).isActive = true
-        
-        blackView.topAnchor.constraint(equalTo: window.topAnchor).isActive = true
-        blackView.bottomAnchor.constraint(equalTo: window.bottomAnchor).isActive = true
-        blackView.leftAnchor.constraint(equalTo: window.leftAnchor).isActive = true
-        blackView.rightAnchor.constraint(equalTo: window.rightAnchor).isActive = true
-
-        rootDrawerView.frame = CGRect(x: -width, y: 0, width: width, height: window.frame.height)
-
+        menuStackView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15).isActive = true
+        menuStackView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 15).isActive = true
     }
     
-    
     @objc func handleMenuTap(_ sender : UIButton){
-        handleDismiss()
+        coordinator.closeDrawer()
         switch sender.title(for: .normal) {
         case drawerMenuItems[0]:
-            viewModel.deleteHistory()
+            coordinator.deleteHistory()
             coordinator.logout()
         case drawerMenuItems[1]:
-            viewModel.deleteHistory()
-            coordinator.refreshDocumentsList()
+            coordinator.deleteHistory()
         case drawerMenuItems[2]:
             coordinator.showAbout()
         default:
@@ -162,18 +123,12 @@ class DrawerViewController: BaseViewController, DrawerDelegate {
         
     }
     
-    @objc func handleDismiss() {
-        UIView.animate(withDuration: 0.3) {
-            self.blackView.alpha = 0
-            self.rootDrawerView.frame = CGRect(x: -self.width, y: 0, width: self.rootDrawerView.frame.width, height: self.rootDrawerView.frame.height)
-        }
+    func hideDrawer() {
+        view.frame = CGRect(x: -view.frame.width, y: 0, width: view.frame.width, height: view.frame.height)
     }
     
     func showDrawer() {
-        UIView.animate(withDuration: 0.3) {
-            self.blackView.alpha = 0.5
-            self.rootDrawerView.frame = CGRect(x: 0, y: 0, width: self.rootDrawerView.frame.width, height: self.rootDrawerView.frame.height)
-        }
+        view.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
     }
     
 }

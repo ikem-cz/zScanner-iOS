@@ -41,7 +41,6 @@ class DocumentsListViewModel {
     }
     func deleteHistory() {
         database.deleteAll(of: DocumentDatabaseModel.self)
-        setupDocuments()
     }
     //MARK: Helpers
     let disposeBag = DisposeBag()
