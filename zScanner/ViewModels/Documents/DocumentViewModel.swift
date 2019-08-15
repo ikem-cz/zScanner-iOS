@@ -55,6 +55,6 @@ class DocumentViewModel {
 
 extension DocumentViewModel: Equatable {
     static func == (lhs: DocumentViewModel, rhs: DocumentViewModel) -> Bool {
-        lhs.document == rhs.document
+        return lhs.document == rhs.document
     }
 }

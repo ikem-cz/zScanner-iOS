@@ -20,7 +20,7 @@ struct DocumentDomainModel {
 
 extension DocumentDomainModel: Equatable {
     static func == (lhs: DocumentDomainModel, rhs: DocumentDomainModel) -> Bool {
-        lhs.id == rhs.id
+        return lhs.id == rhs.id
     }
 }
 
