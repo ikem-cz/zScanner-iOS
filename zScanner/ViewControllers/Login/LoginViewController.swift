@@ -56,6 +56,11 @@ class LoginViewController: BaseViewController {
             .bind(to: viewModel.passwordField.text)
             .disposed(by: disposeBag)
         
+        passwordToggleButton.rx.tap.subscribe(onNext: { [weak self] status in
+            guard let currentState = self?.viewModel.passwordField.protected.value else {return}
+            self?.viewModel.passwordField.protected.accept(currentState ? false : true)
+        }).disposed(by: disposeBag)
+        
         viewModel.isValid.bind(to: loginButton.rx.isEnabled).disposed(by: disposeBag)
         
         loginButton.rx.tap.do(onNext: { [weak self] in
@@ -73,6 +78,14 @@ class LoginViewController: BaseViewController {
             default:
                 break
             }
+        }).disposed(by: disposeBag)
+        
+        viewModel.passwordField.protected.subscribe(onNext: { [weak self] status in
+            guard let currentState = self?.viewModel.passwordField.protected.value else {return}
+            guard let toggleButton = self?.passwordToggleButton else {return}
+            
+            currentState ? toggleButton.setImage(self?.eyeCloseImage, for: .normal) : toggleButton.setImage(self?.eyeOpenImage, for: .normal)
+            self?.passwordTextField.isSecureTextEntry = currentState
         }).disposed(by: disposeBag)
     }
     
@@ -103,17 +116,27 @@ class LoginViewController: BaseViewController {
             make.centerX.equalToSuperview()
             make.right.left.equalToSuperview()
         }
-        
-        container.addSubview(passwordTextField)
-        passwordTextField.snp.makeConstraints { make in
+
+        container.addSubview(passwordContainer)
+        passwordContainer.snp.makeConstraints { make in
             make.top.equalTo(usernameTextField.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
-            make.right.left.equalToSuperview()
+            make.left.right.equalToSuperview()
+        }
+        
+        passwordContainer.addSubview(passwordTextField)
+        passwordTextField.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        passwordContainer.addSubview(passwordToggleButton)
+        passwordToggleButton.snp.makeConstraints { make in
+            make.top.right.bottom.equalToSuperview()
         }
         
         container.addSubview(loginButton)
         loginButton.snp.makeConstraints { make in
-            make.top.equalTo(passwordTextField.snp.bottom).offset(40)
+            make.top.equalTo(passwordContainer.snp.bottom).offset(40)
             make.bottom.centerX.equalToSuperview()
             make.right.left.equalToSuperview().inset(20)
         }
@@ -150,10 +173,31 @@ class LoginViewController: BaseViewController {
         return textField
     }()
     
+    private lazy var eyeCloseImage: UIImage = {
+        let image = UIImage(named: "eyeClose")
+        return image!
+    }()
+    
+    private lazy var eyeOpenImage: UIImage = {
+        let image = UIImage(named: "eyeOpen")
+        return image!
+    }()
+    
+    private lazy var passwordToggleButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(eyeCloseImage, for: .normal)
+        return button
+    }()
+    
     private lazy var loginButton: PrimaryButton = {
         let button = PrimaryButton()
         button.setTitle("login.button.title".localized, for: .normal)
         return button
+    }()
+    
+    private lazy var passwordContainer: UIView = {
+        let view = UIView()
+        return view
     }()
     
     private lazy var container: UIView = {
