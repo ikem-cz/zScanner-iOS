@@ -166,7 +166,7 @@ class LoginViewController: BaseViewController {
     }()
     
     private lazy var passwordTextField: UITextField = {
-        let textField = UITextField()
+        let textField = PasswordTextField()
         textField.textContentType = .password
         textField.isSecureTextEntry = true
         textField.setBottomBorder()
