@@ -7,8 +7,45 @@
 //
 
 import UIKit
+import RxSwift
+import RxRelay
 
 class PasswordTextField: UITextField {
+   
+    // MARK: Instance part
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        setupView()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    var protected = BehaviorRelay<Bool>(value: true)
+    
+    lazy var passwordToggleButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(#imageLiteral(resourceName: "eyeClose"), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "eyeOpen"), for: .selected)
+        return button
+    }()
+    
+    // MARK: Helpers
+    private let disposeBag = DisposeBag()
+
+    private func setupView() {
+        passwordToggleButton.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+
+        self.rightView = passwordToggleButton
+        self.rightViewMode = .always
+        
+        protected.subscribe(onNext: { [weak self] status in
+            self?.passwordToggleButton.isSelected = !status
+            self?.isSecureTextEntry = status
+        }).disposed(by: disposeBag)
+    }
     
     override var isSecureTextEntry: Bool {
         didSet {

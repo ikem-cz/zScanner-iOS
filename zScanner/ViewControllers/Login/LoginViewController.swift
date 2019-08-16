@@ -56,9 +56,11 @@ class LoginViewController: BaseViewController {
             .bind(to: viewModel.passwordField.text)
             .disposed(by: disposeBag)
         
-        passwordToggleButton.rx.tap.subscribe(onNext: { [weak self] status in
+        passwordTextField.passwordToggleButton.rx.tap.subscribe(onNext: { [weak self] _ in
             self?.viewModel.passwordField.protected.toggle()
         }).disposed(by: disposeBag)
+        
+        viewModel.passwordField.protected.bind(to: passwordTextField.protected).disposed(by: disposeBag)
         
         viewModel.isValid.bind(to: loginButton.rx.isEnabled).disposed(by: disposeBag)
         
@@ -77,13 +79,6 @@ class LoginViewController: BaseViewController {
             default:
                 break
             }
-        }).disposed(by: disposeBag)
-        
-        viewModel.passwordField.protected.subscribe(onNext: { [weak self] status in
-            guard let toggleButton = self?.passwordToggleButton else { return }
-            
-            toggleButton.isSelected = status ? false : true
-            self?.passwordTextField.isSecureTextEntry = status
         }).disposed(by: disposeBag)
     }
     
@@ -115,28 +110,16 @@ class LoginViewController: BaseViewController {
             make.right.left.equalToSuperview()
         }
 
-        container.addSubview(passwordContainer)
-        passwordContainer.snp.makeConstraints { make in
+        container.addSubview(passwordTextField)
+        passwordTextField.snp.makeConstraints { make in
             make.top.equalTo(usernameTextField.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
             make.left.right.equalToSuperview()
         }
         
-        passwordContainer.addSubview(passwordTextField)
-        passwordTextField.snp.makeConstraints { make in
-            make.top.left.bottom.equalToSuperview()
-        }
-
-        passwordContainer.addSubview(passwordToggleButton)
-        passwordToggleButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        passwordToggleButton.snp.makeConstraints { make in
-            make.top.right.bottom.equalToSuperview()
-            make.left.equalTo(passwordTextField.snp.right).inset(-5)
-        }
-        
         container.addSubview(loginButton)
         loginButton.snp.makeConstraints { make in
-            make.top.equalTo(passwordContainer.snp.bottom).offset(40)
+            make.top.equalTo(passwordTextField.snp.bottom).offset(40)
             make.bottom.centerX.equalToSuperview()
             make.right.left.equalToSuperview().inset(20)
         }
@@ -165,29 +148,20 @@ class LoginViewController: BaseViewController {
         return textField
     }()
     
-    private lazy var passwordTextField: UITextField = {
+    private lazy var passwordTextField: PasswordTextField = {
         let textField = PasswordTextField()
         textField.textContentType = .password
         textField.isSecureTextEntry = true
         textField.setBottomBorder()
         return textField
     }()
-    
-    private lazy var passwordToggleButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.setImage(#imageLiteral(resourceName: "eyeClose"), for: .normal)
-        button.setImage(#imageLiteral(resourceName: "eyeOpen"), for: .selected)
-        return button
-    }()
-    
+
     private lazy var loginButton: PrimaryButton = {
         let button = PrimaryButton()
         button.setTitle("login.button.title".localized, for: .normal)
         return button
     }()
-    
-    private lazy var passwordContainer = UIView()
-    
+        
     private lazy var container: UIView = {
         let view = UIView()
         return view
