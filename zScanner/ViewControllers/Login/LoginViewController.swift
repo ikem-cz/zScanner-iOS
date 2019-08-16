@@ -57,8 +57,7 @@ class LoginViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         passwordToggleButton.rx.tap.subscribe(onNext: { [weak self] status in
-            guard let currentState = self?.viewModel.passwordField.protected.value else {return}
-            self?.viewModel.passwordField.protected.accept(currentState ? false : true)
+            self?.viewModel.passwordField.protected.toggle()
         }).disposed(by: disposeBag)
         
         viewModel.isValid.bind(to: loginButton.rx.isEnabled).disposed(by: disposeBag)
@@ -81,11 +80,10 @@ class LoginViewController: BaseViewController {
         }).disposed(by: disposeBag)
         
         viewModel.passwordField.protected.subscribe(onNext: { [weak self] status in
-            guard let currentState = self?.viewModel.passwordField.protected.value else {return}
-            guard let toggleButton = self?.passwordToggleButton else {return}
+            guard let toggleButton = self?.passwordToggleButton else { return }
             
-            currentState ? toggleButton.setImage(self?.eyeCloseImage, for: .normal) : toggleButton.setImage(self?.eyeOpenImage, for: .normal)
-            self?.passwordTextField.isSecureTextEntry = currentState
+            toggleButton.isSelected = status ? false : true
+            self?.passwordTextField.isSecureTextEntry = status
         }).disposed(by: disposeBag)
     }
     
@@ -126,12 +124,14 @@ class LoginViewController: BaseViewController {
         
         passwordContainer.addSubview(passwordTextField)
         passwordTextField.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.left.bottom.equalToSuperview()
         }
-        
+
         passwordContainer.addSubview(passwordToggleButton)
+        passwordToggleButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         passwordToggleButton.snp.makeConstraints { make in
             make.top.right.bottom.equalToSuperview()
+            make.left.equalTo(passwordTextField.snp.right).inset(-5)
         }
         
         container.addSubview(loginButton)
@@ -173,19 +173,10 @@ class LoginViewController: BaseViewController {
         return textField
     }()
     
-    private lazy var eyeCloseImage: UIImage = {
-        let image = UIImage(named: "eyeClose")
-        return image!
-    }()
-    
-    private lazy var eyeOpenImage: UIImage = {
-        let image = UIImage(named: "eyeOpen")
-        return image!
-    }()
-    
     private lazy var passwordToggleButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setImage(eyeCloseImage, for: .normal)
+        button.setImage(#imageLiteral(resourceName: "eyeClose"), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "eyeOpen"), for: .selected)
         return button
     }()
     
@@ -195,10 +186,7 @@ class LoginViewController: BaseViewController {
         return button
     }()
     
-    private lazy var passwordContainer: UIView = {
-        let view = UIView()
-        return view
-    }()
+    private lazy var passwordContainer = UIView()
     
     private lazy var container: UIView = {
         let view = UIView()

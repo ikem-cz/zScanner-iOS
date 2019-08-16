@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		434027612302212C0038A40C /* MenuCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434027602302212C0038A40C /* MenuCoordinator.swift */; };
+		4386045E230626B7009ED8D5 /* BehaviorRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4386045D230626B7009ED8D5 /* BehaviorRelay.swift */; };
 		43C14A0C2300EF5A00F7C24E /* DrawerMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A0B2300EF5A00F7C24E /* DrawerMenuButton.swift */; };
 		43C14A102300F07800F7C24E /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A0F2300F07800F7C24E /* AboutViewController.swift */; };
 		43C14A122300F07E00F7C24E /* DrawerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A112300F07E00F7C24E /* DrawerViewController.swift */; };
@@ -92,6 +93,7 @@
 
 /* Begin PBXFileReference section */
 		434027602302212C0038A40C /* MenuCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCoordinator.swift; sourceTree = "<group>"; };
+		4386045D230626B7009ED8D5 /* BehaviorRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorRelay.swift; sourceTree = "<group>"; };
 		43C14A0B2300EF5A00F7C24E /* DrawerMenuButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerMenuButton.swift; sourceTree = "<group>"; };
 		43C14A0F2300F07800F7C24E /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		43C14A112300F07E00F7C24E /* DrawerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerViewController.swift; sourceTree = "<group>"; };
@@ -423,6 +425,7 @@
 				BD402E782300C46F00049DF9 /* UISearchBar.swift */,
 				BD000CB122E3B38B001EE38A /* UITextField.swift */,
 				BD000CAD22E3AA6F001EE38A /* UIViewController.swift */,
+				4386045D230626B7009ED8D5 /* BehaviorRelay.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -738,6 +741,7 @@
 				BD59A09022E36EF900FA9CD0 /* RequestBehavior.swift in Sources */,
 				BD2F209222EBA7D300534916 /* RealmDatabase.swift in Sources */,
 				BDFC478522E907F200F312F0 /* DocumentDatabaseModel.swift in Sources */,
+				4386045E230626B7009ED8D5 /* BehaviorRelay.swift in Sources */,
 				BD402E71230084FD00049DF9 /* ScannerViewController.swift in Sources */,
 				BD402E792300C46F00049DF9 /* UISearchBar.swift in Sources */,
 				BD59A09A22E36EF900FA9CD0 /* API.swift in Sources */,
