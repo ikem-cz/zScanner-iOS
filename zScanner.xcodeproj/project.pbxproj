@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		434027612302212C0038A40C /* MenuCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434027602302212C0038A40C /* MenuCoordinator.swift */; };
+		4370DB5B2306EEC60080B4CC /* LoadingCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4370DB5A2306EEC60080B4CC /* LoadingCircle.swift */; };
 		4386045E230626B7009ED8D5 /* BehaviorRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4386045D230626B7009ED8D5 /* BehaviorRelay.swift */; };
 		43C14A0C2300EF5A00F7C24E /* DrawerMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A0B2300EF5A00F7C24E /* DrawerMenuButton.swift */; };
 		43C14A102300F07800F7C24E /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A0F2300F07800F7C24E /* AboutViewController.swift */; };
@@ -93,6 +94,7 @@
 
 /* Begin PBXFileReference section */
 		434027602302212C0038A40C /* MenuCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCoordinator.swift; sourceTree = "<group>"; };
+		4370DB5A2306EEC60080B4CC /* LoadingCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingCircle.swift; sourceTree = "<group>"; };
 		4386045D230626B7009ED8D5 /* BehaviorRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorRelay.swift; sourceTree = "<group>"; };
 		43C14A0B2300EF5A00F7C24E /* DrawerMenuButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerMenuButton.swift; sourceTree = "<group>"; };
 		43C14A0F2300F07800F7C24E /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
@@ -567,6 +569,7 @@
 			isa = PBXGroup;
 			children = (
 				BDC4A3DF22E5004900D1CF6A /* DocumentTableViewCell.swift */,
+				4370DB5A2306EEC60080B4CC /* LoadingCircle.swift */,
 			);
 			path = Documents;
 			sourceTree = "<group>";
@@ -722,6 +725,7 @@
 				BD2B9E7922EDC11E00FFCD3B /* IkemNetworkManager.swift in Sources */,
 				BD59A06B22E36D2400FA9CD0 /* Closures.swift in Sources */,
 				BDEA570D22FA2CD9004C48F0 /* DocumentNetworkModel.swift in Sources */,
+				4370DB5B2306EEC60080B4CC /* LoadingCircle.swift in Sources */,
 				BD402E772300B99100049DF9 /* GetFolderRequest.swift in Sources */,
 				BD8AA80F23003D530082441F /* FolderDatabaseModel.swift in Sources */,
 				BD2B9E8122EDC1FA00FFCD3B /* DocumentTypeDomainModel.swift in Sources */,

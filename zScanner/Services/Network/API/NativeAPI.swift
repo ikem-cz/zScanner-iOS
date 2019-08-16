@@ -11,8 +11,8 @@ import Foundation
 struct NativeAPI: API {
     
     func process<R, D>(_ request: R, with callback: @escaping (RequestStatus<D>) -> Void) where R : Request, D : Decodable, D == R.DataType {
-        callback(.loading)
-        
+        callback(.loading(1))
+
         guard Reachability.isConnectedToNetwork() else {
             callback(.error(RequestError(.noInternetConnection)))
             return

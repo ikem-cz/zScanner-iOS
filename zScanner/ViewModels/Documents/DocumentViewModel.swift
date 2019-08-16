@@ -36,8 +36,8 @@ class DocumentViewModel {
         let networkDocument = DocumentNetworkModel(from: document)
         networkManager.uploadDocument(networkDocument).subscribe(onNext: { [weak self] status in
             switch status {
-            case .loading:
-                self?.documentUploadStatus.onNext(.progress(0))
+            case .loading(let percentage):
+                self?.documentUploadStatus.onNext(.progress(percentage))
             case .success:
                 self?.documentUploadStatus.onNext(.progress(1))
                 self?.documentUploadStatus.onNext(.success)

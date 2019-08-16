@@ -72,8 +72,8 @@ class DocumentsListViewModel {
     private func fetchDocumentTypes() {
         networkManager.getDocumentTypes().subscribe(onNext: { [weak self] requestStatus in
             switch requestStatus {
-            case .loading:
-                self?.documentModesState.onNext(.loading)
+            case .loading(let percentage):
+                self?.documentModesState.onNext(.loading(percentage))
                 
             case .success(data: let networkModel):
                 let documents = networkModel.map({ $0.toDomainModel() })

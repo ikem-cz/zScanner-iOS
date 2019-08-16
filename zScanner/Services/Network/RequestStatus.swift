@@ -9,7 +9,7 @@
 import Foundation
 
 enum RequestStatus<DataType>: Equatable {
-    case loading
+    case loading(Double)
     case success(data: DataType)
     case error(RequestError)
     

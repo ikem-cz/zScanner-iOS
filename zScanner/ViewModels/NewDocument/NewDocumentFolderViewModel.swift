@@ -39,7 +39,7 @@ class NewDocumentFolderViewModel {
         let id = id.trimmingCharacters(in: CharacterSet.decimalDigits.inverted)
         activeSearch = networkManager.getFolder(with: id).map({ (result) -> RequestStatus<[FolderNetworkModel]> in
             switch result {
-                case .loading: return .loading
+                case .loading: return .loading(1)
                 case .success(data: let folder): return .success(data: [folder])
                 case .error(let error): return .error(error)
             }

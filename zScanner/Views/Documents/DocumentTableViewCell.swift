@@ -43,15 +43,20 @@ class DocumentTableViewCell: UITableViewCell {
                 case .awaitingInteraction:
                     self?.indicator.stopAnimating()
                     self?.successImageView.isHidden = true
-                case .progress:
+                    self?.loadingCircle.isHidden = false
+                case .progress(let percentage):
+                    self?.loadingCircle.progressValue(is: percentage)
                     self?.indicator.startAnimating()
                     self?.successImageView.isHidden = true
+                    self?.loadingCircle.isHidden = false
                 case .success:
                     self?.indicator.stopAnimating()
                     self?.successImageView.isHidden = false
+                    self?.loadingCircle.isHidden = true
                 case .failed:
                     self?.indicator.stopAnimating()
                     self?.successImageView.isHidden = true
+                    self?.loadingCircle.isHidden = false
                     // TODO: Handle error
                 }
             }).disposed(by: disposeBag)
@@ -99,6 +104,11 @@ class DocumentTableViewCell: UITableViewCell {
             make.edges.equalToSuperview()
         }
         
+        loadingContainer.addSubview(loadingCircle)
+        loadingCircle.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+
         loadingContainer.addSubview(successImageView)
         successImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -124,6 +134,8 @@ class DocumentTableViewCell: UITableViewCell {
         indicator.hidesWhenStopped = true
         return indicator
     }()
+    
+    private var loadingCircle = LoadingCircle()
     
     private var successImageView: UIImageView = {
         let image = UIImageView()
