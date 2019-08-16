@@ -36,8 +36,8 @@ class PasswordTextField: UITextField {
     private let disposeBag = DisposeBag()
 
     private func setupView() {
-        passwordToggleButton.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
-
+        passwordToggleButton.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
+        
         self.rightView = passwordToggleButton
         self.rightViewMode = .always
         
@@ -47,6 +47,9 @@ class PasswordTextField: UITextField {
         }).disposed(by: disposeBag)
     }
     
+    // By default, text inside UITextField automatically delete itself after going
+    // from false to true in UITextField.isSecureTextEntry
+    // Below is snippet to prevent that.
     override var isSecureTextEntry: Bool {
         didSet {
             if isFirstResponder {
