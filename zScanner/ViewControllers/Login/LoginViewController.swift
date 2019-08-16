@@ -56,6 +56,12 @@ class LoginViewController: BaseViewController {
             .bind(to: viewModel.passwordField.text)
             .disposed(by: disposeBag)
         
+        passwordTextField.passwordToggleButton.rx.tap.subscribe(onNext: { [weak self] _ in
+            self?.viewModel.passwordField.protected.toggle()
+        }).disposed(by: disposeBag)
+        
+        viewModel.passwordField.protected.bind(to: passwordTextField.protected).disposed(by: disposeBag)
+        
         viewModel.isValid.bind(to: loginButton.rx.isEnabled).disposed(by: disposeBag)
         
         loginButton.rx.tap.do(onNext: { [weak self] in
@@ -103,12 +109,12 @@ class LoginViewController: BaseViewController {
             make.centerX.equalToSuperview()
             make.right.left.equalToSuperview()
         }
-        
+
         container.addSubview(passwordTextField)
         passwordTextField.snp.makeConstraints { make in
             make.top.equalTo(usernameTextField.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
-            make.right.left.equalToSuperview()
+            make.left.right.equalToSuperview()
         }
         
         container.addSubview(loginButton)
@@ -142,20 +148,20 @@ class LoginViewController: BaseViewController {
         return textField
     }()
     
-    private lazy var passwordTextField: UITextField = {
-        let textField = UITextField()
+    private lazy var passwordTextField: PasswordTextField = {
+        let textField = PasswordTextField()
         textField.textContentType = .password
         textField.isSecureTextEntry = true
         textField.setBottomBorder()
         return textField
     }()
-    
+
     private lazy var loginButton: PrimaryButton = {
         let button = PrimaryButton()
         button.setTitle("login.button.title".localized, for: .normal)
         return button
     }()
-    
+        
     private lazy var container: UIView = {
         let view = UIView()
         return view

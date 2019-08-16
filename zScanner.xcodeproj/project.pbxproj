@@ -8,9 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		434027612302212C0038A40C /* MenuCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434027602302212C0038A40C /* MenuCoordinator.swift */; };
+		4386045E230626B7009ED8D5 /* BehaviorRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4386045D230626B7009ED8D5 /* BehaviorRelay.swift */; };
 		43C14A0C2300EF5A00F7C24E /* DrawerMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A0B2300EF5A00F7C24E /* DrawerMenuButton.swift */; };
 		43C14A102300F07800F7C24E /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A0F2300F07800F7C24E /* AboutViewController.swift */; };
 		43C14A122300F07E00F7C24E /* DrawerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43C14A112300F07E00F7C24E /* DrawerViewController.swift */; };
+		43CD63F923061E110086033C /* PasswordTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CD63F823061E110086033C /* PasswordTextField.swift */; };
 		759FB218037CD6C9254A2406 /* Pods_zScanner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA0AB6A19E0BFFBACC7952B9 /* Pods_zScanner.framework */; };
 		BD000CAE22E3AA6F001EE38A /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CAD22E3AA6F001EE38A /* UIViewController.swift */; };
 		BD000CB222E3B38B001EE38A /* UITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD000CB122E3B38B001EE38A /* UITextField.swift */; };
@@ -91,9 +93,11 @@
 
 /* Begin PBXFileReference section */
 		434027602302212C0038A40C /* MenuCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCoordinator.swift; sourceTree = "<group>"; };
+		4386045D230626B7009ED8D5 /* BehaviorRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorRelay.swift; sourceTree = "<group>"; };
 		43C14A0B2300EF5A00F7C24E /* DrawerMenuButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerMenuButton.swift; sourceTree = "<group>"; };
 		43C14A0F2300F07800F7C24E /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		43C14A112300F07E00F7C24E /* DrawerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerViewController.swift; sourceTree = "<group>"; };
+		43CD63F823061E110086033C /* PasswordTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordTextField.swift; sourceTree = "<group>"; };
 		A36199925677978CD669378A /* Pods-zScanner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zScanner.debug.xcconfig"; path = "Target Support Files/Pods-zScanner/Pods-zScanner.debug.xcconfig"; sourceTree = "<group>"; };
 		BD000CAD22E3AA6F001EE38A /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		BD000CB122E3B38B001EE38A /* UITextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextField.swift; sourceTree = "<group>"; };
@@ -202,6 +206,14 @@
 				43C14A0F2300F07800F7C24E /* AboutViewController.swift */,
 			);
 			path = About;
+			sourceTree = "<group>";
+		};
+		43CD63F723061DCD0086033C /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				43CD63F823061E110086033C /* PasswordTextField.swift */,
+			);
+			path = Login;
 			sourceTree = "<group>";
 		};
 		9B8C903859A1A873DA86CB8E /* Frameworks */ = {
@@ -340,6 +352,7 @@
 		BD59A06122E36C7B00FA9CD0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				43CD63F723061DCD0086033C /* Login */,
 				BD59A06222E36C9300FA9CD0 /* Buttons */,
 				BDC4A3DE22E5003400D1CF6A /* Documents */,
 				BD80224322F825B5009B8B69 /* NewDocument */,
@@ -412,6 +425,7 @@
 				BD402E782300C46F00049DF9 /* UISearchBar.swift */,
 				BD000CB122E3B38B001EE38A /* UITextField.swift */,
 				BD000CAD22E3AA6F001EE38A /* UIViewController.swift */,
+				4386045D230626B7009ED8D5 /* BehaviorRelay.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -689,6 +703,7 @@
 				BDC4A3E022E5004900D1CF6A /* DocumentTableViewCell.swift in Sources */,
 				BD2B9E8422EDCC2500FFCD3B /* DocumentTypesRequest.swift in Sources */,
 				BD2B9E7B22EDC15000FFCD3B /* NetworkManager.swift in Sources */,
+				43CD63F923061E110086033C /* PasswordTextField.swift in Sources */,
 				BD2C5F8222F378A20023D097 /* NewDocumentTypeViewController.swift in Sources */,
 				BDD3C0F122F8CBAF008406EA /* Date.swift in Sources */,
 				BD80224722F82C03009B8B69 /* TextInputTableViewCell.swift in Sources */,
@@ -726,6 +741,7 @@
 				BD59A09022E36EF900FA9CD0 /* RequestBehavior.swift in Sources */,
 				BD2F209222EBA7D300534916 /* RealmDatabase.swift in Sources */,
 				BDFC478522E907F200F312F0 /* DocumentDatabaseModel.swift in Sources */,
+				4386045E230626B7009ED8D5 /* BehaviorRelay.swift in Sources */,
 				BD402E71230084FD00049DF9 /* ScannerViewController.swift in Sources */,
 				BD402E792300C46F00049DF9 /* UISearchBar.swift in Sources */,
 				BD59A09A22E36EF900FA9CD0 /* API.swift in Sources */,
