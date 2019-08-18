@@ -35,7 +35,7 @@ class DocumentDatabaseModel: Object {
         let realm = try! Realm()
         self.folder = realm.loadObject(FolderDatabaseModel.self, withId: document.folder.id) ?? FolderDatabaseModel(folder: document.folder)
         
-        // TODO: convert image into filePath
+        self.pages.append(objectsIn: document.pages.map({ $0.absoluteString }))
     }
     
     override class func primaryKey() -> String {
@@ -57,7 +57,7 @@ extension DocumentDatabaseModel {
             date: date,
             name: name,
             notes: notes,
-            pages: []
+            pages: pages.compactMap({ URL(string: $0) })
         )
     }
 }

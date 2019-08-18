@@ -25,16 +25,25 @@
 "document.modeSelector.title" = "Zvolte typ záznamu";
 
 // MARK: - New Document
-"newDocumentFolder.screen.title" = "Dokument - výběr pacienta";
+"newDocumentFolder.screen.title" = "Výběr pacienta";
 "newDocumentFolder.searchBar.title" = "Rodné číslo, příjmení nebo jméno..";
 "newDocumentFolder.searchResults.title" = "Výsledky hledání";
 "newDocumentFolder.searchHistory.title" = "Historie hledání";
 "newDocumentFolder.scanFailedAlert.title" = "Chyba kamery";
 "newDocumentFolder.scanFailedAlert.message" = "Kamera není dostupná, zkontrolujte prosím nastavení.";
 
-"newDocumentType.screen.title" = "Dokument - vlastnosti záznamu";
+"newDocumentType.screen.title" = "Vlastnosti záznamu";
 "newDocumentType.button.title" = "Další";
 
+"newDocumentPhotos.screen.title" = "Obsah záznamu";
+"newDocumentPhotos.button.title" = "Další";
+"newDocumentPhotos.actioSheet.title" = "Nová fotografie";
+"newDocumentPhotos.actioSheet.cameraAction" = "Vyfotit";
+"newDocumentPhotos.actioSheet.galleryAction" = "Vybrat z galerie";
+"newDocumentPhotos.actioSheet.cancel" = "Zrušit";
+
+
+// MARK: - Form
 "form.listPicker.title" = "Typ dokumentu";
 "form.listPicker.unselected" = "Vybrat";
 "form.documentDecription.title" = "Název (nepovinný)";

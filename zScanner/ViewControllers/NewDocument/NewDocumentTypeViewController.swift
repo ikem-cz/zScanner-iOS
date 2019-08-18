@@ -69,7 +69,9 @@ class NewDocumentTypeViewController: BaseViewController {
     }
     
     private func setupBindings() {
-        viewModel.isValid.bind(to: continueButton.rx.isEnabled).disposed(by: disposeBag)
+        viewModel.isValid
+            .bind(to: continueButton.rx.isEnabled)
+            .disposed(by: disposeBag)
         
         continueButton.rx.tap.do(onNext: { [unowned self] in
             self.tableView.visibleCells.forEach({ ($0 as? TextInputTableViewCell)?.enableSelection() })

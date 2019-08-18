@@ -72,7 +72,7 @@ class DocumentsListViewModel {
     private func fetchDocumentTypes() {
         networkManager.getDocumentTypes().subscribe(onNext: { [weak self] requestStatus in
             switch requestStatus {
-            case .loading:
+            case .progress:
                 self?.documentModesState.onNext(.loading)
                 
             case .success(data: let networkModel):

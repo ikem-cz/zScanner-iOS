@@ -139,7 +139,7 @@ extension NewDocumentFolderViewController: UITableViewDataSource {
         let section = sections[section]
         switch section {
         case .searchResults:
-            return try! viewModel.searchResults.value().count
+            return viewModel.searchResults.value.count
         case .history:
             return viewModel.history.count
         }
@@ -152,7 +152,7 @@ extension NewDocumentFolderViewController: UITableViewDataSource {
         
         switch section {
         case .searchResults:
-            folder = try! viewModel.searchResults.value()[indexPath.row]
+            folder = viewModel.searchResults.value[indexPath.row]
         case .history:
             folder = viewModel.history[indexPath.row]
         }
@@ -176,7 +176,7 @@ extension NewDocumentFolderViewController: UITableViewDelegate {
         
         switch section {
         case .searchResults:
-            item = try! viewModel.searchResults.value()[indexPath.row]
+            item = viewModel.searchResults.value[indexPath.row]
         case .history:
             item = viewModel.history[indexPath.row]
         }

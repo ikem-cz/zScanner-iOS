@@ -11,7 +11,7 @@ import RxSwift
 
 class NewDocumentTypeViewModel {
     
-    // MARK: - Instance part
+    // MARK: Instance part
     private let database: Database
     private let mode: DocumentMode
     

@@ -25,7 +25,7 @@ class LoginViewModel {
     let usernameField = TextInputField(title: "login.username.title".localized, validator: { !$0.isEmpty })
     let passwordField = ProtectedTextInputField(title: "login.password.title".localized, validator: { !$0.isEmpty })
     
-    let status = BehaviorRelay<State>(value: .awaitingInteraction)
+    let status = BehaviorSubject<State>(value: .awaitingInteraction)
     
     var isValid: Observable<Bool>
     
@@ -42,7 +42,7 @@ class LoginViewModel {
         model.username = usernameField.text.value
         model.password = passwordField.text.value
         
-        status.accept(.success)
+        status.onNext(.success)
     
         print(model)
         // TODO: Continue with SeaCat

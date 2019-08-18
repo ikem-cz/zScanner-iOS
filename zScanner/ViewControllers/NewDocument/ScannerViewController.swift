@@ -42,7 +42,7 @@ class ScannerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "X", style: .plain, target: self, action: #selector(close))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "delete"), style: .plain, target: self, action: #selector(close))
         navigationItem.leftBarButtonItem?.tintColor = .white
 
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)

@@ -34,6 +34,13 @@ class NewDocumentCoordinator: Coordinator {
         
         self.mode = mode
         self.steps = NewDocumentCoordinator.steps(for: mode)
+        
+        // If mode is .photo the step for setting documentType is skipped, but the documentMode is needed later.
+        // The documentMode is set now to prevent unexpected behavior.
+        if mode == .photo {
+            newDocument.type.mode = .photo
+        }
+        
         guard let firstStep = steps.first else { return nil }
         self.currentStep = firstStep
         
@@ -73,15 +80,9 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func showPhotosSelectionScreen() {
-        
-        if newDocument.type.mode == .undefined {
-            newDocument.type = DocumentTypeDomainModel(id: "photo", name: "Fotografie", mode: .photo)
-            newDocument.notes = "O stran"
-        }
-        
-        // TODO: Implement
-        newDocument.pages = []
-        resolveNextStep()
+        let viewModel = NewDocumentPhotosViewModel()
+        let viewController = NewDocumentPhotosViewController(viewModel: viewModel, coordinator: self)
+        push(viewController)
     }
     
     private func showListItemSelectionScreen<T: ListItem>(for list: ListPickerField<T>) {
@@ -117,6 +118,35 @@ class NewDocumentCoordinator: Coordinator {
         currentStep = steps[nextIndex]
         showCurrentStep()
     }
+    
+    private func savePagesToDocument(_ pages: [UIImage]) {
+        
+        // Get documents directory
+        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        
+        // Create folder for document
+        let folderPath = documentsPath + newDocument.id
+        if !FileManager.default.fileExists(atPath: folderPath) {
+            do {
+                try FileManager.default.createDirectory(atPath: folderPath, withIntermediateDirectories: false, attributes: nil)
+            } catch {
+                return
+            }
+        }
+        
+        // Store images
+        pages
+            .compactMap({
+                $0.jpegData(compressionQuality: 0.8)
+            })
+            .enumerated()
+            .forEach({ (index, imageData) in
+                let fileName = URL(fileURLWithPath: folderPath + "\(index).jpg")
+                if (try? imageData.write(to: fileName)) != nil {
+                    newDocument.pages.append(fileName)
+                }
+            })
+        }
     
     private static func steps(for mode: DocumentMode) -> [Step] {
         switch mode {
@@ -168,5 +198,13 @@ extension NewDocumentCoordinator: NewDocumentTypeCoordinator {
         }
     }
 }
+
 // MARK: - ListItemSelectionCoordinator implementation
 extension NewDocumentCoordinator: ListItemSelectionCoordinator {}
+
+// MARK: - ListItemSelectionCoordinator implementation
+extension NewDocumentCoordinator: NewDocumentPhotosCoordinator {
+    func savePhotos(_ photos: [UIImage]) {
+        savePagesToDocument(photos)
+    }
+}

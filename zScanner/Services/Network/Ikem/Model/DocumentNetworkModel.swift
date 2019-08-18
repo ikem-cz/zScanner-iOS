@@ -24,8 +24,7 @@ struct DocumentNetworkModel: Encodable {
         self.documentMode = domainModel.type.mode.rawValue
         self.documentType = domainModel.type.id
         
-        // TODO: Remove max() when there is actual image selection
-        self.pages = max(domainModel.pages.count,1)
+        self.pages = domainModel.pages.count
         self.datetime = domainModel.date.utcString
         self.name = domainModel.type.name
         self.notes = domainModel.notes

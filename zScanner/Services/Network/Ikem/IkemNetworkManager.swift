@@ -36,7 +36,7 @@ class IkemNetworkManager: NetworkManager {
                 observer.onNext(requestStatus)
                 
                 switch requestStatus {
-                case .loading:
+                case .progress:
                     break
                 case .success:
                     self?.requestBehavior.afterSuccess()
@@ -66,7 +66,7 @@ class IkemNetworkManager: NetworkManager {
                 observer.onNext(requestStatus)
                 
                 switch requestStatus {
-                case .loading:
+                case .progress:
                     break
                 case .success:
                     self?.requestBehavior.afterSuccess()
@@ -96,7 +96,7 @@ class IkemNetworkManager: NetworkManager {
                 observer.onNext(requestStatus)
                 
                 switch requestStatus {
-                case .loading:
+                case .progress:
                     break
                 case .success:
                     self?.requestBehavior.afterSuccess()
@@ -126,7 +126,37 @@ class IkemNetworkManager: NetworkManager {
                 observer.onNext(requestStatus)
                 
                 switch requestStatus {
-                case .loading:
+                case .progress:
+                    break
+                case .success:
+                    self?.requestBehavior.afterSuccess()
+                    observer.onCompleted()
+                case .error(let error):
+                    self?.requestBehavior.afterError(error)
+                    observer.onError(error)
+                }
+            })
+            
+            return Disposables.create()
+        }
+    }
+    
+    func uploadPage(_ page: PageNetworkModel) -> Observable<RequestStatus<EmptyResponse>> {
+        return Observable.create { observer -> Disposable in
+            var request = UploadPageReuest(with: page)
+            
+            request.headers.merge(
+                self.requestBehavior.additionalHeaders,
+                uniquingKeysWith: { (current, _) in current }
+            )
+            
+            self.requestBehavior.beforeSend()
+            
+            self.api.upload(request, with: { [weak self] requestStatus in
+                observer.onNext(requestStatus)
+                
+                switch requestStatus {
+                case .progress:
                     break
                 case .success:
                     self?.requestBehavior.afterSuccess()

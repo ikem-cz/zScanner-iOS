@@ -15,7 +15,7 @@ struct DocumentDomainModel {
     var date: Date
     var name: String
     var notes: String
-    var pages: [UIImage]
+    var pages: [URL]
 }
 
 extension DocumentDomainModel: Equatable {

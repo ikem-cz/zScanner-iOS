@@ -14,7 +14,7 @@ protocol LoginFlowDelegate: FlowDelegate {
 
 class LoginCoordinator: Coordinator {
     
-    // MARK: - Instance part
+    // MARK: Instance part
     unowned private let flowDelegate: LoginFlowDelegate
     
     init(flowDelegate: LoginFlowDelegate, window: UIWindow) {

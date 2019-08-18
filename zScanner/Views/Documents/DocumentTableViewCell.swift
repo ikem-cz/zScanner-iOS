@@ -32,25 +32,29 @@ class DocumentTableViewCell: UITableViewCell {
     }
     
     //MARK: Interface
-    func setup(with document: DocumentViewModel) {
+    func setup(with model: DocumentViewModel) {
         // Make sure the label will keep the space even when empty while respecting the dynamic font size
-        titleLabel.text = document.document.type.title.isEmpty ? " " : document.document.type.title
-        detailLabel.text = document.document.notes.isEmpty ? " " : document.document.notes
-        document.documentUploadStatus
+        titleLabel.text = String(format: "%@ %@", model.document.folder.externalId, model.document.folder.name)
+        detailLabel.text = [
+            model.document.type.mode.title,
+            model.document.type.name,
+            String(format: "document.documentCell.numberOfPagesFormat".localized, model.document.pages.count),
+        ]
+        .filter({ !$0.isEmpty })
+        .joined(separator: " - ")
+        
+        model.documentUploadStatus
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] status in
                 switch status {
                 case .awaitingInteraction:
-                    self?.indicator.stopAnimating()
                     self?.successImageView.isHidden = true
-                case .progress:
-                    self?.indicator.startAnimating()
+                case .progress(let percentage):
+                    // TODO: Show progress
                     self?.successImageView.isHidden = true
                 case .success:
-                    self?.indicator.stopAnimating()
                     self?.successImageView.isHidden = false
                 case .failed:
-                    self?.indicator.stopAnimating()
                     self?.successImageView.isHidden = true
                     // TODO: Handle error
                 }
@@ -76,14 +80,12 @@ class DocumentTableViewCell: UITableViewCell {
         textContainer.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.top.right.left.equalToSuperview()
-            make.height.equalTo(21)
         }
         
         textContainer.addSubview(detailLabel)
         detailLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(4)
             make.right.left.bottom.equalToSuperview()
-            make.height.equalTo(18)
         }
         
         contentView.addSubview(loadingContainer)
@@ -92,11 +94,6 @@ class DocumentTableViewCell: UITableViewCell {
             make.left.equalTo(textContainer.snp.right).offset(8)
             make.width.height.equalTo(30)
             make.centerY.equalToSuperview()
-        }
-
-        loadingContainer.addSubview(indicator)
-        indicator.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
         }
         
         loadingContainer.addSubview(successImageView)
@@ -116,13 +113,8 @@ class DocumentTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = .footnote
         label.textColor = UIColor.black.withAlphaComponent(0.7)
+        label.numberOfLines = 0
         return label
-    }()
-    
-    private var indicator: UIActivityIndicatorView = {
-        let indicator = UIActivityIndicatorView(style: .gray)
-        indicator.hidesWhenStopped = true
-        return indicator
     }()
     
     private var successImageView: UIImageView = {

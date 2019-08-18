@@ -9,13 +9,13 @@
 import Foundation
 
 enum RequestStatus<DataType>: Equatable {
-    case loading
+    case progress(Double)
     case success(data: DataType)
     case error(RequestError)
     
     static func == (lhs: RequestStatus<DataType>, rhs: RequestStatus<DataType>) -> Bool {
         switch (lhs, rhs) {
-        case (.loading, .loading), (.success, .success):
+        case (.progress, .progress), (.success, .success):
             return true
         case (.error(let left), .error(let right)):
             return left == right

@@ -10,6 +10,7 @@ import Foundation
 
 protocol API {
     func process<R, D>(_ request: R, with callback: @escaping (RequestStatus<D>) -> Void) where R: Request, D: Decodable, D == R.DataType
+    func upload<R>(_ request: R, with callback: @escaping (RequestStatus<EmptyResponse>) -> Void) where R: Request, R.DataType == EmptyResponse
 }
 
 //MARK: -

@@ -8,10 +8,11 @@
 
 import Foundation
 import RxSwift
+import RxRelay
 
 class NewDocumentFolderViewModel {
     
-    // MARK: - Instance part
+    // MARK: Instance part
     private let database: Database
     private let networkManager: NetworkManager
     
@@ -28,8 +29,8 @@ class NewDocumentFolderViewModel {
     
     // MARK: Interface
     let history: [FolderDomainModel]
-    let searchResults = BehaviorSubject<[FolderDomainModel]>(value: [])
-    let isLoading = BehaviorSubject<Bool>(value: false)
+    let searchResults = BehaviorRelay<[FolderDomainModel]>(value: [])
+    let isLoading = BehaviorRelay<Bool>(value: false)
     
     func search(query: String) {
         activeSearch = networkManager.searchFolders(with: query)
@@ -39,7 +40,7 @@ class NewDocumentFolderViewModel {
         let id = id.trimmingCharacters(in: CharacterSet.decimalDigits.inverted)
         activeSearch = networkManager.getFolder(with: id).map({ (result) -> RequestStatus<[FolderNetworkModel]> in
             switch result {
-                case .loading: return .loading
+                case .progress(let percentage): return .progress(percentage)
                 case .success(data: let folder): return .success(data: [folder])
                 case .error(let error): return .error(error)
             }
@@ -52,15 +53,15 @@ class NewDocumentFolderViewModel {
         didSet {
             activeSearchDisposable = activeSearch?.subscribe(onNext: { [weak self] status in
                 switch status {
-                case .loading:
-                    self?.isLoading.onNext(true)
+                case .progress:
+                    self?.isLoading.accept(true)
                 case .success(data: let folders):
-                    self?.isLoading.onNext(false)
+                    self?.isLoading.accept(false)
                     let folders = folders.map({ $0.toDomainModel() })
-                    self?.searchResults.onNext(folders)
+                    self?.searchResults.accept(folders)
                 case .error(let error):
-                    self?.isLoading.onNext(false)
-                    self?.searchResults.onNext([])
+                    self?.isLoading.accept(false)
+                    self?.searchResults.accept([])
                     
                     // TODO: Handle error
                     print(error)

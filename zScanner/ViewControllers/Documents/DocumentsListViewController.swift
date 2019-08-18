@@ -17,7 +17,7 @@ protocol DocumentsListCoordinator: BaseCoordinator {
 
 class DocumentsListViewController: BaseViewController {
     
-    // MARK: - Instance part
+    // MARK: Instance part
     private unowned let coordinator: DocumentsListCoordinator
     private let viewModel: DocumentsListViewModel
         
@@ -50,7 +50,7 @@ class DocumentsListViewController: BaseViewController {
     
     override var leftBarButtonItems: [UIBarButtonItem] {
         return [
-            UIBarButtonItem(image: UIImage(named:"menuIcon"),style: .plain, target: self, action: #selector(openMenu))
+            UIBarButtonItem(image: #imageLiteral(resourceName: "menuIcon"),style: .plain, target: self, action: #selector(openMenu))
         ]
     }
     

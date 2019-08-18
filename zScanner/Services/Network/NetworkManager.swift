@@ -14,11 +14,9 @@ protocol NetworkManager {
     /// Fetch all document subtypes
     func getDocumentTypes() -> Observable<RequestStatus<[DocumentTypeNetworkModel]>>
     
-    
     /// Upload document to server
     /// - Parameter document: New document to upload
     func uploadDocument(_ document: DocumentNetworkModel) -> Observable<RequestStatus<EmptyResponse>>
-    
     
     /// Search folders on backend
     /// - Parameter query: Part of the folder external id or name to search
@@ -27,4 +25,6 @@ protocol NetworkManager {
     /// Search folders on backend
     /// - Parameter id: Part of the folder external id or name to search
     func getFolder(with id: String) -> Observable<RequestStatus<FolderNetworkModel>>
+    
+    func uploadPage(_ page: PageNetworkModel) -> Observable<RequestStatus<EmptyResponse>>
 }
