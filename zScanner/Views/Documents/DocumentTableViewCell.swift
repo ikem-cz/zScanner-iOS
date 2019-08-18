@@ -48,13 +48,17 @@ class DocumentTableViewCell: UITableViewCell {
             .subscribe(onNext: { [weak self] status in
                 switch status {
                 case .awaitingInteraction:
+                    self?.loadingCircle.isHidden = true
                     self?.successImageView.isHidden = true
                 case .progress(let percentage):
-                    // TODO: Show progress
+                    self?.loadingCircle.progressValue(is: percentage)
+                    self?.loadingCircle.isHidden = false
                     self?.successImageView.isHidden = true
                 case .success:
+                    self?.loadingCircle.isHidden = true
                     self?.successImageView.isHidden = false
                 case .failed:
+                    self?.loadingCircle.isHidden = true
                     self?.successImageView.isHidden = true
                     // TODO: Handle error
                 }
@@ -96,6 +100,11 @@ class DocumentTableViewCell: UITableViewCell {
             make.centerY.equalToSuperview()
         }
         
+        loadingContainer.addSubview(loadingCircle)
+        loadingCircle.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        
         loadingContainer.addSubview(successImageView)
         successImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -116,6 +125,8 @@ class DocumentTableViewCell: UITableViewCell {
         label.numberOfLines = 0
         return label
     }()
+    
+    private var loadingCircle = LoadingCircle()
     
     private var successImageView: UIImageView = {
         let image = UIImageView()
