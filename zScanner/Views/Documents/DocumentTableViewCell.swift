@@ -48,13 +48,17 @@ class DocumentTableViewCell: UITableViewCell {
             .subscribe(onNext: { [weak self] status in
                 switch status {
                 case .awaitingInteraction:
+                    self?.loadingCircle.isHidden = true
                     self?.successImageView.isHidden = true
                 case .progress(let percentage):
                     self?.loadingCircle.progressValue(is: percentage)
+                    self?.loadingCircle.isHidden = false
                     self?.successImageView.isHidden = true
                 case .success:
+                    self?.loadingCircle.isHidden = true
                     self?.successImageView.isHidden = false
                 case .failed:
+                    self?.loadingCircle.isHidden = true
                     self?.successImageView.isHidden = true
                     // TODO: Handle error
                 }

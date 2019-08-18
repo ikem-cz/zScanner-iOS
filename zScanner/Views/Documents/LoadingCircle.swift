@@ -26,7 +26,7 @@ class LoadingCircle: UIView {
         basicAnimation.toValue = value
         basicAnimation.duration = 2
         basicAnimation.fillMode = .forwards
-        basicAnimation.isRemovedOnCompletion = true
+        basicAnimation.isRemovedOnCompletion = false
         shapeLayer.add(basicAnimation, forKey: "changeProgressValue")
     }
     
