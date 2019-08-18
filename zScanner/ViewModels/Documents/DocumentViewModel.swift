@@ -53,7 +53,7 @@ class DocumentViewModel {
                 switch taskStatus {
                 case .progress(let percentage):
                     stillInProgress = true
-                    progresses.append(percentage)
+                    progresses.append(percentage * 0.9)
                 case .success:
                     progresses.append(1)
                 case .error:

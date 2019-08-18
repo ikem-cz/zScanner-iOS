@@ -28,6 +28,10 @@ class DocumentTableViewCell: UITableViewCell {
         
         titleLabel.text = nil
         detailLabel.text = nil
+        loadingCircle.isHidden = true
+        loadingCircle.progressValue(is: 0, animated: false)
+        successImageView.isHidden = true
+        
         disposeBag = DisposeBag()
     }
     
@@ -43,6 +47,29 @@ class DocumentTableViewCell: UITableViewCell {
         .filter({ !$0.isEmpty })
         .joined(separator: " - ")
         
+        let onCompleted: () -> Void = { [weak self] in
+            self?.successImageView.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
+            self?.successImageView.isHidden = false
+            self?.successImageView.alpha = 0
+            
+            UIView.animate(withDuration: 0.5, animations: {
+                self?.successImageView.alpha = 1
+                self?.successImageView.transform = CGAffineTransform(scaleX: 1, y: 1)
+                self?.loadingCircle.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
+                self?.loadingCircle.alpha = 0
+            }, completion: { _ in
+                self?.loadingCircle.isHidden = true
+                self?.loadingCircle.alpha = 1
+                self?.loadingCircle.transform = CGAffineTransform(scaleX: 1, y: 1)
+            })
+        }
+        
+        let onError: (Error?) -> Void = { [weak self] error in
+            self?.loadingCircle.isHidden = true
+            self?.successImageView.isHidden = true
+            // TODO: Handle error
+        }
+        
         model.documentUploadStatus
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] status in
@@ -55,14 +82,14 @@ class DocumentTableViewCell: UITableViewCell {
                     self?.loadingCircle.isHidden = false
                     self?.successImageView.isHidden = true
                 case .success:
-                    self?.loadingCircle.isHidden = true
-                    self?.successImageView.isHidden = false
+                    onCompleted()
                 case .failed:
-                    self?.loadingCircle.isHidden = true
-                    self?.successImageView.isHidden = true
-                    // TODO: Handle error
+                    onError(nil)
                 }
-            }).disposed(by: disposeBag)
+            }, onError: onError,
+               onCompleted: onCompleted
+            )
+            .disposed(by: disposeBag)
     }
     
     //MARK: Helpers

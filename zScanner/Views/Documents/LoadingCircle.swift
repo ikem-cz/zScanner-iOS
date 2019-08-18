@@ -21,20 +21,29 @@ class LoadingCircle: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func progressValue(is value: Double) {
+    var prevValue: Double = 0
+    
+    func progressValue(is value: Double, animated: Bool = true) {
+        
+        if !animated {
+            shapeLayer.strokeEnd = CGFloat(value)
+            return
+        }
+        
         let basicAnimation = CABasicAnimation(keyPath: "strokeEnd")
         basicAnimation.toValue = value
-        basicAnimation.duration = 2
+        basicAnimation.duration = 0.3
         basicAnimation.fillMode = .forwards
         basicAnimation.isRemovedOnCompletion = false
-        shapeLayer.add(basicAnimation, forKey: "changeProgressValue")
+        shapeLayer.add(basicAnimation, forKey: "changeProgressValue\(value)")
+        prevValue = value
     }
     
     //MARK: Helpers
     private let shapeLayer = CAShapeLayer()
 
     private func setup() {
-        let circularPath = UIBezierPath(arcCenter: self.center, radius: 15, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: true)
+        let circularPath = UIBezierPath(arcCenter: self.center, radius: 15, startAngle: -0.5 * .pi, endAngle: 1.5 * .pi, clockwise: true)
         shapeLayer.path = circularPath.cgPath
         shapeLayer.strokeColor = UIColor.black.cgColor
         shapeLayer.lineWidth = 2
