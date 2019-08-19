@@ -125,7 +125,7 @@ class NewDocumentCoordinator: Coordinator {
         let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
         
         // Create folder for document
-        let folderPath = documentsPath + newDocument.id
+        let folderPath = documentsPath + "/" + newDocument.id
         if !FileManager.default.fileExists(atPath: folderPath) {
             do {
                 try FileManager.default.createDirectory(atPath: folderPath, withIntermediateDirectories: false, attributes: nil)
@@ -141,7 +141,7 @@ class NewDocumentCoordinator: Coordinator {
             })
             .enumerated()
             .forEach({ (index, imageData) in
-                let fileName = URL(fileURLWithPath: folderPath + "\(index).jpg")
+                let fileName = URL(fileURLWithPath: folderPath + "/\(index).jpg")
                 if (try? imageData.write(to: fileName)) != nil {
                     newDocument.pages.append(fileName)
                 }

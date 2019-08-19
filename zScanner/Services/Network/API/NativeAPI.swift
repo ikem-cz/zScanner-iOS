@@ -166,7 +166,7 @@ struct NativeAPI: API {
         let mimetype = "image/jpg"
 
         body.append(string: "--\(boundary)\r\n")
-        body.append(string: "Content-Disposition: form-data; name=\"page\" filename=\"\(filename)\"\r\n")
+        body.append(string: "Content-Disposition: form-data; name=\"page\"; filename=\"\(filename)\"\r\n")
         body.append(string: "Content-Type: \(mimetype)\r\n\r\n")
         body.append(imageDataKey)
         body.append(string: "\r\n")
