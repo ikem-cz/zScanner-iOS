@@ -42,6 +42,10 @@
 "newDocumentPhotos.actioSheet.galleryAction" = "Vybrat z galerie";
 "newDocumentPhotos.actioSheet.cancel" = "Zrušit";
 
+"newDocument.popAlert.title" = "Opravdu chcete jít o krok zpět?";
+"newDocument.popAlert.message" = "Změny provedené na této obrazovce nebudou uloženy.";
+"newDocument.popAlert.confirm" = "Ano";
+"newDocument.popAlert.cancel" = "Zrušit";
 
 // MARK: - Form
 "form.listPicker.title" = "Typ dokumentu";

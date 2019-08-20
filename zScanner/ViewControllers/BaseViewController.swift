@@ -10,6 +10,7 @@ import UIKit
 
 protocol BaseCoordinator: class {
     func backButtonPressed(sender: BaseViewController)
+    func willPreventPop(for sender: BaseViewController) -> Bool
 }
 
 // MARK: -
@@ -60,7 +61,7 @@ class BaseViewController: PluggableViewController {
         guard let navigationController = navigationController else { return }
         
         // TODO: set deleate to catch before pop()
-        navigationController.interactivePopGestureRecognizer?.delegate = nil
+        navigationController.interactivePopGestureRecognizer?.delegate = self
         navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItems = leftBarButtonItems
         navigationItem.rightBarButtonItems = rightBarButtonItems
@@ -95,5 +96,15 @@ class BaseViewController: PluggableViewController {
 extension BaseViewController: BackButtonDelegate {
     func didClickBack() {
         coordinator.backButtonPressed(sender: self)
+    }
+}
+
+extension BaseViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if coordinator.willPreventPop(for: self) {
+            coordinator.backButtonPressed(sender: self)
+            return false
+        }
+        return true
     }
 }

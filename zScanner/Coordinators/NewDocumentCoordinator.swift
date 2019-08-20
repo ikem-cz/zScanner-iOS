@@ -119,6 +119,23 @@ class NewDocumentCoordinator: Coordinator {
         showCurrentStep()
     }
     
+    private func resolvePreviousStep() {
+        guard let index = steps.firstIndex(of: currentStep) else {
+            fatalError("Current step is not present in list of steps")
+        }
+        
+        let prevIndex = index - 1
+        
+        if prevIndex < 0 {
+            pop()
+            flowDelegate.coordinatorDidFinish(self)
+            return
+        }
+        
+        currentStep = steps[prevIndex]
+        pop()
+    }
+    
     private func savePagesToDocument(_ pages: [UIImage]) {
         
         // Get documents directory
@@ -157,6 +174,38 @@ class NewDocumentCoordinator: Coordinator {
             case .undefined:
                 return []
         }
+    }
+    
+    // MARK: - BaseCordinator implementation
+    override func willPreventPop(for sender: BaseViewController) -> Bool {
+        switch sender {
+        case
+        is NewDocumentPhotosViewController,
+        is NewDocumentTypeViewController,
+        is NewDocumentFolderViewController:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    override func backButtonPressed(sender: BaseViewController) {
+        if willPreventPop(for: sender) {
+            showPopConfirmationDialog(presentOn: sender, popHandler: { [unowned self] in
+                self.resolvePreviousStep()
+            })
+        } else {
+            super.backButtonPressed(sender: sender)
+        }
+    }
+    
+    private func showPopConfirmationDialog(presentOn viewController: BaseViewController, popHandler: @escaping EmptyClosure) {
+        let alert = UIAlertController(title: "newDocument.popAlert.title".localized, message: "newDocument.popAlert.message".localized, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "newDocument.popAlert.confirm".localized, style: .default, handler: { _ in popHandler() }))
+        alert.addAction(UIAlertAction(title: "newDocument.popAlert.cancel".localized, style: .cancel, handler: nil))
+        
+        viewController.present(alert, animated: true)
     }
 }
 

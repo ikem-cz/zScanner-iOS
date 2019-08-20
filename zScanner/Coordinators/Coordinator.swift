@@ -89,6 +89,14 @@ class Coordinator {
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
     }
+    
+    func backButtonPressed(sender: BaseViewController) {
+        pop()
+    }
+    
+    func willPreventPop(for sender: BaseViewController) -> Bool {
+        return false
+    }
 }
 
 // MARK: - Equtable implementation
@@ -100,9 +108,7 @@ extension Coordinator: Equatable {
 
 // MARK: - BaseCordinator implementation
 extension Coordinator: BaseCoordinator {
-    func backButtonPressed(sender: BaseViewController) {
-        pop()
-    }
+    // Implemented in the main scope as swift cannot everride extensions yet.
 }
 
 // MARK: - FlowDelegate implementation
