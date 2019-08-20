@@ -30,6 +30,7 @@ extension Event {
         case .documentType: return "documentType"
         case .useOfDescription: return "useOfDescription"
             
+        case .deleteImage: return "deleteImage"
         case .galleryUsed(let used): return used ? "galleryUsed" : "cameraUsed"
         
         case .numberOfDocumentsBeforeDelete: return "numberOfDocumentsBeforeDelete"

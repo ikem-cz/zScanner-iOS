@@ -20,7 +20,7 @@ enum Event {
     case documentType(String)
     case useOfDescription(Bool)
     
-    // TODO: Swipe delete?
+    case deleteImage
     case galleryUsed(Bool)
     
     case numberOfDocumentsBeforeDelete(Int)
