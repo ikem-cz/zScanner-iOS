@@ -19,9 +19,20 @@ class FirebaseAnalytics: Tracker {
 extension Event {
     var id: String {
         switch self {
-            case .documentModeSelected: return "newDocument"
-            case .login: return "login"
-            case .logout: return "logout"
+        case .login: return "login"
+        case .logout: return "logout"
+            
+        case .documentModeSelected: return "newDocument"
+            
+        case .userFoundBy: return "userFound"
+        case .userNotFound: return "userNotFound"
+            
+        case .useOfDescription: return "useOfDescription"
+            
+        case .galleryUsed(let used): return used ? "galleryUsed" : "cameraUsed"
+        
+        case .numberOfDocumentsBeforeDelete: return "numberOfDocumentsBeforeDelete"
+        case .createDocumentAgain: return "createDocumentAgain"
         }
     }
     
@@ -29,6 +40,12 @@ extension Event {
         switch self {
         case .documentModeSelected(let mode):
             return ["documentMode": mode.rawValue]
+        case .userFoundBy(let mode):
+            return ["searchType": mode.rawValue]
+        case .useOfDescription(let usage):
+            return ["used": usage]
+        case .numberOfDocumentsBeforeDelete(let sum):
+            return ["numberOfDocuments": sum]
         default:
             return [:]
         }

@@ -13,4 +13,16 @@ enum Event {
     case logout
     
     case documentModeSelected(DocumentMode)
+    
+    case userFoundBy(SearchMode)
+    case userNotFound
+    
+    // TODO: Četnosti jednotlivých typů záznamů (ambulantní zpráva, přijímají zpráva,...)
+    case useOfDescription(Bool)
+    
+    // TODO: Swipe delete?
+    case galleryUsed(Bool)
+    
+    case numberOfDocumentsBeforeDelete(Int)
+    case createDocumentAgain
 }

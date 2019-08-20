@@ -13,3 +13,9 @@ struct FolderDomainModel {
     var id : String
     var name: String
 }
+
+enum SearchMode: String {
+    case history = "history"
+    case search = "search"
+    case scan = "scan"
+}
