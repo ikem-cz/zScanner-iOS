@@ -17,7 +17,7 @@ enum Event {
     case userFoundBy(SearchMode)
     case userNotFound
     
-    // TODO: Četnosti jednotlivých typů záznamů (ambulantní zpráva, přijímají zpráva,...)
+    case documentType(String)
     case useOfDescription(Bool)
     
     // TODO: Swipe delete?
