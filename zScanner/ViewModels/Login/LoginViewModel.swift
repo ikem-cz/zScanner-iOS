@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import RxRelay
+import SeaCatClient
 
 class LoginViewModel {
     
@@ -20,6 +21,7 @@ class LoginViewModel {
     }
  
     //MARK: Instance part
+    private let networkManager: NetworkManager
     var model: LoginDomainModel
     
     let usernameField = TextInputField(title: "login.username.title".localized, validator: { !$0.isEmpty })
@@ -29,7 +31,8 @@ class LoginViewModel {
     
     var isValid: Observable<Bool>
     
-    init(model: LoginDomainModel) {
+    init(model: LoginDomainModel, networkManager: NetworkManager) {
+        self.networkManager = networkManager
         self.model = model
         isValid = Observable<Bool>.combineLatest(usernameField.isValid, passwordField.isValid) { (username, password) -> Bool in
             return username && password
@@ -38,13 +41,52 @@ class LoginViewModel {
     
     //MARK: Interface
     func signin() {
-        // update model
+        
         model.username = usernameField.text.value
         model.password = passwordField.text.value
         
-        status.onNext(.success)
-    
+        let seaCatToken = UUID().uuidString
+        
+        print("UUID: \(seaCatToken)")
+        
+        guard let csr = SCCSR() else {
+            assertionFailure()
+            return
+        }
+        csr.setGivenName(model.username)
+        csr.setUniqueIdentifier(seaCatToken)
+        let result = csr.submit(nil)
+        print("CSR submit result: \(result)")
+        
+        networkManager.submitPassword(AuthNetworkModel(password: model.password, token: seaCatToken))
+            .subscribe(onNext: { status in
+                print(status)
+            })
+            .disposed(by: disposeBag)
+
         print(model)
-        // TODO: Continue with SeaCat
+        
+        
+        SeaCatClient.addObserver(self, selector:#selector(self.onStateChanged), name:SeaCat_Notification_StateChanged);
+        seaCatTimer = Timer.scheduledTimer(timeInterval:1.0, target:self, selector:#selector(self.onStateChanged), userInfo:nil, repeats:true);
+        onStateChanged()
+    }
+    
+    // MAKR: Helpers
+    private let disposeBag = DisposeBag()
+    private var seaCatTimer: Timer!
+    
+    @objc func onStateChanged()
+    {
+        OperationQueue.main.addOperation {
+            let state = SeaCatClient.getState()
+            print("Seacat state: \(state)")
+            
+            if SeaCatClient.isReady() {
+                self.seaCatTimer.invalidate()
+                self.status.onNext(.success)
+                self.status.onCompleted()
+            }
+        }
     }
 }

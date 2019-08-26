@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SeaCatClient
 
 protocol LoginFlowDelegate: FlowDelegate {
     func successfulLogin()
@@ -25,6 +26,7 @@ class LoginCoordinator: Coordinator {
     
     //MARK: Interface
     func begin() {
+        //SeaCatClient.reset()
         showLoginScreen()
     }
     
@@ -35,7 +37,8 @@ class LoginCoordinator: Coordinator {
                 LoginDomainModel(
                     username: "",
                     password: ""
-                )
+                ),
+                           networkManager: IkemNetworkManager(api: NativeAPI())
             ),
             coordinator: self
         )

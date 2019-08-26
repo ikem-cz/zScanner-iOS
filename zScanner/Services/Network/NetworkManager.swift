@@ -27,4 +27,6 @@ protocol NetworkManager {
     func getFolder(with id: String) -> Observable<RequestStatus<FolderNetworkModel>>
     
     func uploadPage(_ page: PageNetworkModel) -> Observable<RequestStatus<EmptyResponse>>
+    
+    func submitPassword(_ auth: AuthNetworkModel) -> Observable<RequestStatus<EmptyResponse>>
 }

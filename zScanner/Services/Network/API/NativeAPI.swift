@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SeaCatClient
 
 struct NativeAPI: API {
     
@@ -37,7 +38,11 @@ struct NativeAPI: API {
             urlRequest.httpBody = request.parameters?.toJSONData()
         }
         
-        let session = URLSession.shared
+        guard let configuration = SeaCatClient.getNSURLSessionConfiguration() else {
+            callback(.error(RequestError(.seacatError)))
+            return
+        }
+        let session = URLSession(configuration: configuration)
         let task = session.dataTask(
             with: urlRequest as URLRequest,
             completionHandler: { (data, response, error) in
@@ -118,7 +123,10 @@ struct NativeAPI: API {
         }
         
         let uploadDelegate = UploadDelegate(callback: callback)
-        let configuration = URLSessionConfiguration.default
+        guard let configuration = SeaCatClient.getNSURLSessionConfiguration() else {
+            callback(.error(RequestError(.seacatError)))
+            return
+        }
         configuration.timeoutIntervalForRequest = 300
         configuration.timeoutIntervalForResource = 300
         let session = URLSession(configuration: configuration, delegate: uploadDelegate, delegateQueue: .main)

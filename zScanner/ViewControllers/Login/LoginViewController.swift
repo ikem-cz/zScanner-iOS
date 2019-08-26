@@ -10,6 +10,7 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import SeaCatClient
 
 protocol LoginViewDelegate: BaseCoordinator {
     func successfulLogin()

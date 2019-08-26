@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SeaCatClient
 
 class AppCoordinator: Coordinator {
     
@@ -18,8 +19,11 @@ class AppCoordinator: Coordinator {
     
     // MARK: Inteface
     func begin() {
-        startLoginCoordinator()
-//        startDocumentsCoordinator()
+        if SeaCatClient.isReady() {
+            startDocumentsCoordinator()
+        } else {
+            startLoginCoordinator()
+        }
     }
     
     // MARK: Helpers
@@ -46,6 +50,7 @@ extension AppCoordinator: LoginFlowDelegate {
 // MARK: - DocumentsFlowDelegate implementation
 extension AppCoordinator: DocumentsFlowDelegate {
     func logout() {
+        SeaCatClient.reset()
         startLoginCoordinator()
     }
 }

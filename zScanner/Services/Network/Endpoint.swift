@@ -24,4 +24,11 @@ enum Environment {
             case .testing: return Config.testingURL
         }
     }
+    
+    var authUrl: String {
+        switch self {
+        case .production: return Config.authUrl
+        case .testing: return ""
+        }
+    }
 }
