@@ -19,7 +19,7 @@ extension DocumentTypeNetworkModel {
         return DocumentTypeDomainModel(
             id: type,
             name: display,
-            mode: DocumentMode.init(rawValue: mode) ?? .undefined
+            mode: DocumentMode(rawValue: mode) ?? .undefined
         )
     }
 }

@@ -26,7 +26,6 @@ class LoginCoordinator: Coordinator {
     
     //MARK: Interface
     func begin() {
-        //SeaCatClient.reset()
         showLoginScreen()
     }
     

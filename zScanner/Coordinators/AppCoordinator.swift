@@ -9,6 +9,10 @@
 import UIKit
 import SeaCatClient
 
+var isReady: Bool {
+    return SeaCatClient.isReady()
+}
+
 class AppCoordinator: Coordinator {
     
     //MARK: - Instance part

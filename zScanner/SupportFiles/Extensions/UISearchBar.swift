@@ -20,7 +20,7 @@ extension UISearchBar {
     
     private var searchIcon: UIImage? {
         let subViews = subviews.flatMap { $0.subviews }
-        return  ((subViews.filter { $0 is UIImageView }).first as? UIImageView)?.image
+        return ((subViews.filter { $0 is UIImageView }).first as? UIImageView)?.image
     }
     
     var isLoading: Bool {

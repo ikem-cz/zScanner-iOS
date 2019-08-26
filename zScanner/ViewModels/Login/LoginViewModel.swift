@@ -13,7 +13,7 @@ import SeaCatClient
 
 class LoginViewModel {
     
-    enum State {
+    enum State: Equatable {
         case loading
         case success
         case error(message: String)
@@ -41,6 +41,11 @@ class LoginViewModel {
     
     //MARK: Interface
     func signin() {
+        guard let value = try? self.status.value(), value == .awaitingInteraction else {
+            return
+        }
+        
+        status.onNext(.loading)
         
         model.username = usernameField.text.value
         model.password = passwordField.text.value
@@ -64,8 +69,6 @@ class LoginViewModel {
             })
             .disposed(by: disposeBag)
 
-        print(model)
-        
         
         SeaCatClient.addObserver(self, selector:#selector(self.onStateChanged), name:SeaCat_Notification_StateChanged);
         seaCatTimer = Timer.scheduledTimer(timeInterval:1.0, target:self, selector:#selector(self.onStateChanged), userInfo:nil, repeats:true);
@@ -76,14 +79,11 @@ class LoginViewModel {
     private let disposeBag = DisposeBag()
     private var seaCatTimer: Timer!
     
-    @objc func onStateChanged()
-    {
-        OperationQueue.main.addOperation {
-            let state = SeaCatClient.getState()
-            print("Seacat state: \(state)")
-            
+    @objc func onStateChanged() {
+        DispatchQueue.main.async {
             if SeaCatClient.isReady() {
                 self.seaCatTimer.invalidate()
+                SeaCatClient.removeObserver(self, name: SeaCat_Notification_StateChanged)
                 self.status.onNext(.success)
                 self.status.onCompleted()
             }

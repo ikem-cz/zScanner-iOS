@@ -47,7 +47,7 @@ class NewDocumentTypeViewModel {
         }
         
         switch mode {
-        case .document, .examination:
+        case .document, .examination, .ext:
             return [
                 ListPickerField<DocumentTypeDomainModel>(title: "form.listPicker.title".localized, list: documentTypes),
                 TextInputField(title: "form.documentDecription.title".localized, validator: { _ in true }),

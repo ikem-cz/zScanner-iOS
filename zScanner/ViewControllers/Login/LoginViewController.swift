@@ -10,7 +10,6 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
-import SeaCatClient
 
 protocol LoginViewDelegate: BaseCoordinator {
     func successfulLogin()
@@ -74,6 +73,14 @@ class LoginViewController: BaseViewController {
         }).disposed(by: disposeBag)
         
         viewModel.status.subscribe(onNext: { [weak self] status in
+            if status == .loading {
+                self?.loading.startAnimating()
+            } else {
+                self?.loading.stopAnimating()
+            }
+        }).disposed(by: disposeBag)
+        
+        viewModel.status.subscribe(onNext: { [weak self] status in
             switch status {
             case .success:
                self?.coordinator.successfulLogin()
@@ -125,6 +132,13 @@ class LoginViewController: BaseViewController {
             make.right.left.equalToSuperview().inset(20)
         }
         
+        loginButton.addSubview(loading)
+        loading.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.right.equalToSuperview().inset(12)
+        }
+        
+        // TODO: Localize
         titleLabel.text = "zScanner"
     }
     
@@ -161,6 +175,12 @@ class LoginViewController: BaseViewController {
         let button = PrimaryButton()
         button.setTitle("login.button.title".localized, for: .normal)
         return button
+    }()
+    
+    private lazy var loading: UIActivityIndicatorView = {
+        let loading = UIActivityIndicatorView(style: .white)
+        loading.hidesWhenStopped = true
+        return loading
     }()
         
     private lazy var container: UIView = {

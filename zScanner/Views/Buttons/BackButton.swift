@@ -20,7 +20,6 @@ class BackButton: UIBarButtonItem {
     
     override init() {
         super.init()
-        
         setup()
     }
     
@@ -30,8 +29,21 @@ class BackButton: UIBarButtonItem {
     
     // MARK: Helpers
     private func setup() {
-        image = #imageLiteral(resourceName: "backButton")
-        action = #selector(didClick)
+        let view = UIView()
+        let image = UIImageView(image: #imageLiteral(resourceName: "backButton"))
+        view.addSubview(image)
+        
+        image.snp.makeConstraints { make in
+            make.centerY.left.equalToSuperview()
+        }
+        
+        view.snp.makeConstraints { make in
+            make.width.equalTo(32)
+            make.height.equalTo(44)
+        }
+        
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didClick)))
+        customView = view
     }
     
     @objc private func didClick() {
