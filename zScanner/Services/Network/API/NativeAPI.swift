@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SeaCatClient
 
 struct NativeAPI: API {
     

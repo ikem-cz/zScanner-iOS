@@ -8,7 +8,6 @@
 
 import UIKit
 import Firebase
-import SeaCatClient
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,13 +22,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         SeaCatClient.configure(with: nil)
-//        SeaCatClient.setLogMask(SCLogFlag.LOG_FLAG_DEBUG_GENERIC)
+        SeaCatClient.setLogMask(SCLogFlag.LOG_FLAG_DEBUG_GENERIC)
         
         FirebaseApp.configure()
         
+        runApp()
+
+        return true
+    }
+    
+    private func runApp() {
         appCoordinator = AppCoordinator()
         appCoordinator?.begin()
-        
-        return true
     }
 }

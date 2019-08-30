@@ -1,6 +1,0 @@
-framework module SeaCatClient {
-  umbrella header "SeaCatClient.h"
-
-  export *
-  module * { export * }
-}

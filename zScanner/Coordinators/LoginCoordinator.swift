@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SeaCatClient
 
 protocol LoginFlowDelegate: FlowDelegate {
     func successfulLogin()
@@ -41,7 +40,7 @@ class LoginCoordinator: Coordinator {
             ),
             coordinator: self
         )
-        push(viewController)
+        changeWindowControllerTo(viewController)
     }
     
 }

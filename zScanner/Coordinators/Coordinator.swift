@@ -84,9 +84,8 @@ class Coordinator {
         viewControllers = []
     }
     
-    //MARK: Helpers
-    private func changeWindowControllerTo(_ navigationController: UINavigationController) {
-        window.rootViewController = navigationController
+    func changeWindowControllerTo(_ viewController: UIViewController) {
+        window.rootViewController = viewController
         window.makeKeyAndVisible()
     }
     

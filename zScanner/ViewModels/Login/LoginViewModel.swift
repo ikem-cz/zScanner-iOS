@@ -9,7 +9,6 @@
 import Foundation
 import RxSwift
 import RxRelay
-import SeaCatClient
 
 class LoginViewModel {
     
