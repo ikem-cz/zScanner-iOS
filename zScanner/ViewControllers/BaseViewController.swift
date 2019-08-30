@@ -60,7 +60,6 @@ class BaseViewController: PluggableViewController {
     private func configureNavigationBarButtons() {
         guard let navigationController = navigationController else { return }
         
-        // TODO: set deleate to catch before pop()
         navigationController.interactivePopGestureRecognizer?.delegate = self
         navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItems = leftBarButtonItems

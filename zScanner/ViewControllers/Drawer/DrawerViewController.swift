@@ -27,9 +27,8 @@ class DrawerViewController: BaseViewController {
     }
     
     // MARK: Lifecycle
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
+    override func loadView() {
+        super.loadView()
         setupView()
     }
     

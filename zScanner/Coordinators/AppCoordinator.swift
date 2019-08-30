@@ -8,6 +8,10 @@
 
 import UIKit
 
+var isReady: Bool {
+    return SeaCatClient.isReady()
+}
+
 class AppCoordinator: Coordinator {
     
     //MARK: - Instance part
@@ -18,12 +22,21 @@ class AppCoordinator: Coordinator {
     
     // MARK: Inteface
     func begin() {
-        startLoginCoordinator()
-//        startDocumentsCoordinator()
+        if SeaCatClient.isReady() {
+            startDocumentsCoordinator()
+        } else {
+            showSplashScreen()
+            waitForSeaCat()
+        }
     }
     
     // MARK: Helpers
-    private func startLoginCoordinator() {
+    private func showSplashScreen() {
+        guard let viewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController() else { return }
+        changeWindowControllerTo(viewController)
+    }
+    
+    private func runLoginFlow() {
         let coordinator = LoginCoordinator(flowDelegate: self, window: window)
         addChildCoordinator(coordinator)
         coordinator.begin()
@@ -33,6 +46,32 @@ class AppCoordinator: Coordinator {
         let coordinator = DocumentsCoordinator(flowDelegate: self, window: window)
         addChildCoordinator(coordinator)
         coordinator.begin()
+    }
+    
+    // MARK: SeaCat
+    private var seaCatTimer: Timer?
+    
+    private func waitForSeaCat() {
+        SeaCatClient.addObserver(self, selector: #selector(seaCatStateChanged), name: SeaCat_Notification_StateChanged)
+        seaCatTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(seaCatStateChanged), userInfo: nil, repeats: true)
+        seaCatStateChanged()
+    }
+    
+    @objc private func seaCatStateChanged() {
+        guard let state = SeaCatClient.getState() else { return }
+        
+        if state[1] == "C" || state[1] == "*" {
+            seaCatTimer?.invalidate()
+            SeaCatClient.removeObserver(self)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                if SeaCatClient.isReady() {
+                    self.startDocumentsCoordinator()
+                } else {
+                    self.runLoginFlow()
+                }
+            }
+        }
     }
 }
 
@@ -46,6 +85,7 @@ extension AppCoordinator: LoginFlowDelegate {
 // MARK: - DocumentsFlowDelegate implementation
 extension AppCoordinator: DocumentsFlowDelegate {
     func logout() {
-        startLoginCoordinator()
+        SeaCatClient.reset()
+        runLoginFlow()
     }
 }

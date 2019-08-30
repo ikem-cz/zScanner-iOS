@@ -17,6 +17,7 @@
 // MARK: - Document type
 "documentMode.doc.name" = "Dokument";
 "documentMode.exam.name" = "Vyšetření";
+"documentMode.ext.name" = "Externí";
 "documentMode.photo.name" = "Fotografie";
 
 // MARK: - Documents List

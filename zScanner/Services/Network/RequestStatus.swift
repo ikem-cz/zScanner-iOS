@@ -43,6 +43,7 @@ enum RequestErrorType: Equatable {
     case serverError(Error)
     case jsonParserError
     case dataCorruptedError
+    case seacatError
     
     var rawValue: String {
         switch self {
@@ -56,6 +57,8 @@ enum RequestErrorType: Equatable {
             return "jsonParserError"
         case .dataCorruptedError:
             return "dataCorruptedError"
+        case .seacatError:
+            return "seacatError"
         }
     }
     

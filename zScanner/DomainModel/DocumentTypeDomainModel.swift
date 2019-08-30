@@ -9,6 +9,7 @@
 import Foundation
 
 enum DocumentMode: String {
+    case ext = "ext"
     case document = "doc"
     case examination = "exam"
     case photo = "photo"

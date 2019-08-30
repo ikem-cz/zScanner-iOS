@@ -21,6 +21,36 @@ class IkemNetworkManager: NetworkManager {
     }
     
     // MARK: Interface
+    func submitPassword(_ auth: AuthNetworkModel) -> Observable<RequestStatus<EmptyResponse>> {
+        return Observable.create { observer -> Disposable in
+            var request = SubmitPasswordRequest(auth: auth)
+            
+            request.headers.merge(
+                self.requestBehavior.additionalHeaders,
+                uniquingKeysWith: { (current, _) in current }
+            )
+            
+            self.requestBehavior.beforeSend()
+            
+            self.api.process(request, with: { [weak self] requestStatus in
+                observer.onNext(requestStatus)
+                
+                switch requestStatus {
+                case .progress:
+                    break
+                case .success:
+                    self?.requestBehavior.afterSuccess()
+                    observer.onCompleted()
+                case .error(let error):
+                    self?.requestBehavior.afterError(error)
+                    observer.onError(error)
+                }
+            })
+            
+            return Disposables.create()
+        }
+    }
+    
     func getDocumentTypes() -> Observable<RequestStatus<[DocumentTypeNetworkModel]>> {
         return Observable.create { observer -> Disposable in
             var request = DocumentTypesRequest()

@@ -35,11 +35,12 @@ class LoginCoordinator: Coordinator {
                 LoginDomainModel(
                     username: "",
                     password: ""
-                )
+                ),
+                           networkManager: IkemNetworkManager(api: NativeAPI())
             ),
             coordinator: self
         )
-        push(viewController)
+        changeWindowControllerTo(viewController)
     }
     
 }
