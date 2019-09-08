@@ -42,7 +42,7 @@ class DocumentsListViewController: BaseViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
+        super.viewWillAppear(animated)
         
         viewModel.updateDocuments()
         tableView.reloadSections([0], with: .fade)

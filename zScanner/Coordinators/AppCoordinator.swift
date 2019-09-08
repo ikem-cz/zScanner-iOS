@@ -22,17 +22,17 @@ class AppCoordinator: Coordinator {
     
     // MARK: Inteface
     func begin() {
+        // Skip waiting in case of superfast SeaCat init. (with existing credentials)
         if SeaCatClient.isReady() {
             startDocumentsCoordinator()
         } else {
             showSplashScreen()
-            waitForSeaCat()
         }
     }
     
     // MARK: Helpers
     private func showSplashScreen() {
-        guard let viewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController() else { return }
+        let viewController = SeaCatSplashViewController(coordinator: self)
         changeWindowControllerTo(viewController)
     }
     
@@ -47,38 +47,20 @@ class AppCoordinator: Coordinator {
         addChildCoordinator(coordinator)
         coordinator.begin()
     }
-    
-    // MARK: SeaCat
-    private var seaCatTimer: Timer?
-    private var timeoutTimer: Timer?
-    
-    private func waitForSeaCat() {
-        SeaCatClient.addObserver(self, selector: #selector(seaCatStateChanged), name: SeaCat_Notification_StateChanged)
-        seaCatTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(seaCatStateChanged), userInfo: nil, repeats: true)
-        timeoutTimer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(timeout), userInfo: nil, repeats: false)
-        seaCatStateChanged()
-    }
-    
-    @objc private func seaCatStateChanged() {
-        guard let state = SeaCatClient.getState() else { return }
+}
+
+// MARK: - SeaCatSplashCoordinator implementation
+extension AppCoordinator: SeaCatSplashCoordinator {
+    func seaCatInitialized() {
         
-        if state[1] == "C" || state[1] == "*" {
-            seaCatTimer?.invalidate()
-            timeoutTimer?.invalidate()
-            SeaCatClient.removeObserver(self)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                if SeaCatClient.isReady() {
-                    self.startDocumentsCoordinator()
-                } else {
-                    self.runLoginFlow()
-                }
-            }
+        // It's not about SeaCat is ready but more about certificate exists.
+        // In this case we are creating certificate with credentials on login.
+        // Therefore is more like credentials exists -> is logged in
+        if SeaCatClient.isReady() {
+            self.startDocumentsCoordinator()
+        } else {
+            self.runLoginFlow()
         }
-    }
-    
-    @objc private func timeout() {
-        SeaCatClient.reset()
     }
 }
 

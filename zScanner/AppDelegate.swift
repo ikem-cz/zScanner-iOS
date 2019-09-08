@@ -20,14 +20,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private var appCoordinator: AppCoordinator?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
         SeaCatClient.configure(with: nil)
-        SeaCatClient.setLogMask(SCLogFlag.LOG_FLAG_DEBUG_GENERIC)
-        
         FirebaseApp.configure()
-        
         runApp()
-
         return true
     }
     
