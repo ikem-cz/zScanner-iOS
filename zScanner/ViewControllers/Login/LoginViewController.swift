@@ -15,7 +15,7 @@ protocol LoginViewDelegate: BaseCoordinator {
     func successfulLogin()
 }
 
-class LoginViewController: BaseViewController {
+class LoginViewController: BaseViewController, ErrorHandling {
 
     // MARK: Instance part
     private unowned let coordinator: LoginViewDelegate
@@ -56,38 +56,54 @@ class LoginViewController: BaseViewController {
             .bind(to: viewModel.passwordField.text)
             .disposed(by: disposeBag)
         
-        passwordTextField.passwordToggleButton.rx.tap.subscribe(onNext: { [weak self] _ in
-            self?.viewModel.passwordField.protected.toggle()
-        }).disposed(by: disposeBag)
+        passwordTextField.passwordToggleButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                self?.viewModel.passwordField.protected.toggle()
+            })
+            .disposed(by: disposeBag)
         
-        viewModel.passwordField.protected.bind(to: passwordTextField.protected).disposed(by: disposeBag)
+        viewModel.passwordField.protected
+            .bind(to: passwordTextField.protected)
+            .disposed(by: disposeBag)
         
-        viewModel.isValid.bind(to: loginButton.rx.isEnabled).disposed(by: disposeBag)
+        viewModel.isValid
+            .bind(to: loginButton.rx.isEnabled)
+            .disposed(by: disposeBag)
         
-        loginButton.rx.tap.do(onNext: { [weak self] in
-            self?.usernameTextField.resignFirstResponder()
-            self?.passwordTextField.resignFirstResponder()
-        })
-        .subscribe(onNext: { [weak self] in
-            self?.viewModel.signin()
-        }).disposed(by: disposeBag)
+        loginButton.rx.tap
+            .do(onNext: { [weak self] in
+                self?.usernameTextField.resignFirstResponder()
+                self?.passwordTextField.resignFirstResponder()
+            })
+            .subscribe(onNext: { [weak self] in
+                self?.viewModel.signin()
+            })
+            .disposed(by: disposeBag)
         
-        viewModel.status.subscribe(onNext: { [weak self] status in
-            if status == .loading {
-                self?.loading.startAnimating()
-            } else {
-                self?.loading.stopAnimating()
-            }
-        }).disposed(by: disposeBag)
+        viewModel.status
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] status in
+                if status == .loading {
+                    self?.loading.startAnimating()
+                } else {
+                    self?.loading.stopAnimating()
+                }
+            })
+            .disposed(by: disposeBag)
         
-        viewModel.status.subscribe(onNext: { [weak self] status in
-            switch status {
-            case .success:
-               self?.coordinator.successfulLogin()
-            default:
-                break
-            }
-        }).disposed(by: disposeBag)
+        viewModel.status
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] status in
+                switch status {
+                case .success:
+                   self?.coordinator.successfulLogin()
+                case .error(let error):
+                    self?.handleError(error, okCallback: nil, retryCallback: nil)
+                default:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     private func setupView() {
@@ -138,8 +154,7 @@ class LoginViewController: BaseViewController {
             make.right.equalToSuperview().inset(12)
         }
         
-        // TODO: Localize
-        titleLabel.text = "zScanner"
+        titleLabel.text = "login.screen.title".localized
     }
     
     private lazy var logoView: UIImageView = {
@@ -188,4 +203,3 @@ class LoginViewController: BaseViewController {
         return view
     }()
 }
-

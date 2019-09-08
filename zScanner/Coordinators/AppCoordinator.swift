@@ -50,10 +50,12 @@ class AppCoordinator: Coordinator {
     
     // MARK: SeaCat
     private var seaCatTimer: Timer?
+    private var timeoutTimer: Timer?
     
     private func waitForSeaCat() {
         SeaCatClient.addObserver(self, selector: #selector(seaCatStateChanged), name: SeaCat_Notification_StateChanged)
         seaCatTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(seaCatStateChanged), userInfo: nil, repeats: true)
+        timeoutTimer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(timeout), userInfo: nil, repeats: false)
         seaCatStateChanged()
     }
     
@@ -62,6 +64,7 @@ class AppCoordinator: Coordinator {
         
         if state[1] == "C" || state[1] == "*" {
             seaCatTimer?.invalidate()
+            timeoutTimer?.invalidate()
             SeaCatClient.removeObserver(self)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
@@ -72,6 +75,10 @@ class AppCoordinator: Coordinator {
                 }
             }
         }
+    }
+    
+    @objc private func timeout() {
+        SeaCatClient.reset()
     }
 }
 

@@ -10,9 +10,13 @@
 "alert.okButton.title" = "OK";
 
 // MARK: - Login
+"login.screen.title" = "zScanner";
+
 "login.username.title" = "login";
 "login.password.title" = "heslo";
 "login.button.title"= "Přihlásit";
+
+"login.failed.message" = "Zkontrolujte svoje údaje a zkuste to prosím znovu.";
 
 // MARK: - Document type
 "documentMode.doc.name" = "Dokument";
@@ -66,3 +70,15 @@
 "about.info.paragraph" = "Aplikace zScanner je určena k rychlému importu dokumentů vyšetření a fotodokumentace do NIS IKEM Zlatokop";
 "about.copyright.title" = "© 2019 Datové centrum IKEM";
 
+// MARK: Error handling
+"dialog.requestError.ok" = "Ok";
+"dialog.requestError.retry" = "Opakovat";
+"dialog.requestError.title" = "Načítání dat selhalo";
+"dialog.requestError.message[noInternetConnection]" = "Chybí připojení k internetu.";
+"dialog.requestError.message[noData]" = "Odpověď serveru je prázdná.";
+"dialog.requestError.message[serverError]" = "Chyba serveru, prosím obraťte se na podporu. (%@)";
+"dialog.requestError.message[jsonParserError]" = "Chybný formát dat, zkuste to prosím znovu.";
+"dialog.requestError.message[dataCorruptedError]" = "Data nelze zpracovat, zkuste to prosím znovu.";
+"dialog.requestError.message[seacatError]" = "Nelze ověřit vaši identitu, prosím obraťte se na podporu.";
+"dialog.requestError.message[timeout]" = "Časový limit vypršel, zkuste to prosím znovu.";
+"dialog.requestError.message[timeout]" = "";

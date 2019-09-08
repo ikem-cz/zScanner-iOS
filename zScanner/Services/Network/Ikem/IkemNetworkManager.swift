@@ -22,128 +22,43 @@ class IkemNetworkManager: NetworkManager {
     
     // MARK: Interface
     func submitPassword(_ auth: AuthNetworkModel) -> Observable<RequestStatus<EmptyResponse>> {
-        return Observable.create { observer -> Disposable in
-            var request = SubmitPasswordRequest(auth: auth)
-            
-            request.headers.merge(
-                self.requestBehavior.additionalHeaders,
-                uniquingKeysWith: { (current, _) in current }
-            )
-            
-            self.requestBehavior.beforeSend()
-            
-            self.api.process(request, with: { [weak self] requestStatus in
-                observer.onNext(requestStatus)
-                
-                switch requestStatus {
-                case .progress:
-                    break
-                case .success:
-                    self?.requestBehavior.afterSuccess()
-                    observer.onCompleted()
-                case .error(let error):
-                    self?.requestBehavior.afterError(error)
-                    observer.onError(error)
-                }
-            })
-            
-            return Disposables.create()
-        }
+        let request = SubmitPasswordRequest(auth: auth)
+        return observe(request)
+    }
+    
+    func getStatus(_ token: TokenNetworkModel) -> Observable<RequestStatus<StatusResponseNetworkModel>> {
+        let request = GetStatusRequest(token: token)
+        return observe(request)
     }
     
     func getDocumentTypes() -> Observable<RequestStatus<[DocumentTypeNetworkModel]>> {
-        return Observable.create { observer -> Disposable in
-            var request = DocumentTypesRequest()
-            
-            request.headers.merge(
-                self.requestBehavior.additionalHeaders,
-                uniquingKeysWith: { (current, _) in current }
-            )
-            
-            self.requestBehavior.beforeSend()
-            
-            self.api.process(request, with: { [weak self] requestStatus in
-                observer.onNext(requestStatus)
-                
-                switch requestStatus {
-                case .progress:
-                    break
-                case .success:
-                    self?.requestBehavior.afterSuccess()
-                    observer.onCompleted()
-                case .error(let error):
-                    self?.requestBehavior.afterError(error)
-                    observer.onError(error)
-                }
-            })
-            
-            return Disposables.create()
-        }
+        let request = DocumentTypesRequest()
+        return observe(request)
     }
     
     func uploadDocument(_ document: DocumentNetworkModel) -> Observable<RequestStatus<EmptyResponse>> {
-        return Observable.create { observer -> Disposable in
-            var request = SubmitReuest(document: document)
-            
-            request.headers.merge(
-                self.requestBehavior.additionalHeaders,
-                uniquingKeysWith: { (current, _) in current }
-            )
-            
-            self.requestBehavior.beforeSend()
-            
-            self.api.process(request, with: { [weak self] requestStatus in
-                observer.onNext(requestStatus)
-                
-                switch requestStatus {
-                case .progress:
-                    break
-                case .success:
-                    self?.requestBehavior.afterSuccess()
-                    observer.onCompleted()
-                case .error(let error):
-                    self?.requestBehavior.afterError(error)
-                    observer.onError(error)
-                }
-            })
-            
-            return Disposables.create()
-        }
+        let request = SubmitReuest(document: document)
+        return observe(request)
     }
     
     func searchFolders(with query: String) -> Observable<RequestStatus<[FolderNetworkModel]>> {
-        return Observable.create { observer -> Disposable in
-            var request = SearchFoldersRequest(query: query)
-            
-            request.headers.merge(
-                self.requestBehavior.additionalHeaders,
-                uniquingKeysWith: { (current, _) in current }
-            )
-            
-            self.requestBehavior.beforeSend()
-            
-            self.api.process(request, with: { [weak self] requestStatus in
-                observer.onNext(requestStatus)
-                
-                switch requestStatus {
-                case .progress:
-                    break
-                case .success:
-                    self?.requestBehavior.afterSuccess()
-                    observer.onCompleted()
-                case .error(let error):
-                    self?.requestBehavior.afterError(error)
-                    observer.onError(error)
-                }
-            })
-            
-            return Disposables.create()
-        }
+        let request = SearchFoldersRequest(query: query)
+        return observe(request)
     }
     
     func getFolder(with id: String) -> Observable<RequestStatus<FolderNetworkModel>> {
+        let request = GetFolderRequest(with: id)
+        return observe(request)
+    }
+    
+    func uploadPage(_ page: PageNetworkModel) -> Observable<RequestStatus<EmptyResponse>> {
+        let request = UploadPageReuest(with: page)
+        return observe(request)
+    }
+    
+    private func observe<T: Request, U: Decodable>(_ request: T) -> Observable<RequestStatus<U>> where T.DataType == U {
         return Observable.create { observer -> Disposable in
-            var request = GetFolderRequest(with: id)
+            var request = request
             
             request.headers.merge(
                 self.requestBehavior.additionalHeaders,
@@ -153,36 +68,6 @@ class IkemNetworkManager: NetworkManager {
             self.requestBehavior.beforeSend()
             
             self.api.process(request, with: { [weak self] requestStatus in
-                observer.onNext(requestStatus)
-                
-                switch requestStatus {
-                case .progress:
-                    break
-                case .success:
-                    self?.requestBehavior.afterSuccess()
-                    observer.onCompleted()
-                case .error(let error):
-                    self?.requestBehavior.afterError(error)
-                    observer.onError(error)
-                }
-            })
-            
-            return Disposables.create()
-        }
-    }
-    
-    func uploadPage(_ page: PageNetworkModel) -> Observable<RequestStatus<EmptyResponse>> {
-        return Observable.create { observer -> Disposable in
-            var request = UploadPageReuest(with: page)
-            
-            request.headers.merge(
-                self.requestBehavior.additionalHeaders,
-                uniquingKeysWith: { (current, _) in current }
-            )
-            
-            self.requestBehavior.beforeSend()
-            
-            self.api.upload(request, with: { [weak self] requestStatus in
                 observer.onNext(requestStatus)
                 
                 switch requestStatus {
