@@ -38,9 +38,9 @@ class DocumentViewModel {
         let task = networkManager.uploadDocument(networkDocument)
         uploadTasks.append(task)
         
-        document.pages.enumerated().forEach({ (index, url) in
-            let page = PageNetworkModel(correlation: document.id, page: index, pageUrl: url)
-            let task = networkManager.uploadPage(page)
+        document.pages.enumerated().forEach({ (index, page) in
+            let pageNetworkModel = PageNetworkModel(from: page)
+            let task = networkManager.uploadPage(pageNetworkModel)
             uploadTasks.append(task)
         })
         
@@ -75,7 +75,6 @@ class DocumentViewModel {
             .subscribe(onNext: { [unowned self] element in
                 self.documentUploadStatus.onNext(element)
             }, onError: { [unowned self] error in
-                //self.documentUploadStatus.onNext(.progress(0))
                 self.documentUploadStatus.onNext(.failed)
                 self.documentUploadStatus.onError(error)
             }, onCompleted: { [unowned self] in

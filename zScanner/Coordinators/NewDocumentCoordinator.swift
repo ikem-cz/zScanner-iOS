@@ -138,30 +138,14 @@ class NewDocumentCoordinator: Coordinator {
     
     private func savePagesToDocument(_ pages: [UIImage]) {
         
-        // Get documents directory
-        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
         
-        // Create folder for document
-        let folderPath = documentsPath + "/" + newDocument.id
-        if !FileManager.default.fileExists(atPath: folderPath) {
-            do {
-                try FileManager.default.createDirectory(atPath: folderPath, withIntermediateDirectories: false, attributes: nil)
-            } catch {
-                return
-            }
-        }
         
         // Store images
         pages
-            .compactMap({
-                $0.jpegData(compressionQuality: 0.8)
-            })
             .enumerated()
-            .forEach({ (index, imageData) in
-                let fileName = URL(fileURLWithPath: folderPath + "/\(index).jpg")
-                if (try? imageData.write(to: fileName)) != nil {
-                    newDocument.pages.append(fileName)
-                }
+            .forEach({ (index, image) in
+                let page = PageDomainModel(image: image, index: index, correlationId: newDocument.id)
+                newDocument.pages.append(page)
             })
         }
     

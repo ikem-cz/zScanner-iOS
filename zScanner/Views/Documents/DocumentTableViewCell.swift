@@ -119,20 +119,20 @@ class DocumentTableViewCell: UITableViewCell {
             make.right.left.bottom.equalToSuperview()
         }
         
-        contentView.addSubview(loadingContainer)
-        loadingContainer.snp.makeConstraints { make in
+        contentView.addSubview(statusContainer)
+        statusContainer.snp.makeConstraints { make in
             make.right.equalTo(contentView.snp.rightMargin)
             make.left.equalTo(textContainer.snp.right).offset(8)
             make.width.height.equalTo(30)
             make.centerY.equalToSuperview()
         }
         
-        loadingContainer.addSubview(loadingCircle)
+        statusContainer.addSubview(loadingCircle)
         loadingCircle.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
         
-        loadingContainer.addSubview(successImageView)
+        statusContainer.addSubview(successImageView)
         successImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -164,5 +164,5 @@ class DocumentTableViewCell: UITableViewCell {
     
     private var textContainer = UIView()
     
-    private var loadingContainer = UIView()
+    private var statusContainer = UIView()
 }

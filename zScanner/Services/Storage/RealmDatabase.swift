@@ -24,19 +24,19 @@ extension Realm: Database {
         return self.object(ofType: type as! Object.Type, forPrimaryKey: id) as! T?
     }
     
-    func saveObject<T>(_ object: T) where T: Storable {
+    func saveObject<T: Storable>(_ object: T) {
         try! self.write {
             self.add(object as! Object)
         }
     }
     
-    func deleteAll<T>(of type: T.Type) where T: Storable {
+    func deleteObject<T: Storable>(_ object: T) {
+        if let object = object as? RichDeleting {
+            object.deleteRichContent()
+        }
+        
         try! self.write {
-            let objects = self.objects(type as! Object.Type)
-            
-            for object in objects {
-                self.delete(object)
-            }
+            self.delete(object as! Object)
         }
     }
 }

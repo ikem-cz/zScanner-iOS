@@ -12,4 +12,10 @@ struct PageNetworkModel: Encodable {
     var correlation: String
     var page: Int
     var pageUrl: URL
+    
+    init(from domainModel: PageDomainModel) {
+        self.pageUrl = domainModel.url
+        self.page = domainModel.index
+        self.correlation = domainModel.correlationId
+    }
 }

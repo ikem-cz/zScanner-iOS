@@ -9,7 +9,6 @@
 import Foundation
 import RealmSwift
 
-
 class DocumentDatabaseModel: Object {
     @objc dynamic var id = ""
     @objc dynamic var documentMode = ""
@@ -19,7 +18,7 @@ class DocumentDatabaseModel: Object {
     @objc dynamic var name = ""
     @objc dynamic var notes = ""
     @objc dynamic var folder: FolderDatabaseModel?
-    let pages = List<String>()
+    let pages = List<PageDatabaseModel>()
     
     convenience init(document: DocumentDomainModel) {
         self.init()
@@ -35,7 +34,7 @@ class DocumentDatabaseModel: Object {
         let realm = try! Realm()
         self.folder = realm.loadObject(FolderDatabaseModel.self, withId: document.folder.id) ?? FolderDatabaseModel(folder: document.folder)
         
-        self.pages.append(objectsIn: document.pages.map({ $0.absoluteString }))
+        self.pages.append(objectsIn: document.pages.map({ PageDatabaseModel(page: $0) }))
     }
     
     override class func primaryKey() -> String {
@@ -57,7 +56,7 @@ extension DocumentDatabaseModel {
             date: date,
             name: name,
             notes: notes,
-            pages: pages.compactMap({ URL(string: $0) })
+            pages: pages.map({ $0.toDomainModel() })
         )
     }
 }
