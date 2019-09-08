@@ -14,7 +14,7 @@ struct SubmitReuest: Request, ParametersJsonEncoded {
     var endpoint: Endpoint = IkemEndpoint.submitDocument
     var method: HTTPMethod = .post
     var parameters: Parameters?
-    var headers: HTTPHeaders = ["Content-Type": "application-json"]
+    var headers: HTTPHeaders = [:]
     
     init(document: DocumentNetworkModel) {
         parameters = document

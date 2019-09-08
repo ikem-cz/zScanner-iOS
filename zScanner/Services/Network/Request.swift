@@ -44,8 +44,9 @@ extension ParametersURLEncoded where Self: Request {
 protocol ParametersJsonEncoded {}
 
 // MARK: -
-protocol UploadFileURL {
+protocol FileUploading {
     var fileUrl: URL { get }
+    var boundary: String { get }
 }
 
 

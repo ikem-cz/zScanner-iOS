@@ -8,14 +8,15 @@
 
 import Foundation
 
-struct UploadPageReuest: Request, ParametersJsonEncoded, UploadFileURL {
+struct UploadPageReuest: Request, FileUploading {
     typealias DataType = EmptyResponse
     
     var endpoint: Endpoint = IkemEndpoint.uploadPage
     var method: HTTPMethod = .post
     var parameters: Parameters?
-    var headers: HTTPHeaders = ["Content-Type": "multipart/form-data; boundary=AaB03x"]
+    var headers: HTTPHeaders = [:]
     var fileUrl: URL
+    var boundary = "AaB03x"
     
     init(with page: PageNetworkModel) {
         parameters = page
