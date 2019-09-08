@@ -48,5 +48,3 @@ protocol FileUploading {
     var fileUrl: URL { get }
     var boundary: String { get }
 }
-
-

@@ -81,12 +81,10 @@ struct NativeAPI: API {
         let task: URLSessionDataTask
         
         if let uploadingRequest = request as? FileUploading {
-            guard let imageData = try? Data(contentsOf: uploadingRequest.fileUrl) else {
+            guard let requestBody = createBody(for: uploadingRequest, parameters: request.parameters) else {
                 callback(.error(RequestError(.dataCorruptedError)))
                 return
             }
-            
-            let requestBody = createBodyWithParameters(parameters: request.parameters, fileUrl: uploadingRequest.fileUrl, imageDataKey: imageData, boundary: uploadingRequest.boundary)
             
             let uploadDelegate = UploadDelegate(callback: { status in
                 if case let .progress(percentage) = status {
@@ -117,29 +115,31 @@ struct NativeAPI: API {
         callback(.progress(0))
     }
     
-    private func createBodyWithParameters(parameters: Encodable?, fileUrl: URL, imageDataKey: Data, boundary: String) -> Data {
+    private func createBody(for request: FileUploading, parameters: Encodable?) -> Data? {
         var body = Data()
-
-        // TODO: Do it more generic
-        if let page = parameters as? PageNetworkModel {
-            body.append(string: "--\(boundary)\r\n")
-            body.append(string: "Content-Disposition: form-data; name=\"correlation\"\r\n\r\n")
-            body.append(string: "\(page.correlation)\r\n")
-            body.append(string: "--\(boundary)\r\n")
-            body.append(string: "Content-Disposition: form-data; name=\"page\"\r\n\r\n")
-            body.append(string: "\(page.page)\r\n")
+            
+        if let properties = parameters?.properties().compactMap({ $0 }).filter({ !($0.value is URL) }) {
+            for property in properties {
+                body.append(string: "--\(request.boundary)\r\n")
+                body.append(string: "Content-Disposition: form-data; name=\"\(property.name)\"\r\n\r\n")
+                body.append(string: "\(String(describing: property.value))")
+                body.append(string: "\r\n")
+            }
         }
-
-        let filename = fileUrl.lastPathComponent
+    
+        guard let imageData = try? Data(contentsOf: request.fileUrl) else {
+            return nil
+        }
+        
+        let filename = request.fileUrl.lastPathComponent
         let mimetype = "image/jpg"
 
-        body.append(string: "--\(boundary)\r\n")
+        body.append(string: "--\(request.boundary)\r\n")
         body.append(string: "Content-Disposition: form-data; name=\"page\"; filename=\"\(filename)\"\r\n")
         body.append(string: "Content-Type: \(mimetype)\r\n\r\n")
-        body.append(imageDataKey)
+        body.append(imageData)
         body.append(string: "\r\n")
-
-        body.append(string: "--\(boundary)--\r\n")
+        body.append(string: "--\(request.boundary)--\r\n")
 
         return body
     }
@@ -157,8 +157,20 @@ private class UploadDelegate: NSObject, URLSessionDelegate, URLSessionTaskDelega
         self.callback = callback
     }
     
+    deinit {
+        print("")
+    }
+    
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         let percentage = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
         callback(.progress(percentage))
+    }
+    
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        callback(.error(RequestError(.serverError(error!))))
+    }
+    
+    func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        print("")
     }
 }

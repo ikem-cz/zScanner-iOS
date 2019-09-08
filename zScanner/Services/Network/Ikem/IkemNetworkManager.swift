@@ -57,7 +57,9 @@ class IkemNetworkManager: NetworkManager {
     }
     
     private func observe<T: Request, U: Decodable>(_ request: T) -> Observable<RequestStatus<U>> where T.DataType == U {
-        return Observable.create { observer -> Disposable in
+        return Observable.create { [weak self] observer -> Disposable in
+            guard let `self` = self else { return Disposables.create() }
+            
             var request = request
             
             request.headers.merge(
