@@ -43,10 +43,9 @@ class DocumentsListViewModel {
         
         // Find all documents with active upload
         let activeUploadDocuments = documents.filter({
-            if let status = try? $0.documentUploadStatus.value() {
-                return status != .success
-            }
-            return false
+            var currentStatus: DocumentViewModel.UploadStatus?
+            $0.documentUploadStatus.subscribe(onNext: { status in currentStatus = status }).disposed(by: disposeBag)
+            return currentStatus == .awaitingInteraction || currentStatus == .progress(0) // Any progress, parameter is not considered when comparing
         })
         
         loadDocuments()
@@ -65,28 +64,31 @@ class DocumentsListViewModel {
     private func loadDocuments() {
         documents = database
             .loadObjects(DocumentDatabaseModel.self)
-            .map({ DocumentViewModel(document: $0.toDomainModel()) })
+            .map({ DocumentViewModel(document: $0.toDomainModel(), networkManager: networkManager, database: database) })
             .reversed()
     }
     
     private func fetchDocumentTypes() {
-        networkManager.getDocumentTypes().subscribe(onNext: { [weak self] requestStatus in
-            switch requestStatus {
-            case .progress:
-                self?.documentModesState.onNext(.loading)
-                
-            case .success(data: let networkModel):
-                let documents = networkModel.map({ $0.toDomainModel() })
-                
-                self?.storeDocumentTypes(documents)
-                self?.storeDocumentModes(from: documents)
-                
-                self?.documentModesState.onNext(.success)
+        networkManager
+            .getDocumentTypes()
+            .subscribe(onNext: { [weak self] requestStatus in
+                switch requestStatus {
+                case .progress:
+                    self?.documentModesState.onNext(.loading)
+                    
+                case .success(data: let networkModel):
+                    let documents = networkModel.map({ $0.toDomainModel() })
+                    
+                    self?.storeDocumentTypes(documents)
+                    self?.storeDocumentModes(from: documents)
+                    
+                    self?.documentModesState.onNext(.success)
 
-            case .error(let error):
-                self?.documentModesState.onNext(.error(error))
-            }
-        }).disposed(by: disposeBag)
+                case .error(let error):
+                    self?.documentModesState.onNext(.error(error))
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     private func storeDocumentModes(from documentTypes: [DocumentTypeDomainModel]) {

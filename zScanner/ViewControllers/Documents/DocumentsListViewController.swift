@@ -130,6 +130,16 @@ class DocumentsListViewController: BaseViewController {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        
+        tableView.backgroundView = emptyView
+        
+        emptyView.addSubview(emptyViewLabel)
+        emptyViewLabel.snp.makeConstraints { make in
+            make.width.equalToSuperview().multipliedBy(0.75)
+            make.centerX.equalToSuperview()
+            make.top.greaterThanOrEqualTo(tableView.safeAreaLayoutGuide.snp.top)
+            make.centerY.equalToSuperview().multipliedBy(0.666).priority(900)
+        }
     }
     
     private lazy var addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newDocument))
@@ -151,12 +161,26 @@ class DocumentsListViewController: BaseViewController {
         tableView.tableFooterView = UIView()
         return tableView
     }()
+    
+    private lazy var emptyView = UIView()
+    
+    private lazy var emptyViewLabel: UILabel = {
+        let label = UILabel()
+        label.text = "document.emptyView.title".localized
+        label.textColor = .black
+        label.numberOfLines = 0
+        label.font = .body
+        label.textAlignment = .center
+        return label
+    }()
 }
 
 //MARK: - UITableViewDataSource implementation
 extension DocumentsListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.documents.count
+        let count = viewModel.documents.count
+        tableView.backgroundView?.isHidden = count > 0
+        return count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

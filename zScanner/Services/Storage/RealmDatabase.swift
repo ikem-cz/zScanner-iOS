@@ -26,7 +26,7 @@ extension Realm: Database {
     
     func saveObject<T: Storable>(_ object: T) {
         try! self.write {
-            self.add(object as! Object)
+            self.add(object as! Object, update: .modified)
         }
     }
     

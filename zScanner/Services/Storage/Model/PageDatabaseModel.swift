@@ -13,6 +13,7 @@ class PageDatabaseModel: Object {
     @objc dynamic var url = ""
     @objc dynamic var index = 0
     @objc dynamic var correlationId = ""
+    @objc private dynamic var primaryKey = ""
     
     convenience init(page: PageDomainModel) {
         self.init()
@@ -20,6 +21,11 @@ class PageDatabaseModel: Object {
         self.correlationId = page.correlationId
         self.index = page.index
         self.url = page.url.absoluteString
+        self.primaryKey = String(format: "%dx%@", index, correlationId)
+    }
+    
+    override class func primaryKey() -> String {
+        return "primaryKey"
     }
 }
 
@@ -35,6 +41,6 @@ extension PageDatabaseModel {
 
 extension PageDatabaseModel: RichDeleting {
     func deleteRichContent() {
-        try! FileManager.default.removeItem(at: URL(string: url)!)
+        try? FileManager.default.removeItem(at: URL(string: url)!)
     }
 }

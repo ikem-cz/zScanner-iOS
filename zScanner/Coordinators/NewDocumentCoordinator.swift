@@ -95,8 +95,8 @@ class NewDocumentCoordinator: Coordinator {
         let databaseDocument = DocumentDatabaseModel(document: newDocument)
         database.saveObject(databaseDocument)
         
-        let documentViewModel = DocumentViewModel(document: newDocument)
-        documentViewModel.uploadDocument(with: networkManager)
+        let documentViewModel = DocumentViewModel(document: newDocument, networkManager: networkManager, database: database)
+        documentViewModel.uploadDocument()
         
         popAll()
         flowDelegate.newDocumentCreated(documentViewModel)

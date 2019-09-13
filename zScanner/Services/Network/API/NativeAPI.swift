@@ -157,10 +157,6 @@ private class UploadDelegate: NSObject, URLSessionDelegate, URLSessionTaskDelega
         self.callback = callback
     }
     
-    deinit {
-        print("")
-    }
-    
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         let percentage = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
         callback(.progress(percentage))
@@ -170,7 +166,5 @@ private class UploadDelegate: NSObject, URLSessionDelegate, URLSessionTaskDelega
         callback(.error(RequestError(.serverError(error!))))
     }
     
-    func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
-        print("")
-    }
+    func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {}
 }

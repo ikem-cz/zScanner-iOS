@@ -12,6 +12,8 @@ import RxSwift
 class DocumentTableViewCell: UITableViewCell {
     
     //MARK: Instance part
+    private var viewModel: DocumentViewModel?
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -26,17 +28,21 @@ class DocumentTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        viewModel = nil
         titleLabel.text = nil
         detailLabel.text = nil
         loadingCircle.isHidden = true
         loadingCircle.progressValue(is: 0, animated: false)
         successImageView.isHidden = true
+        retryButton.isHidden = true
         
         disposeBag = DisposeBag()
     }
     
     //MARK: Interface
     func setup(with model: DocumentViewModel) {
+        self.viewModel = model
+        
         // Make sure the label will keep the space even when empty while respecting the dynamic font size
         titleLabel.text = String(format: "%@ %@", model.document.folder.externalId, model.document.folder.name)
         detailLabel.text = [
@@ -48,6 +54,15 @@ class DocumentTableViewCell: UITableViewCell {
         .joined(separator: " - ")
         
         let onCompleted: () -> Void = { [weak self] in
+            self?.retryButton.isHidden = true
+            
+            // If not animating, skip trnasition animation
+            if self?.loadingCircle.isHidden == true {
+                self?.loadingCircle.isHidden = true
+                self?.successImageView.isHidden = false
+                return
+            }
+            
             self?.successImageView.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
             self?.successImageView.isHidden = false
             self?.successImageView.alpha = 0
@@ -67,6 +82,7 @@ class DocumentTableViewCell: UITableViewCell {
         let onError: (Error?) -> Void = { [weak self] error in
             self?.loadingCircle.isHidden = true
             self?.successImageView.isHidden = true
+            self?.retryButton.isHidden = false
             // TODO: Handle error
         }
         
@@ -77,10 +93,12 @@ class DocumentTableViewCell: UITableViewCell {
                 case .awaitingInteraction:
                     self?.loadingCircle.isHidden = true
                     self?.successImageView.isHidden = true
+                    self?.retryButton.isHidden = true
                 case .progress(let percentage):
                     self?.loadingCircle.progressValue(is: percentage)
                     self?.loadingCircle.isHidden = false
                     self?.successImageView.isHidden = true
+                    self?.retryButton.isHidden = true
                 case .success:
                     onCompleted()
                 case .failed:
@@ -90,6 +108,11 @@ class DocumentTableViewCell: UITableViewCell {
                onCompleted: onCompleted
             )
             .disposed(by: disposeBag)
+        
+        retryButton.rx.tap.subscribe(onNext: { [weak self] in
+            self?.viewModel?.uploadDocument()
+        })
+        .disposed(by: disposeBag)
     }
     
     //MARK: Helpers
@@ -113,6 +136,9 @@ class DocumentTableViewCell: UITableViewCell {
             make.top.right.left.equalToSuperview()
         }
         
+        titleLabel.setContentHuggingPriority(.init(rawValue: 251), for: .vertical)
+        titleLabel.setContentCompressionResistancePriority(.init(rawValue: 751), for: .vertical)
+        
         textContainer.addSubview(detailLabel)
         detailLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(4)
@@ -134,6 +160,11 @@ class DocumentTableViewCell: UITableViewCell {
         
         statusContainer.addSubview(successImageView)
         successImageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        statusContainer.addSubview(retryButton)
+        retryButton.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
@@ -160,6 +191,12 @@ class DocumentTableViewCell: UITableViewCell {
         image.contentMode = .scaleAspectFit
         image.image = #imageLiteral(resourceName: "checkmark")
         return image
+    }()
+    
+    private var retryButton: UIButton = {
+        let button = UIButton()
+        button.setImage(#imageLiteral(resourceName: "retry"), for: .normal)
+        return button
     }()
     
     private var textContainer = UIView()

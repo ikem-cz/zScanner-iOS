@@ -28,6 +28,7 @@
 "document.screen.title" = "zScanner";
 "document.modeSelector.cancel" = "Zrušit";
 "document.modeSelector.title" = "Zvolte typ záznamu";
+"document.emptyView.title" = "Nemáte žádné nahrané dokumenty, dokument vytvoříte klepnutím na tlačítko plus.";
 
 // MARK: - New Document
 "newDocumentFolder.screen.title" = "Výběr pacienta";

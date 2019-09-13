@@ -61,8 +61,11 @@ class SeaCatSplashViewController: BaseViewController, ErrorHandling {
             seaCatTimer?.invalidate()
             timeoutTimer?.invalidate()
             SeaCatClient.removeObserver(self)
-           
-            coordinator.seaCatInitialized()
+            
+            // Give SeaCat a little bit extra time to init 😤😖
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.coordinator.seaCatInitialized()
+            }
         }
     }
 
