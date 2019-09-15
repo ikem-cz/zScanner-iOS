@@ -10,28 +10,29 @@ import Foundation
 import RealmSwift
 
 class PageDatabaseModel: Object {
+    @objc dynamic var id = ""
     @objc dynamic var url = ""
     @objc dynamic var index = 0
     @objc dynamic var correlationId = ""
-    @objc private dynamic var primaryKey = ""
     
     convenience init(page: PageDomainModel) {
         self.init()
         
+        self.id = page.id
         self.correlationId = page.correlationId
         self.index = page.index
         self.url = page.url.absoluteString
-        self.primaryKey = String(format: "%dx%@", index, correlationId)
     }
     
     override class func primaryKey() -> String {
-        return "primaryKey"
+        return "id"
     }
 }
 
 extension PageDatabaseModel {
     func toDomainModel() -> PageDomainModel {
         return PageDomainModel(
+            id: id,
             url: URL(string: url)!,
             index: index,
             correlationId: correlationId

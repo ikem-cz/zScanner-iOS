@@ -24,7 +24,7 @@ class PageViewModel {
         self.networkManager = networkManager
         self.database = database
         
-        if let databaseModel = database.loadObjects(PageUploadStatusDatabaseModel.self).filter({ $0.correlationId == page.correlationId && $0.index == page.index }).first {
+        if let databaseModel = database.loadObjects(PageUploadStatusDatabaseModel.self).filter({ $0.pageId == page.id }).first {
             pageUploadStatus.onNext(databaseModel.uploadStatus == .success ? .success : .failed)
         }
     }
@@ -64,7 +64,7 @@ class PageViewModel {
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self]  status in
                 guard let `self` = self else { return }
-                let pageUploadStatus = PageUploadStatusDatabaseModel(viewModel: self)
+                let pageUploadStatus = PageUploadStatusDatabaseModel(pageId: self.page.id, status: status)
                 self.database.saveObject(pageUploadStatus)
             })
             .disposed(by: disposeBag)

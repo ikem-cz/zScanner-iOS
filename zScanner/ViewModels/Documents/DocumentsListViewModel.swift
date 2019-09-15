@@ -14,7 +14,7 @@ class DocumentsListViewModel {
         case awaitingInteraction
         case loading
         case success
-        case error(Error)
+        case error(RequestError)
     }
     
     //MARK: Instance part
@@ -37,6 +37,10 @@ class DocumentsListViewModel {
     
     func insertNewDocument(_ document: DocumentViewModel) {
         documents.insert(document, at: 0)
+    }
+    
+    func updateDocumentTypes() {
+        fetchDocumentTypes()
     }
     
     func updateDocuments() {
@@ -68,7 +72,7 @@ class DocumentsListViewModel {
             .reversed()
     }
     
-    private func fetchDocumentTypes() {
+    func fetchDocumentTypes() {
         networkManager
             .getDocumentTypes()
             .subscribe(onNext: { [weak self] requestStatus in

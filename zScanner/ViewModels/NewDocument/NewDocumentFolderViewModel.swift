@@ -33,6 +33,7 @@ class NewDocumentFolderViewModel {
     let isLoading = BehaviorRelay<Bool>(value: false)
     
     func search(query: String) {
+        guard query.length >= 3 else { return }
         activeSearch = networkManager.searchFolders(with: query)
     }
     
@@ -59,12 +60,9 @@ class NewDocumentFolderViewModel {
                     self?.isLoading.accept(false)
                     let folders = folders.map({ $0.toDomainModel() })
                     self?.searchResults.accept(folders)
-                case .error(let error):
+                case .error:
                     self?.isLoading.accept(false)
                     self?.searchResults.accept([])
-                    
-                    // TODO: Handle error
-                    print(error)
                 }
             })
         }

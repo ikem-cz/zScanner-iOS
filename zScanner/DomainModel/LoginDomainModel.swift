@@ -10,5 +10,4 @@ import Foundation
 
 struct LoginDomainModel {
     var username: String
-    var password: String
 }

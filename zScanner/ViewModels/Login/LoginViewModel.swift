@@ -21,7 +21,7 @@ class LoginViewModel {
  
     //MARK: Instance part
     private let networkManager: NetworkManager
-    var model: LoginDomainModel
+    var loginModel: LoginDomainModel
     
     let usernameField = TextInputField(title: "login.username.title".localized, validator: { !$0.isEmpty })
     let passwordField = ProtectedTextInputField(title: "login.password.title".localized, validator: { !$0.isEmpty })
@@ -30,9 +30,9 @@ class LoginViewModel {
     
     var isValid: Observable<Bool>
     
-    init(model: LoginDomainModel, networkManager: NetworkManager) {
+    init(networkManager: NetworkManager) {
         self.networkManager = networkManager
-        self.model = model
+        self.loginModel = LoginDomainModel(username: "")
         isValid = Observable<Bool>.combineLatest(usernameField.isValid, passwordField.isValid) { (username, password) -> Bool in
             return username && password
         }
@@ -43,13 +43,11 @@ class LoginViewModel {
         guard (try? self.status.value()) == .awaitingInteraction else { return }
         
         status.onNext(.loading)
-        
-        model.username = usernameField.text.value
-        model.password = passwordField.text.value
-        
+
+        loginModel.username = usernameField.text.value
+
         seaCatToken = UUID().uuidString
-        
-        startSeaCatLogin()
+        startSeaCatLogin(password: passwordField.text.value)
     }
     
     // MAKR: Helpers
@@ -58,7 +56,7 @@ class LoginViewModel {
     private var timeoutTimer: Timer?
     private var seaCatToken: String?
     
-    private func startSeaCatLogin() {
+    private func startSeaCatLogin(password: String) {
         guard let csr = SCCSR() else {
             assertionFailure()
             return
@@ -66,11 +64,11 @@ class LoginViewModel {
         
         guard let token = seaCatToken else { return }
         
-        csr.setGivenName(model.username)
+        csr.setGivenName(loginModel.username)
         csr.setUniqueIdentifier(token)
         csr.submit(nil)
         
-        networkManager.submitPassword(AuthNetworkModel(password: model.password, token: token))
+        networkManager.submitPassword(AuthNetworkModel(password: password, token: token))
             .subscribe(onNext: { [weak self] status in
                 switch status {
                 case .progress:
@@ -104,7 +102,7 @@ class LoginViewModel {
                 switch status {
                 case .success(data: let data):
                     let state = data.status
-                    if state.cert {
+                    if state.cert && SeaCatClient.isReady() {
                         self?.success()
                     } else if !(state.cert || state.username || state.password) {
                         self?.error(RequestError(.logicError, message: "login.failed.message".localized))

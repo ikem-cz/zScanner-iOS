@@ -23,14 +23,14 @@ class AppCoordinator: Coordinator {
     // MARK: Inteface
     func begin() {
         // Skip waiting in case of superfast SeaCat init. (with existing credentials)
-        if SeaCatClient.isReady() {
-            startDocumentsCoordinator()
+        if let userSession = restoredUserSession, SeaCatClient.isReady() {
+            startDocumentsCoordinator(with: userSession)
         } else {
             showSplashScreen()
         }
     }
     
-    // MARK: Helpers
+    // MARK: Navigation methods
     private func showSplashScreen() {
         let viewController = SeaCatSplashViewController(coordinator: self)
         changeWindowControllerTo(viewController)
@@ -42,10 +42,25 @@ class AppCoordinator: Coordinator {
         coordinator.begin()
     }
     
-    private func startDocumentsCoordinator() {
-        let coordinator = DocumentsCoordinator(flowDelegate: self, window: window)
+    private func startDocumentsCoordinator(with userSession: UserSession) {
+        let coordinator = DocumentsCoordinator(userSession: userSession, flowDelegate: self, window: window)
         addChildCoordinator(coordinator)
         coordinator.begin()
+    }
+    
+    // MARK: Helpers
+    private let database: Database = try! RealmDatabase()
+    
+    private func storeUserSession(_ userSession: UserSession) {
+        let databaseLogin = LoginDatabaseModel(login: userSession.login)
+        database.saveObject(databaseLogin)
+    }
+    
+    private var restoredUserSession: UserSession? {
+        if let login = database.loadObjects(LoginDatabaseModel.self).first?.toDomainModel() {
+            return UserSession(login: login)
+        }
+        return nil
     }
 }
 
@@ -56,8 +71,8 @@ extension AppCoordinator: SeaCatSplashCoordinator {
         // It's not about SeaCat is ready but more about certificate exists.
         // In this case we are creating certificate with credentials on login.
         // Therefore is more like credentials exists -> is logged in
-        if SeaCatClient.isReady() {
-            self.startDocumentsCoordinator()
+        if let userSession = restoredUserSession, SeaCatClient.isReady() {
+            startDocumentsCoordinator(with: userSession)
         } else {
             self.runLoginFlow()
         }
@@ -66,8 +81,9 @@ extension AppCoordinator: SeaCatSplashCoordinator {
 
 // MARK: - LoginFlowDelegate implementation
 extension AppCoordinator: LoginFlowDelegate {
-    func successfulLogin() {
-        startDocumentsCoordinator()
+    func successfulLogin(userSession: UserSession) {
+        storeUserSession(userSession)
+        startDocumentsCoordinator(with: userSession)
     }
 }
 

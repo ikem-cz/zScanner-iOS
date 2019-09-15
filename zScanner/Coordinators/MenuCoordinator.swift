@@ -17,8 +17,10 @@ class MenuCoordinator: Coordinator {
     
     // MARK: Instance part
     unowned private let flowDelegate: MenuFlowDelegate
+    private let login: LoginDomainModel
 
-    init(flowDelegate: MenuFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
+    init(login: LoginDomainModel, flowDelegate: MenuFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
+        self.login = login
         self.flowDelegate = flowDelegate
 
         super.init(window: window, navigationController: navigationController)
@@ -52,7 +54,7 @@ class MenuCoordinator: Coordinator {
     }
     
     private lazy var drawerViewController: DrawerViewController = {
-        return DrawerViewController(coordinator: self)
+        return DrawerViewController(login: login, coordinator: self)
     }()
     
     private lazy var blackView: UIView = {

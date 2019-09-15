@@ -13,6 +13,9 @@ import RealmSwift
 extension Object: Storable {}
 
 // MARK: -
+
+typealias RealmDatabase = Realm
+
 extension Realm: Database {
     
     func loadObjects<T>(_ type: T.Type) -> [T] where T: Storable {
@@ -25,8 +28,11 @@ extension Realm: Database {
     }
     
     func saveObject<T: Storable>(_ object: T) {
+        
+        let update: UpdatePolicy = (T.self as! Object.Type).primaryKey() != nil ? .modified : .error
+        
         try! self.write {
-            self.add(object as! Object, update: .modified)
+            self.add(object as! Object, update: update)
         }
     }
     

@@ -62,6 +62,7 @@
 
 // MARK: - Drawer Menu
 "drawer.header.title" = "zScanner";
+"drawer.header.usernameFormat" = "Přihlášený uživatel: %@";
 "drawer.logout.title" = "Odhlásit se";
 "drawer.deleteHistory.title" = "Odstranit historii";
 "drawer.aboutApp.title" = "O aplikaci";

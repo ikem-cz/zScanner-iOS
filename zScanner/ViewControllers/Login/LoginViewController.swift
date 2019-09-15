@@ -12,7 +12,7 @@ import RxSwift
 import RxCocoa
 
 protocol LoginViewDelegate: BaseCoordinator {
-    func successfulLogin()
+    func successfulLogin(with login: LoginDomainModel)
 }
 
 class LoginViewController: BaseViewController, ErrorHandling {
@@ -93,12 +93,12 @@ class LoginViewController: BaseViewController, ErrorHandling {
         
         viewModel.status
             .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] status in
+            .subscribe(onNext: { [unowned self] status in
                 switch status {
                 case .success:
-                   self?.coordinator.successfulLogin()
+                    self.coordinator.successfulLogin(with: self.viewModel.loginModel)
                 case .error(let error):
-                    self?.handleError(error, okCallback: nil, retryCallback: nil)
+                    self.handleError(error, okCallback: nil, retryCallback: nil)
                 default:
                     break
                 }

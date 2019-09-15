@@ -19,9 +19,11 @@ class DrawerViewController: BaseViewController {
     
     // MARK: - Instance part
     private unowned let coordinator: DrawerCoordinator
+    private let login: LoginDomainModel
     
-    init(coordinator: DrawerCoordinator) {
+    init(login: LoginDomainModel, coordinator: DrawerCoordinator) {
         self.coordinator = coordinator
+        self.login = login
         
         super.init(coordinator: coordinator)
     }
@@ -48,6 +50,15 @@ class DrawerViewController: BaseViewController {
         return label
     }()
     
+    private lazy var usernameLabel: UILabel = {
+        let label = UILabel()
+        label.text = String(format: "drawer.header.usernameFormat".localized, login.username)
+        label.numberOfLines = 0
+        label.textColor = .white
+        label.font = .body
+        return label
+    }()
+    
     private lazy var topView: UIView = {
         let topView = UIView()
         topView.backgroundColor = .primary
@@ -58,6 +69,7 @@ class DrawerViewController: BaseViewController {
         var button = DrawerMenuButton()
         button.setTitle("drawer.logout.title".localized, for: .normal)
         button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
+        button.titleLabel?.font = .body
         return button
     }()
     
@@ -65,6 +77,7 @@ class DrawerViewController: BaseViewController {
         var button = DrawerMenuButton()
         button.setTitle("drawer.deleteHistory.title".localized, for: .normal)
         button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
+        button.titleLabel?.font = .body
         return button
     }()
     
@@ -72,6 +85,7 @@ class DrawerViewController: BaseViewController {
         var button = DrawerMenuButton()
         button.setTitle("drawer.aboutApp.title".localized, for: .normal)
         button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
+        button.titleLabel?.font = .body
         return button
     }()
     
@@ -86,6 +100,7 @@ class DrawerViewController: BaseViewController {
     private func setupView() {
         topView.addSubview(drawerLogo)
         topView.addSubview(drawerTopLabel)
+        topView.addSubview(usernameLabel)
         
         menuStackView.addArrangedSubview(logoutButton)
         menuStackView.addArrangedSubview(deleteHistoryButton)
@@ -108,13 +123,18 @@ class DrawerViewController: BaseViewController {
         }
         
         drawerTopLabel.snp.makeConstraints { make in
-            make.top.equalTo(drawerLogo.snp.bottom).offset(20)
+            make.top.equalTo(drawerLogo.snp.bottom).offset(8)
+            make.left.right.equalToSuperview().inset(20)
+        }
+        
+        usernameLabel.snp.makeConstraints { make in
+            make.top.equalTo(drawerTopLabel.snp.bottom).offset(20)
             make.left.right.bottom.equalToSuperview().inset(20)
         }
         
         menuStackView.snp.makeConstraints { make in
             make.top.equalTo(topView.snp.bottom).offset(15)
-            make.left.right.equalToSuperview().inset(15)
+            make.left.right.equalToSuperview().inset(20)
         }
     }
     

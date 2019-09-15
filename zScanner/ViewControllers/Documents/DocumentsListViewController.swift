@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RealmSwift
 import RxSwift
 
 protocol DocumentsListCoordinator: BaseCoordinator {
@@ -15,7 +14,7 @@ protocol DocumentsListCoordinator: BaseCoordinator {
     func openMenu()
 }
 
-class DocumentsListViewController: BaseViewController {
+class DocumentsListViewController: BaseViewController, ErrorHandling {
     
     // MARK: Instance part
     private unowned let coordinator: DocumentsListCoordinator
@@ -84,9 +83,11 @@ class DocumentsListViewController: BaseViewController {
                     self.rightBarButtons = [self.loadingItem]
                 case .success:
                     self.rightBarButtons = [self.addButton]
-                case .error:
-                    self.rightBarButtons = []
-                    // TODO: Show error dialog
+                case .error(let error):
+                    self.rightBarButtons = [self.reloadButton]
+                    self.handleError(error, okCallback: nil) {
+                        self.reloadDocumentTypes()
+                    }
                 }
             })
             .disposed(by: disposeBag)
@@ -98,6 +99,10 @@ class DocumentsListViewController: BaseViewController {
     
     @objc private func openMenu() {
         coordinator.openMenu()
+    }
+    
+    @objc private func reloadDocumentTypes() {
+        viewModel.updateDocumentTypes()
     }
     
     private func showDocumentModePicker() {
@@ -143,6 +148,8 @@ class DocumentsListViewController: BaseViewController {
     }
     
     private lazy var addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newDocument))
+    
+    private lazy var reloadButton = UIBarButtonItem(image: #imageLiteral(resourceName: "refresh"), style: .plain, target: self, action: #selector(reloadDocumentTypes))
     
     private lazy var loadingItem: UIBarButtonItem = {
         let loading = UIActivityIndicatorView(style: .gray)

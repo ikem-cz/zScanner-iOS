@@ -9,7 +9,7 @@
 import UIKit
 
 protocol LoginFlowDelegate: FlowDelegate {
-    func successfulLogin()
+    func successfulLogin(userSession: UserSession)
 }
 
 class LoginCoordinator: Coordinator {
@@ -30,25 +30,21 @@ class LoginCoordinator: Coordinator {
     
     // MARK: Navigation methods
     private func showLoginScreen() {
-        let viewController = LoginViewController(viewModel:
-            LoginViewModel(model:
-                LoginDomainModel(
-                    username: "",
-                    password: ""
-                ),
-                           networkManager: IkemNetworkManager(api: NativeAPI())
-            ),
-            coordinator: self
-        )
+        let viewModel = LoginViewModel(networkManager: networkManager)
+        let viewController = LoginViewController(viewModel: viewModel, coordinator: self)
         changeWindowControllerTo(viewController)
     }
     
+    // MARK: Helpers
+    private lazy var api: API = NativeAPI()
+    private lazy var networkManager: NetworkManager = IkemNetworkManager(api: api)
 }
 
 //MARK: - LoginViewDelegate implementation
 extension LoginCoordinator: LoginViewDelegate {
-    func successfulLogin() {
-        flowDelegate.successfulLogin()
+    func successfulLogin(with login: LoginDomainModel) {
+        let userSession = UserSession(login: login)
+        flowDelegate.successfulLogin(userSession: userSession)
         flowDelegate.coordinatorDidFinish(self)
     }
 }

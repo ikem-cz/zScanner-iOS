@@ -10,18 +10,14 @@ import Foundation
 import RealmSwift
 
 class PageUploadStatusDatabaseModel: Object {
-    @objc dynamic var correlationId = ""
-    @objc dynamic var index = -1
+    @objc dynamic var pageId = ""
     @objc private dynamic var _uploadStatus = -1
-    @objc private dynamic var primaryKey = ""
     
-    convenience init(viewModel: PageViewModel) {
+    convenience init(pageId: String, status: DocumentViewModel.UploadStatus) {
         self.init()
         
-        self.correlationId = viewModel.page.correlationId
-        self.index = viewModel.page.index
-        self.uploadStatus = (try? viewModel.pageUploadStatus.value()) ?? .awaitingInteraction
-        self.primaryKey = String(format: "%dx%@", index, correlationId)
+        self.pageId = pageId
+        self.uploadStatus = status
     }
     
     var uploadStatus: DocumentViewModel.UploadStatus {
@@ -34,6 +30,6 @@ class PageUploadStatusDatabaseModel: Object {
     }
     
     override class func primaryKey() -> String {
-        return "primaryKey"
+        return "pageId"
     }
 }

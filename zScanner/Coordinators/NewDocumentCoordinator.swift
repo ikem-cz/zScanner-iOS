@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RealmSwift
 
 protocol NewDocumentFlowDelegate: FlowDelegate {
     func newDocumentCreated(_ documentViewModel: DocumentViewModel)
@@ -53,7 +52,7 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     // MARK: Helepers
-    private let database: Database = try! Realm()
+    private let database: Database = try! RealmDatabase()
     private let networkManager: NetworkManager = IkemNetworkManager(api: NativeAPI())
     
     private func showCurrentStep() {

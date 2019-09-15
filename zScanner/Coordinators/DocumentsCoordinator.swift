@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RealmSwift
 import RxSwift
 
 protocol DocumentsFlowDelegate: FlowDelegate {
@@ -19,8 +18,10 @@ class DocumentsCoordinator: Coordinator {
     
     // MARK: Instance part
     unowned private let flowDelegate: DocumentsFlowDelegate
+    private let userSession: UserSession
     
-    init(flowDelegate: DocumentsFlowDelegate, window: UIWindow) {
+    init(userSession: UserSession, flowDelegate: DocumentsFlowDelegate, window: UIWindow) {
+        self.userSession = userSession
         self.flowDelegate = flowDelegate
         self.networkManager = IkemNetworkManager(api: api)
         
@@ -41,7 +42,7 @@ class DocumentsCoordinator: Coordinator {
     }
     
     private lazy var menuCoordinator: MenuCoordinator = {
-        return MenuCoordinator(flowDelegate: self, window: window, navigationController: navigationController)
+        return MenuCoordinator(login: userSession.login, flowDelegate: self, window: window, navigationController: navigationController)
     }()
     
     private func setupMenu() {
@@ -58,7 +59,7 @@ class DocumentsCoordinator: Coordinator {
     // MARK: Helpers
     private let api: API = NativeAPI()
     private let networkManager: NetworkManager
-    private let database: Database = try! Realm()
+    private let database: Database = try! RealmDatabase()
     private let tracker: Tracker = FirebaseAnalytics()
 }
 
@@ -88,6 +89,7 @@ extension DocumentsCoordinator: NewDocumentFlowDelegate {
 // MARK: - MenuFlowDelegate implementation
 extension DocumentsCoordinator: MenuFlowDelegate {
     func deleteHistory() {
+        database.deleteAll(of: LoginDatabaseModel.self)
         database.deleteAll(of: PageDatabaseModel.self)
         database.deleteAll(of: DocumentDatabaseModel.self)
         database.deleteAll(of: PageUploadStatusDatabaseModel.self)

@@ -9,6 +9,7 @@
 import UIKit
 
 struct PageDomainModel: Equatable {
+    var id: String
     var url: URL
     var index: Int
     var correlationId: String
@@ -40,7 +41,7 @@ struct PageDomainModel: Equatable {
 
 extension PageDomainModel {
     init(image: UIImage, index: Int, correlationId: String) {
-        self.init(url: URL(fileURLWithPath: ""), index: index, correlationId: correlationId)
+        self.init(id: UUID().uuidString, url: URL(fileURLWithPath: ""), index: index, correlationId: correlationId)
         self.image = image
     }
 }
