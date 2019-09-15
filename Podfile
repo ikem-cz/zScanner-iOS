@@ -7,6 +7,8 @@ def common_pods
     pod 'RxSwift', '~> 5'    # RxSwift
     pod 'RxCocoa', '~> 5'    # RxSwift
     pod 'RealmSwift'         # Database
+    pod 'Fabric'             # Analytics
+    pod 'Crashlytics'        # Crash reporting
     pod 'Firebase/Analytics' # Analytics
 end
 

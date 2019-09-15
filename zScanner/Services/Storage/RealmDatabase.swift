@@ -29,7 +29,7 @@ extension Realm: Database {
     
     func saveObject<T: Storable>(_ object: T) {
         
-        let update: UpdatePolicy = (T.self as! Object.Type).primaryKey() != nil ? .modified : .error
+        let update: UpdatePolicy = T.primaryKey() != nil ? .modified : .error
         
         try! self.write {
             self.add(object as! Object, update: update)

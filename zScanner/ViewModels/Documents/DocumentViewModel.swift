@@ -122,7 +122,6 @@ class DocumentViewModel {
         for status in tasks {
             switch status {
             case .awaitingInteraction:
-                stillInProgress = true
                 progresses.append(0)
             case .progress(let percentage):
                 stillInProgress = true

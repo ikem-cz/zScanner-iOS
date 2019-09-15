@@ -136,9 +136,7 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func savePagesToDocument(_ pages: [UIImage]) {
-        
-        
-        
+
         // Store images
         pages
             .enumerated()

@@ -8,7 +8,9 @@
 
 import Foundation
 
-protocol Storable {}
+protocol Storable {
+    static func primaryKey() -> String?
+}
 
 // MARK: -
 protocol Database {
