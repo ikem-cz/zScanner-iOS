@@ -11,9 +11,9 @@ import RealmSwift
 
 class PageDatabaseModel: Object {
     @objc dynamic var id = ""
-    @objc dynamic var url = ""
     @objc dynamic var index = 0
     @objc dynamic var correlationId = ""
+    @objc dynamic var relativePath = ""
     
     convenience init(page: PageDomainModel) {
         self.init()
@@ -21,7 +21,7 @@ class PageDatabaseModel: Object {
         self.id = page.id
         self.correlationId = page.correlationId
         self.index = page.index
-        self.url = page.url.absoluteString
+        self.relativePath = page.relativePath
     }
     
     override class func primaryKey() -> String {
@@ -33,15 +33,15 @@ extension PageDatabaseModel {
     func toDomainModel() -> PageDomainModel {
         return PageDomainModel(
             id: id,
-            url: URL(string: url)!,
             index: index,
-            correlationId: correlationId
+            correlationId: correlationId,
+            relativePath: relativePath
         )
     }
 }
 
 extension PageDatabaseModel: RichDeleting {
     func deleteRichContent() {
-        try? FileManager.default.removeItem(at: URL(string: url)!)
+        try? FileManager.default.removeItem(at: URL(documentsWith: relativePath))
     }
 }

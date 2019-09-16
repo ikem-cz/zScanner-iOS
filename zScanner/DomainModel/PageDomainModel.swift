@@ -10,38 +10,38 @@ import UIKit
 
 struct PageDomainModel: Equatable {
     var id: String
-    var url: URL
     var index: Int
     var correlationId: String
+    var relativePath: String
     
     var image: UIImage {
         get {
-            return UIImage(data: try! Data(contentsOf: url))!
+            let absoluteUrl = URL(documentsWith: relativePath)
+            return UIImage(data: try! Data(contentsOf: absoluteUrl))!
         }
         set {
             // Create folder for document
-            let folderPath = documentsPath + "/" + correlationId
-            if !FileManager.default.fileExists(atPath: folderPath) {
-                try! FileManager.default.createDirectory(atPath: folderPath, withIntermediateDirectories: false, attributes: nil)
+            let folderPath = "/" + correlationId
+            let absolutePath = URL.documentsPath + folderPath
+            
+            if !FileManager.default.fileExists(atPath: absolutePath) {
+                try! FileManager.default.createDirectory(atPath: absolutePath, withIntermediateDirectories: false, attributes: nil)
             }
             
             // Convert image to data and store to folder
             let data = newValue.jpegData(compressionQuality: 0.8)!
-            let fileName = URL(fileURLWithPath: folderPath + "/\(index).jpg")
-            try! data.write(to: fileName)
+            let filePath = folderPath + id + ".jpg"
+            let absoluteUrl = URL(documentsWith: filePath)
+            try! data.write(to: absoluteUrl)
             
-            self.url = fileName
+            self.relativePath = filePath
         }
-    }
-    
-    private var documentsPath: String {
-        return NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
     }
 }
 
 extension PageDomainModel {
     init(image: UIImage, index: Int, correlationId: String) {
-        self.init(id: UUID().uuidString, url: URL(fileURLWithPath: ""), index: index, correlationId: correlationId)
+        self.init(id: UUID().uuidString, index: index, correlationId: correlationId, relativePath: "")
         self.image = image
     }
 }

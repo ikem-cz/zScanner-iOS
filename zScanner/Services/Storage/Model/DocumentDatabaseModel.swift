@@ -63,7 +63,7 @@ extension DocumentDatabaseModel {
 
 extension DocumentDatabaseModel: RichDeleting {
     func deleteRichContent() {
-        let folderPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] + "/" + id
+        let folderPath = URL.documentsPath + "/" + id
         try? FileManager.default.removeItem(atPath: folderPath)
     }
 }

@@ -14,7 +14,7 @@ struct PageNetworkModel: Encodable {
     var pageUrl: URL
     
     init(from domainModel: PageDomainModel) {
-        self.pageUrl = domainModel.url
+        self.pageUrl = URL(documentsWith: domainModel.relativePath)
         self.page = domainModel.index
         self.correlation = domainModel.correlationId
     }
