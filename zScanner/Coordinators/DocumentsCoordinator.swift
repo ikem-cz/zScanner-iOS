@@ -89,7 +89,6 @@ extension DocumentsCoordinator: NewDocumentFlowDelegate {
 // MARK: - MenuFlowDelegate implementation
 extension DocumentsCoordinator: MenuFlowDelegate {
     func deleteHistory() {
-        database.deleteAll(of: LoginDatabaseModel.self)
         database.deleteAll(of: PageDatabaseModel.self)
         database.deleteAll(of: DocumentDatabaseModel.self)
         database.deleteAll(of: PageUploadStatusDatabaseModel.self)

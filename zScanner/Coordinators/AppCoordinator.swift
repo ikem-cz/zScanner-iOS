@@ -90,6 +90,7 @@ extension AppCoordinator: LoginFlowDelegate {
 // MARK: - DocumentsFlowDelegate implementation
 extension AppCoordinator: DocumentsFlowDelegate {
     func logout() {
+        database.deleteAll(of: LoginDatabaseModel.self)
         SeaCatClient.reset()
         runLoginFlow()
     }
