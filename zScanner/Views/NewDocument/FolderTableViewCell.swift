@@ -30,13 +30,40 @@ class FolderTableViewCell: UITableViewCell {
     
     // MARK: Interface
     func setup(with folder: FolderDomainModel) {
-        textLabel?.text = String(format: "%@   %@", folder.externalId, folder.name)
+        idLabel.text = folder.externalId
+        nameLabel.text = folder.name
     }
     
     // MARK: Helpers
     private func setupView() {
         selectionStyle = .none
         
-        textLabel?.font = UIFont.bodyMonospaced
+        contentView.addSubview(idLabel)
+        idLabel.snp.makeConstraints { make in
+            make.width.equalTo(14).priority(500)
+            make.top.bottom.equalToSuperview().inset(13)
+            make.left.equalToSuperview().inset(15)
+        }
+        
+        contentView.addSubview(nameLabel)
+        nameLabel.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(13)
+            make.left.equalTo(idLabel.snp.right).offset(8)
+            make.right.equalToSuperview().inset(15)
+        }
     }
+    
+    private var idLabel: UILabel = {
+        let label = UILabel()
+        label.font = .body
+        label.textColor = .black
+        return label
+    }()
+   
+    private var nameLabel: UILabel = {
+        let label = UILabel()
+        label.font = .body
+        label.textColor = .black
+        return label
+    }()
 }

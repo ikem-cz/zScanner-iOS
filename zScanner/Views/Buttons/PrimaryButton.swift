@@ -30,6 +30,7 @@ class PrimaryButton: UIButton {
     //MARK: Helpers
     private func setup() {
         backgroundColor = .primary
+        titleLabel?.font = .body
         setTitleColor(.onPrimary, for: .normal)
         layer.cornerRadius = 4
     }

@@ -37,7 +37,7 @@ class AboutViewController: BaseViewController {
         view.addSubview(stackView)
         
         stackView.snp.makeConstraints { make in
-            make.top.greaterThanOrEqualToSuperview()
+            make.top.greaterThanOrEqualTo(safeArea).inset(20)
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview().multipliedBy(0.666).priority(900)
             make.width.equalToSuperview().multipliedBy(0.85)
@@ -71,6 +71,7 @@ class AboutViewController: BaseViewController {
         label.text = "about.info.paragraph".localized
         label.numberOfLines = 0
         label.textAlignment = .center
+        label.font = .body
         label.textColor = .primary
         return label
     }()

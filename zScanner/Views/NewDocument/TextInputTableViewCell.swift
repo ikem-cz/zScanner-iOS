@@ -71,6 +71,7 @@ class TextInputTableViewCell: UITableViewCell {
     private lazy var textField: UITextField = {
         let textField = UITextField()
         textField.delegate = self
+        textField.font = .body
         return textField
     }()
 }

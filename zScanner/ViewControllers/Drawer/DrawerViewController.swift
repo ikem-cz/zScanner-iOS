@@ -130,7 +130,6 @@ class DrawerViewController: BaseViewController {
         var button = DrawerMenuButton()
         button.setTitle("drawer.logout.title".localized, for: .normal)
         button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
-        button.titleLabel?.font = .body
         return button
     }()
 
@@ -138,7 +137,6 @@ class DrawerViewController: BaseViewController {
         var button = DrawerMenuButton()
         button.setTitle("drawer.deleteHistory.title".localized, for: .normal)
         button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
-        button.titleLabel?.font = .body
         return button
     }()
 
@@ -146,7 +144,6 @@ class DrawerViewController: BaseViewController {
         var button = DrawerMenuButton()
         button.setTitle("drawer.aboutApp.title".localized, for: .normal)
         button.addTarget(self, action: #selector(handleMenuTap(_:)), for: .touchUpInside)
-        button.titleLabel?.font = .body
         return button
     }()
 

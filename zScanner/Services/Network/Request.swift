@@ -32,7 +32,10 @@ extension ParametersURLEncoded where Self: Request {
         
         // Add parameters to url
         if let parameters = parameters as? [String: Any] {
-            let parameters = parameters.map({ (key, value) -> String in "\(key)=\(value)" }).joined(separator: "&")
+            let parameters = parameters.compactMap({ (key, value) -> String? in
+                guard let value = String(describing: value).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
+                return String(format: "%@=%@", key, value)
+            }).joined(separator: "&")
             url += "?" + parameters
         }
         

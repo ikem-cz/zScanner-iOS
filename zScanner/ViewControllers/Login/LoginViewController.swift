@@ -188,6 +188,7 @@ class LoginViewController: BaseViewController, ErrorHandling {
         let textField = UITextField()
         textField.textContentType = .username
         textField.setBottomBorder()
+        textField.font = .body
         return textField
     }()
     
@@ -196,6 +197,7 @@ class LoginViewController: BaseViewController, ErrorHandling {
         textField.textContentType = .password
         textField.isSecureTextEntry = true
         textField.setBottomBorder()
+        textField.font = .body
         return textField
     }()
 
