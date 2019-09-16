@@ -98,6 +98,12 @@ class NewDocumentPhotosViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         viewModel.pictures
+            .subscribe(onNext: { [weak self] pictures in
+                self?.collectionView.backgroundView?.isHidden = pictures.count > 0
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.pictures
             .map({ !$0.isEmpty })
             .bind(to: continueButton.rx.isEnabled)
             .disposed(by: disposeBag)
@@ -129,6 +135,16 @@ class NewDocumentPhotosViewController: BaseViewController {
             make.right.bottom.left.equalTo(safeArea).inset(20)
             make.height.equalTo(44)
         }
+        
+        collectionView.backgroundView = emptyView
+        
+        emptyView.addSubview(emptyViewLabel)
+        emptyViewLabel.snp.makeConstraints { make in
+            make.width.equalToSuperview().multipliedBy(0.75)
+            make.centerX.equalToSuperview()
+            make.top.greaterThanOrEqualTo(collectionView.safeAreaLayoutGuide.snp.top)
+            make.centerY.equalToSuperview().multipliedBy(0.666).priority(900)
+        }
     }
     
     private lazy var collectionView: UICollectionView = {
@@ -144,6 +160,18 @@ class NewDocumentPhotosViewController: BaseViewController {
         button.setTitle("newDocumentPhotos.button.title".localized, for: .normal)
         button.dropShadow()
         return button
+    }()
+    
+    private lazy var emptyView = UIView()
+    
+    private lazy var emptyViewLabel: UILabel = {
+        let label = UILabel()
+        label.text = "newDocumentPhotos.emptyView.title".localized
+        label.textColor = .black
+        label.numberOfLines = 0
+        label.font = .body
+        label.textAlignment = .center
+        return label
     }()
     
     private lazy var gradientView = GradientView()

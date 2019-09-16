@@ -43,11 +43,12 @@
 "newDocumentType.button.title" = "Další";
 
 "newDocumentPhotos.screen.title" = "Obsah záznamu";
-"newDocumentPhotos.button.title" = "Další";
+"newDocumentPhotos.button.title" = "Odeslat záznam";
 "newDocumentPhotos.actioSheet.title" = "Nová fotografie";
 "newDocumentPhotos.actioSheet.cameraAction" = "Vyfotit";
 "newDocumentPhotos.actioSheet.galleryAction" = "Vybrat z galerie";
 "newDocumentPhotos.actioSheet.cancel" = "Zrušit";
+"newDocumentPhotos.emptyView.title" = "Nejsou vybrány žádné fotografie, fotografii vyberete klepnutím na tlačítko plus.";
 
 "newDocument.popAlert.title" = "Opravdu chcete jít o krok zpět?";
 "newDocument.popAlert.message" = "Změny provedené na této obrazovce nebudou uloženy.";
