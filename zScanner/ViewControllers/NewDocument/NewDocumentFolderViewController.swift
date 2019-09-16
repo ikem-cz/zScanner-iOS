@@ -115,6 +115,16 @@ class NewDocumentFolderViewController: BaseViewController {
         if !viewModel.history.isEmpty {
             sections.append(.history)
         }
+        
+        tableView.backgroundView = emptyView
+        
+        emptyView.addSubview(emptyViewLabel)
+        emptyViewLabel.snp.makeConstraints { make in
+            make.width.equalToSuperview().multipliedBy(0.75)
+            make.centerX.equalToSuperview()
+            make.top.greaterThanOrEqualTo(tableView.safeAreaLayoutGuide.snp.top)
+            make.centerY.equalToSuperview().multipliedBy(0.36).priority(900)
+        }
     }
     
     private lazy var tableView: UITableView = {
@@ -136,12 +146,26 @@ class NewDocumentFolderViewController: BaseViewController {
         search.sizeToFit()
         return search
     }()
+    
+    private lazy var emptyView = UIView()
+    
+    private lazy var emptyViewLabel: UILabel = {
+        let label = UILabel()
+        label.text = "newDocumentFolder.emptyView.title".localized
+        label.textColor = .black
+        label.numberOfLines = 0
+        label.font = .body
+        label.textAlignment = .center
+        return label
+    }()
 }
 
 // MARK: - UITableViewDataSource implementation
 extension NewDocumentFolderViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return sections.count
+        let count = sections.count
+        tableView.backgroundView?.isHidden = count > 0
+        return count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -198,7 +222,13 @@ extension NewDocumentFolderViewController: UITableViewDelegate {
 // MARK: - UISearchBarDelegate implementation
 extension NewDocumentFolderViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.search(query: searchText)
+        var searchText = searchText
+        
+        if searchText.length >= Config.minimumSearchLength {
+            viewModel.search(query: searchText)
+        } else {
+            searchText = ""
+        }
         
         if searchText.isEmpty {
             // Remove section if present

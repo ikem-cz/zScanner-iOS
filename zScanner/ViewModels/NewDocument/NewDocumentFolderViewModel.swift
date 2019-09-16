@@ -33,7 +33,6 @@ class NewDocumentFolderViewModel {
     let isLoading = BehaviorRelay<Bool>(value: false)
     
     func search(query: String) {
-        guard query.length >= 3 else { return }
         activeSearch = networkManager.searchFolders(with: query)
     }
     

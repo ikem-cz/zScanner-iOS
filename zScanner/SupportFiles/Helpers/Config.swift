@@ -15,4 +15,5 @@ enum Config {
     
     static let currentEnvironment: Environment = .production
     static let folderUsageHistoryCount = 3
+    static let minimumSearchLength = 3
 }

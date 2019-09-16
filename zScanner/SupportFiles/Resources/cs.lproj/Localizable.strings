@@ -37,6 +37,7 @@
 "newDocumentFolder.searchHistory.title" = "Historie hledání";
 "newDocumentFolder.scanFailedAlert.title" = "Chyba kamery";
 "newDocumentFolder.scanFailedAlert.message" = "Kamera není dostupná, zkontrolujte prosím nastavení.";
+"newDocumentFolder.emptyView.title" = "Zadejte alespoň tři znaky pro zahájení vyhledávání.";
 
 "newDocumentType.screen.title" = "Vlastnosti záznamu";
 "newDocumentType.button.title" = "Další";
