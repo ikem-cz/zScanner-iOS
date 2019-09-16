@@ -41,6 +41,11 @@ class NewDocumentFolderViewController: BaseViewController {
         setupBindings()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.setFocusToSearchBar()
+    }
+
     override var rightBarButtonItems: [UIBarButtonItem] {
         return [
             UIBarButtonItem(image: #imageLiteral(resourceName: "barcode"), style: .plain, target: self, action: #selector(scanBarcode))
@@ -62,6 +67,10 @@ class NewDocumentFolderViewController: BaseViewController {
     
     private var sections: [Section] = []
     private let disposeBag = DisposeBag()
+    
+    private func setFocusToSearchBar() {
+        searchBar.becomeFirstResponder()
+    }
     
     @objc private func scanBarcode() {
         presentScanner()
