@@ -50,6 +50,10 @@ class LoginViewController: BaseViewController, ErrorHandling {
             .bind(to: viewModel.usernameField.text)
             .disposed(by: disposeBag)
         
+        usernameTextField.rx.controlEvent(.editingDidEndOnExit).subscribe { [weak self] _ in
+            _ = self?.passwordTextField.becomeFirstResponder()
+        }.disposed(by: disposeBag)
+        
         passwordTextField.placeholder = viewModel.passwordField.title
         passwordTextField.rx.text
             .orEmpty
@@ -61,6 +65,10 @@ class LoginViewController: BaseViewController, ErrorHandling {
                 self?.viewModel.passwordField.protected.toggle()
             })
             .disposed(by: disposeBag)
+        
+        passwordTextField.rx.controlEvent(.editingDidEndOnExit).subscribe { [weak self] _ in
+            self?.viewModel.signin()
+        }.disposed(by: disposeBag)
         
         viewModel.passwordField.protected
             .bind(to: passwordTextField.protected)
