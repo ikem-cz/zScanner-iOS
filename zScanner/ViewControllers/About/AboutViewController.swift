@@ -26,9 +26,34 @@ class AboutViewController: BaseViewController {
     }
     
     // MARK: Helpers
+    private func setupView() {
+        navigationItem.title = "drawer.aboutApp.title".localized
+      
+        stackView.addArrangedSubview(drawerLogo)
+        stackView.addArrangedSubview(aboutHeader)
+        stackView.addArrangedSubview(aboutParagraph)
+        stackView.addArrangedSubview(aboutCopyright)
+
+        view.addSubview(stackView)
+        
+        stackView.snp.makeConstraints { make in
+            make.top.greaterThanOrEqualToSuperview()
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().multipliedBy(0.666).priority(900)
+            make.width.equalToSuperview().multipliedBy(0.85)
+        }
+        
+        drawerLogo.snp.makeConstraints { make in
+            make.height.equalTo(102)
+            make.width.equalTo(114)
+        }
+    }
+    
     private lazy var drawerLogo: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "menuLogo"))
+        let imageView = UIImageView()
+        imageView.image = #imageLiteral(resourceName: "ikemLogo")
         imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = .white
         imageView.backgroundColor = .primary
         return imageView
     }()
@@ -66,25 +91,4 @@ class AboutViewController: BaseViewController {
         stackView.spacing = 15
         return stackView
     }()
-    
-    private func setupView() {
-        navigationItem.title = "drawer.aboutApp.title".localized
-      
-        stackView.addArrangedSubview(drawerLogo)
-        stackView.addArrangedSubview(aboutHeader)
-        stackView.addArrangedSubview(aboutParagraph)
-        stackView.addArrangedSubview(aboutCopyright)
-
-        view.addSubview(stackView)
-        
-        stackView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(0.85)
-        }
-        
-        drawerLogo.snp.makeConstraints { make in
-            make.height.equalTo(102)
-            make.width.equalTo(114)
-        }
-    }
 }

@@ -126,6 +126,8 @@ class LoginViewController: BaseViewController, ErrorHandling {
         container.addSubview(logoView)
         logoView.snp.makeConstraints { make in
             make.top.centerX.equalToSuperview()
+            make.width.equalTo(114)
+            make.height.equalTo(102)
         }
         
         container.addSubview(titleLabel)
@@ -166,9 +168,12 @@ class LoginViewController: BaseViewController, ErrorHandling {
     }
     
     private lazy var logoView: UIImageView = {
-        let image = UIImageView()
-        image.contentMode = .scaleAspectFit
-        return image
+        let imageView = UIImageView()
+        imageView.image = #imageLiteral(resourceName: "ikemLogo")
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = .white
+        imageView.backgroundColor = .primary
+        return imageView
     }()
     
     private lazy var titleLabel: UILabel = {
