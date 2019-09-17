@@ -25,7 +25,7 @@ class PageViewModel {
         self.database = database
         
         if let databaseModel = database.loadObjects(PageUploadStatusDatabaseModel.self).filter({ $0.pageId == page.id }).first {
-            pageUploadStatus.onNext(databaseModel.uploadStatus == .success ? .success : .failed)
+            pageUploadStatus.onNext(databaseModel.uploadStatus == .success ? .success : .failed(nil))
         }
     }
     
@@ -45,8 +45,8 @@ class PageViewModel {
                 case .success:
                     self?.pageUploadStatus.onNext(.progress(1))
                     self?.pageUploadStatus.onNext(.success)
-                case .error:
-                    self?.pageUploadStatus.onNext(.failed)
+                case .error(let error):
+                    self?.pageUploadStatus.onNext(.failed(error))
                 }
             }, onError: { [weak self] error in
                 self?.pageUploadStatus.onError(error)

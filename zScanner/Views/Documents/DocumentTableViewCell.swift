@@ -9,10 +9,15 @@
 import UIKit
 import RxSwift
 
+protocol DocumentViewDelegate {
+    func handleError(_ error: RequestError)
+}
+
 class DocumentTableViewCell: UITableViewCell {
     
     //MARK: Instance part
     private var viewModel: DocumentViewModel?
+    private var delegate: DocumentViewDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -29,6 +34,7 @@ class DocumentTableViewCell: UITableViewCell {
         super.prepareForReuse()
         
         viewModel = nil
+        delegate = nil
         titleLabel.text = nil
         detailLabel.text = nil
         loadingCircle.isHidden = true
@@ -40,8 +46,9 @@ class DocumentTableViewCell: UITableViewCell {
     }
     
     //MARK: Interface
-    func setup(with model: DocumentViewModel) {
+    func setup(with model: DocumentViewModel, delegate: DocumentViewDelegate) {
         self.viewModel = model
+        self.delegate = delegate
         
         // Make sure the label will keep the space even when empty while respecting the dynamic font size
         titleLabel.text = String(format: "%@ %@", model.document.folder.externalId, model.document.folder.name)
@@ -83,7 +90,9 @@ class DocumentTableViewCell: UITableViewCell {
             self?.loadingCircle.isHidden = true
             self?.successImageView.isHidden = true
             self?.retryButton.isHidden = false
-            // TODO: Handle error
+            if let error = error as? RequestError {
+                self?.delegate?.handleError(error)
+            }
         }
         
         model.documentUploadStatus

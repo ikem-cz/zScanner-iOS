@@ -193,7 +193,10 @@ extension DocumentsListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let document = viewModel.documents[indexPath.row]
         let cell = tableView.dequeueCell(DocumentTableViewCell.self)
-        cell.setup(with: document)
+        cell.setup(with: document, delegate: self)
         return cell
     }
 }
+
+//MARK: - DocumentViewDelegate implementation
+extension DocumentsListViewController: DocumentViewDelegate {}

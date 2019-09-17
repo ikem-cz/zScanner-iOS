@@ -14,7 +14,7 @@ class DocumentViewModel {
         case awaitingInteraction
         case progress(Double)
         case success
-        case failed
+        case failed(RequestError?)
         
         typealias RawValue = Int
         
@@ -23,7 +23,7 @@ class DocumentViewModel {
                 case 0: self = .awaitingInteraction
                 case 1: self = .progress(0)
                 case 2: self = .success
-                case 3: self = .failed
+                case 3: self = .failed(nil)
                 default: return nil
             }
         }
@@ -56,7 +56,7 @@ class DocumentViewModel {
         pages = document.pages.map({ PageViewModel(page: $0, networkManager: networkManager, database: database) })
         
         if let databaseModel = database.loadObjects(DocumentUploadStatusDatabaseModel.self).filter({ $0.documentId == document.id }).first {
-            internalUploadStatus.onNext(databaseModel.uploadStatus == .success ? .success : .failed)
+            internalUploadStatus.onNext(databaseModel.uploadStatus == .success ? .success : .failed(nil))
         }        
     }
     
@@ -75,8 +75,8 @@ class DocumentViewModel {
                 case .success:
                     self?.internalUploadStatus.onNext(.progress(1))
                     self?.internalUploadStatus.onNext(.success)
-                case .error:
-                    self?.internalUploadStatus.onNext(.failed)
+                case .error(let error):
+                    self?.internalUploadStatus.onNext(.failed(error))
                 }
             }, onError: { [weak self] error in
                 self?.internalUploadStatus.onError(error)
@@ -118,6 +118,7 @@ class DocumentViewModel {
         var progresses = [Double]()
         var stillInProgress = false
         var failed = false
+        var error: RequestError?
         
         for status in tasks {
             switch status {
@@ -128,15 +129,16 @@ class DocumentViewModel {
                 progresses.append(percentage * 0.9)
             case .success:
                 progresses.append(1)
-            case .failed:
+            case .failed(let e):
                 failed = true
+                error = e
                 progresses.append(0)
             }
         }
         
         if !stillInProgress {
             if failed {
-                return .failed
+                return .failed(error)
             } else {
                 return .success
             }
