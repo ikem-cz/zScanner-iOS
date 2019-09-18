@@ -68,7 +68,7 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func showFolderSelectionScreen() {
-        let viewModel = NewDocumentFolderViewModel(database: database, networkManager: networkManager)
+        let viewModel = NewDocumentFolderViewModel(database: database, networkManager: networkManager, tracker: tracker)
         let viewController = NewDocumentFolderViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
