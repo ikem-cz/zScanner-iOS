@@ -17,9 +17,6 @@ enum Event {
     case userFoundBy(SearchMode)
     case userNotFound
     
-    case documentType(String)
-    case useOfDescription(Bool)
-    
     case deleteImage
     case galleryUsed(Bool)
     

@@ -50,6 +50,7 @@ class AppCoordinator: Coordinator {
     
     // MARK: Helpers
     private let database: Database = try! RealmDatabase()
+    private let tracker: Tracker = FirebaseAnalytics()
     
     private func storeUserSession(_ userSession: UserSession) {
         let databaseLogin = LoginDatabaseModel(login: userSession.login)
@@ -82,6 +83,7 @@ extension AppCoordinator: SeaCatSplashCoordinator {
 // MARK: - LoginFlowDelegate implementation
 extension AppCoordinator: LoginFlowDelegate {
     func successfulLogin(userSession: UserSession) {
+        tracker.track(.login)
         storeUserSession(userSession)
         startDocumentsCoordinator(with: userSession)
     }
@@ -92,6 +94,7 @@ extension AppCoordinator: DocumentsFlowDelegate {
     func logout() {
         database.deleteAll(of: LoginDatabaseModel.self)
         SeaCatClient.reset()
+        tracker.track(.logout)
         runLoginFlow()
     }
 }

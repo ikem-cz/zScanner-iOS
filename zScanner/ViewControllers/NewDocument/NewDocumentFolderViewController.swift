@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 
 protocol NewDocumentFolderCoordinator: BaseCoordinator {
-    func saveFolder(_ folder: FolderDomainModel)
+    func saveFolder(_ folder: FolderDomainModel, searchMode: SearchMode)
     func showNextStep()
 }
 
@@ -206,15 +206,18 @@ extension NewDocumentFolderViewController: UITableViewDelegate {
         let section = sections[indexPath.section]
         
         let item: FolderDomainModel
+        let searchMode: SearchMode
         
         switch section {
         case .searchResults:
             item = viewModel.searchResults.value[indexPath.row]
+            searchMode = viewModel.lastUsedSearchMode
         case .history:
             item = viewModel.history[indexPath.row]
+            searchMode = .history
         }
         
-        coordinator.saveFolder(item)
+        coordinator.saveFolder(item, searchMode: searchMode)
         coordinator.showNextStep()
     }
 }

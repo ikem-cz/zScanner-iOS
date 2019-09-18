@@ -27,9 +27,6 @@ extension Event {
         case .userFoundBy: return "userFound"
         case .userNotFound: return "userNotFound"
             
-        case .documentType: return "documentType"
-        case .useOfDescription: return "useOfDescription"
-            
         case .deleteImage: return "deleteImage"
         case .galleryUsed(let used): return used ? "galleryUsed" : "cameraUsed"
         
@@ -44,10 +41,6 @@ extension Event {
             return ["documentMode": mode.rawValue]
         case .userFoundBy(let mode):
             return ["searchType": mode.rawValue]
-        case .documentType(let type):
-            return ["selected": type]
-        case .useOfDescription(let usage):
-            return ["used": usage]
         case .numberOfDocumentsBeforeDelete(let sum):
             return ["numberOfDocuments": sum]
         default:

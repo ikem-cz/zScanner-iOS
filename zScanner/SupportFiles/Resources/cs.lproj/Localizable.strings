@@ -23,6 +23,7 @@
 "documentMode.exam.name" = "Vyšetření";
 "documentMode.ext.name" = "Externí";
 "documentMode.photo.name" = "Fotografie";
+"documentMode.undefined.name" = "Neznámý typ";
 
 // MARK: - Documents List
 "document.screen.title" = "zScanner";
