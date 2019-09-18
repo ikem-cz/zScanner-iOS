@@ -54,7 +54,6 @@ class DateTimePickerTableViewCell: UITableViewCell {
     private lazy var dateTimePicker: UIDatePicker = {
         let picker = UIDatePicker()
         let closest5 = Date().ceil(precision: 5 * 60)
-        picker.minimumDate = closest5
         picker.date = closest5
         picker.datePickerMode = .dateAndTime
         picker.minuteInterval = 5
