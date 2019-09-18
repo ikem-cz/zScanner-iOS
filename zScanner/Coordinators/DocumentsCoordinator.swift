@@ -26,6 +26,8 @@ class DocumentsCoordinator: Coordinator {
         self.networkManager = IkemNetworkManager(api: api)
         
         super.init(window: window)
+        
+        setupSessionHandler()
     }
     
     // MARK: Interface
@@ -51,6 +53,14 @@ class DocumentsCoordinator: Coordinator {
     }
     
     private func runNewDocumentFlow(with mode: DocumentMode) {
+        // Tracking
+        if documentCreatedInThisSession {
+            tracker.track(.createDocumentAgain)
+        } else {
+            documentCreatedInThisSession = true
+        }
+        
+        // Start new-document flow
         guard let coordinator = NewDocumentCoordinator(for: mode, flowDelegate: self, window: window, navigationController: navigationController) else { return }
         addChildCoordinator(coordinator)
         coordinator.begin()
@@ -61,6 +71,20 @@ class DocumentsCoordinator: Coordinator {
     private let networkManager: NetworkManager
     private let database: Database = try! RealmDatabase()
     private let tracker: Tracker = FirebaseAnalytics()
+    private var documentCreatedInThisSession = false
+    
+    private func setupSessionHandler() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appEnteredBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+    }
+    
+    @objc private func appEnteredBackground() {
+        documentCreatedInThisSession = true
+    }
 }
 
 // MARK: - DocumentsListCoordinator implementation
@@ -89,6 +113,12 @@ extension DocumentsCoordinator: NewDocumentFlowDelegate {
 // MARK: - MenuFlowDelegate implementation
 extension DocumentsCoordinator: MenuFlowDelegate {
     func deleteHistory() {
+        
+        //Tracking
+        let numberOfDocuments = database.loadObjects(DocumentDatabaseModel.self).count
+        tracker.track(.numberOfDocumentsBeforeDelete(numberOfDocuments))
+        
+        // Deleting
         database.deleteAll(of: PageDatabaseModel.self)
         database.deleteAll(of: DocumentDatabaseModel.self)
         database.deleteAll(of: PageUploadStatusDatabaseModel.self)

@@ -15,10 +15,12 @@ class NewDocumentFolderViewModel {
     // MARK: Instance part
     private let database: Database
     private let networkManager: NetworkManager
+    private let tracker: Tracker
     
-    init(database: Database, networkManager: NetworkManager) {
+    init(database: Database, networkManager: NetworkManager, tracker: Tracker) {
         self.database = database
         self.networkManager = networkManager
+        self.tracker = tracker
         
         history = database
             .loadObjects(FolderDatabaseModel.self)
@@ -31,12 +33,15 @@ class NewDocumentFolderViewModel {
     let history: [FolderDomainModel]
     let searchResults = BehaviorRelay<[FolderDomainModel]>(value: [])
     let isLoading = BehaviorRelay<Bool>(value: false)
+    var lastUsedSearchMode: SearchMode = .history
     
     func search(query: String) {
+        lastUsedSearchMode = .search
         activeSearch = networkManager.searchFolders(with: query)
     }
     
     func getFolder(with id: String) {
+        lastUsedSearchMode = .scan
         let id = id.trimmingCharacters(in: CharacterSet.decimalDigits.inverted)
         activeSearch = networkManager.getFolder(with: id).map({ (result) -> RequestStatus<[FolderNetworkModel]> in
             switch result {
@@ -59,6 +64,10 @@ class NewDocumentFolderViewModel {
                     self?.isLoading.accept(false)
                     let folders = folders.map({ $0.toDomainModel() })
                     self?.searchResults.accept(folders)
+                    
+                    if folders.isEmpty {
+                        self?.tracker.track(.userNotFound)
+                    }
                 case .error:
                     self?.isLoading.accept(false)
                     self?.searchResults.accept([])

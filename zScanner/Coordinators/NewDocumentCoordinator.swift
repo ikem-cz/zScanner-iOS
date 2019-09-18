@@ -54,6 +54,7 @@ class NewDocumentCoordinator: Coordinator {
     // MARK: Helepers
     private let database: Database = try! RealmDatabase()
     private let networkManager: NetworkManager = IkemNetworkManager(api: NativeAPI())
+    private let tracker: Tracker = FirebaseAnalytics()
     
     private func showCurrentStep() {
         switch currentStep {
@@ -196,10 +197,11 @@ extension NewDocumentCoordinator: NewDocumentFolderCoordinator {
         resolveNextStep()
     }
     
-    func saveFolder(_ folder: FolderDomainModel) {
+    func saveFolder(_ folder: FolderDomainModel, searchMode: SearchMode) {
         newDocument.folder = folder
         let databaseFolder = FolderDatabaseModel(folder: folder)
         FolderDatabaseModel.updateLastUsage(of: databaseFolder)
+        tracker.track(.userFoundBy(searchMode))
     }
 }
 

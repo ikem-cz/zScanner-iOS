@@ -13,4 +13,13 @@ enum Event {
     case logout
     
     case documentModeSelected(DocumentMode)
+    
+    case userFoundBy(SearchMode)
+    case userNotFound
+    
+    case deleteImage
+    case galleryUsed(Bool)
+    
+    case numberOfDocumentsBeforeDelete(Int)
+    case createDocumentAgain
 }
