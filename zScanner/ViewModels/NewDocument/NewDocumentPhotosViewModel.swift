@@ -13,18 +13,30 @@ import RxRelay
 class NewDocumentPhotosViewModel {
     
     // MARK: Instance part
-    init() {}
+    private let tracker: Tracker
+    
+    init(tracker: Tracker) {
+        self.tracker = tracker
+    }
     
     // MARK: Interface
     let pictures = BehaviorRelay<[UIImage]>(value: [])
     
-    func addImage(_ image: UIImage) {
+    func addImage(_ image: UIImage, fromGallery: Bool) {
+        // Tracking
+        tracker.track(.galleryUsed(fromGallery))
+        
+        // Add image
         var newArray = pictures.value
         newArray.append(image)
         pictures.accept(newArray)
     }
     
     func removeImage(_ image: UIImage) {
+        // Tracking
+        tracker.track(.deleteImage)
+
+        // Remove image
         var newArray = pictures.value
         _ = newArray.remove(image)
         pictures.accept(newArray)

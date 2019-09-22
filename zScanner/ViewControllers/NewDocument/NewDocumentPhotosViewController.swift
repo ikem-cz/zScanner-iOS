@@ -199,7 +199,7 @@ class NewDocumentPhotosViewController: BaseViewController {
 extension NewDocumentPhotosViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let pickedImage = info[.originalImage] as? UIImage {
-            viewModel.addImage(pickedImage)
+            viewModel.addImage(pickedImage, fromGallery: picker.sourceType == .photoLibrary)
         }
         self.dismiss(animated: true, completion: nil)
     }

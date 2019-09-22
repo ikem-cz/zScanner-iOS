@@ -80,7 +80,7 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func showPhotosSelectionScreen() {
-        let viewModel = NewDocumentPhotosViewModel()
+        let viewModel = NewDocumentPhotosViewModel(tracker: tracker)
         let viewController = NewDocumentPhotosViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
