@@ -33,6 +33,7 @@ class AboutViewController: BaseViewController {
         stackView.addArrangedSubview(aboutHeader)
         stackView.addArrangedSubview(aboutParagraph)
         stackView.addArrangedSubview(aboutCopyright)
+        stackView.addArrangedSubview(versionLabel)
 
         view.addSubview(stackView)
         
@@ -91,5 +92,14 @@ class AboutViewController: BaseViewController {
         stackView.alignment = .center
         stackView.spacing = 15
         return stackView
+    }()
+    
+    private lazy var versionLabel: UILabel = {
+        let label = UILabel()
+        label.text = Bundle.main.formattedVersion
+        label.textAlignment = .center
+        label.textColor = .primary
+        label.font = .footnote
+        return label
     }()
 }

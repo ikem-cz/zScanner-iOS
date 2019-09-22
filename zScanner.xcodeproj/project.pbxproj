@@ -78,6 +78,7 @@
 		BD678DA523048A3A00AE5B15 /* NewDocumentPhotosViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD678DA423048A3A00AE5B15 /* NewDocumentPhotosViewModel.swift */; };
 		BD678DA7230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD678DA6230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift */; };
 		BD70566F23301D7E0074184A /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD70566E23301D7E0074184A /* URL.swift */; };
+		BD72DB3D2337E5A80016C2E0 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD72DB3C2337E5A80016C2E0 /* Bundle.swift */; };
 		BD7EAC3A2325839C002C225A /* PageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7EAC392325839C002C225A /* PageViewModel.swift */; };
 		BD7EAC3C232583C3002C225A /* PageDomainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7EAC3B232583C3002C225A /* PageDomainModel.swift */; };
 		BD7EAC3E23258A1A002C225A /* PageDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7EAC3D23258A1A002C225A /* PageDatabaseModel.swift */; };
@@ -210,6 +211,7 @@
 		BD678DA423048A3A00AE5B15 /* NewDocumentPhotosViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDocumentPhotosViewModel.swift; sourceTree = "<group>"; };
 		BD678DA6230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSelectorCollectionViewCell.swift; sourceTree = "<group>"; };
 		BD70566E23301D7E0074184A /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
+		BD72DB3C2337E5A80016C2E0 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		BD7EAC392325839C002C225A /* PageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewModel.swift; sourceTree = "<group>"; };
 		BD7EAC3B232583C3002C225A /* PageDomainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageDomainModel.swift; sourceTree = "<group>"; };
 		BD7EAC3D23258A1A002C225A /* PageDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageDatabaseModel.swift; sourceTree = "<group>"; };
@@ -514,6 +516,8 @@
 			isa = PBXGroup;
 			children = (
 				BD59A07022E36D8800FA9CD0 /* Array.swift */,
+				4386045D230626B7009ED8D5 /* BehaviorRelay.swift */,
+				BD72DB3C2337E5A80016C2E0 /* Bundle.swift */,
 				BDD3C0F022F8CBAF008406EA /* Date.swift */,
 				BDA428CD2309960900EFBAC2 /* Data.swift */,
 				BDBE340522FA3A50000F8498 /* Encodable.swift */,
@@ -526,7 +530,6 @@
 				BD88F14F23087F1300569D71 /* UIView.swift */,
 				BD000CAD22E3AA6F001EE38A /* UIViewController.swift */,
 				BD70566E23301D7E0074184A /* URL.swift */,
-				4386045D230626B7009ED8D5 /* BehaviorRelay.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -893,6 +896,7 @@
 				BD59A09B22E36EF900FA9CD0 /* RequestStatus.swift in Sources */,
 				BDBDF4DD22C8016700183BBF /* AppDelegate.swift in Sources */,
 				BD7EAC3A2325839C002C225A /* PageViewModel.swift in Sources */,
+				BD72DB3D2337E5A80016C2E0 /* Bundle.swift in Sources */,
 				BD59A07122E36D8800FA9CD0 /* Array.swift in Sources */,
 				BD59A0A522E378BC00FA9CD0 /* LoginCoordinator.swift in Sources */,
 				43C14A102300F07800F7C24E /* AboutViewController.swift in Sources */,
