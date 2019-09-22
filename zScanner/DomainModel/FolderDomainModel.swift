@@ -8,10 +8,14 @@
 
 import Foundation
 
-struct FolderDomainModel {
+struct FolderDomainModel: Equatable {
     var externalId : String
     var id : String
     var name: String
+}
+
+extension FolderDomainModel {
+    static var notFound = FolderDomainModel(externalId: "", id: "", name: "folderResult.folderNotFound.title".localized)
 }
 
 enum SearchMode: String {

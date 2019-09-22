@@ -76,6 +76,23 @@ class NewDocumentFolderViewController: BaseViewController {
         presentScanner()
     }
     
+    private func showSearchResult(_ show: Bool) {
+        if show {
+            // Insert section if missing
+            if sections.contains(.searchResults) == false {
+                let index = 0
+                sections.insert(.searchResults, at: index)
+                tableView.insertSections([index], with: .fade)
+            }
+        } else {
+            // Remove section if present
+            if let index = sections.firstIndex(of: .searchResults) {
+                sections.remove(at: index)
+                tableView.deleteSections([index], with: .fade)
+            }
+        }
+    }
+    
     private func setupBindings() {
         viewModel.searchResults
             .observeOn(MainScheduler.instance)
@@ -217,6 +234,8 @@ extension NewDocumentFolderViewController: UITableViewDelegate {
             searchMode = .history
         }
         
+        guard item != .notFound else { return }
+        
         coordinator.saveFolder(item, searchMode: searchMode)
         coordinator.showNextStep()
     }
@@ -233,20 +252,7 @@ extension NewDocumentFolderViewController: UISearchBarDelegate {
             searchText = ""
         }
         
-        if searchText.isEmpty {
-            // Remove section if present
-            if let index = sections.firstIndex(of: .searchResults) {
-                sections.remove(at: index)
-                tableView.deleteSections([index], with: .fade)
-            }
-        } else {
-            // Insert section if missing
-            if sections.contains(.searchResults) == false {
-                let index = 0
-                sections.insert(.searchResults, at: index)
-                tableView.insertSections([index], with: .fade)
-            }
-        }
+        showSearchResult(!searchText.isEmpty)
     }
 }
 
@@ -254,6 +260,9 @@ extension NewDocumentFolderViewController: UISearchBarDelegate {
 extension NewDocumentFolderViewController: ScannerDelegate {
     func close() {
         dismiss(animated: true, completion: nil)
+        if viewModel.lastUsedSearchMode == .scan {
+            showSearchResult(true)
+        }
     }
     
     func failed() {

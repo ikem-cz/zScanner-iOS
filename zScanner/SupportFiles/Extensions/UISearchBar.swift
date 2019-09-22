@@ -10,17 +10,18 @@ import UIKit
 
 extension UISearchBar {
     private var textField: UITextField? {
-        let subViews = self.subviews.flatMap { $0.subviews }
-        return (subViews.filter { $0 is UITextField }).first as? UITextField
+        if #available(iOS 13.0, *) {
+            return searchTextField
+        } else {
+            if let textField = value(forKey: "searchField") as? UITextField {
+                return textField
+            }
+            return nil
+        }
     }
     
-    public var activityIndicator: UIActivityIndicatorView? {
+    private var activityIndicator: UIActivityIndicatorView? {
         return textField?.leftView?.subviews.compactMap{ $0 as? UIActivityIndicatorView }.first
-    }
-    
-    private var searchIcon: UIImage? {
-        let subViews = subviews.flatMap { $0.subviews }
-        return ((subViews.filter { $0 is UIImageView }).first as? UIImageView)?.image
     }
     
     var isLoading: Bool {
@@ -30,7 +31,6 @@ extension UISearchBar {
             if newValue {
                 if activityIndicator == nil {
                     let newActivityIndicator = UIActivityIndicatorView(style: .gray)
-                    // newActivityIndicator.transform = CGAffineTransform(scaleX: 0.7, y: 0.7)
                     newActivityIndicator.startAnimating()
                     newActivityIndicator.backgroundColor = .white
                     textField?.leftView?.addSubview(newActivityIndicator)

@@ -33,7 +33,7 @@ class NewDocumentFolderViewModel {
     let history: [FolderDomainModel]
     let searchResults = BehaviorRelay<[FolderDomainModel]>(value: [])
     let isLoading = BehaviorRelay<Bool>(value: false)
-    var lastUsedSearchMode: SearchMode = .history
+    private(set) var lastUsedSearchMode: SearchMode = .history
     
     func search(query: String) {
         lastUsedSearchMode = .search
@@ -42,6 +42,7 @@ class NewDocumentFolderViewModel {
     
     func getFolder(with id: String) {
         lastUsedSearchMode = .scan
+        searchResults.accept([])
         let id = id.trimmingCharacters(in: CharacterSet.decimalDigits.inverted)
         activeSearch = networkManager.getFolder(with: id).map({ (result) -> RequestStatus<[FolderNetworkModel]> in
             switch result {
@@ -62,15 +63,16 @@ class NewDocumentFolderViewModel {
                     self?.isLoading.accept(true)
                 case .success(data: let folders):
                     self?.isLoading.accept(false)
-                    let folders = folders.map({ $0.toDomainModel() })
-                    self?.searchResults.accept(folders)
-                    
+                    var folders = folders.map({ $0.toDomainModel() })
                     if folders.isEmpty {
                         self?.tracker.track(.userNotFound)
+                        folders.append(.notFound)
                     }
+                    self?.searchResults.accept(folders)
                 case .error:
+                    self?.tracker.track(.userNotFound)
                     self?.isLoading.accept(false)
-                    self?.searchResults.accept([])
+                    self?.searchResults.accept([.notFound])
                 }
             })
         }

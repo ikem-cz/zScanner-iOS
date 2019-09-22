@@ -40,6 +40,8 @@
 "newDocumentFolder.scanFailedAlert.message" = "Kamera není dostupná, zkontrolujte prosím nastavení.";
 "newDocumentFolder.emptyView.title" = "Zadejte alespoň tři znaky pro zahájení vyhledávání.";
 
+"folderResult.folderNotFound.title" = "Pacient nenalezen";
+
 "newDocumentType.screen.title" = "Vlastnosti záznamu";
 "newDocumentType.button.title" = "Další";
 
