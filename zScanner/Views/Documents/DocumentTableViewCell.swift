@@ -119,7 +119,7 @@ class DocumentTableViewCell: UITableViewCell {
             .disposed(by: disposeBag)
         
         retryButton.rx.tap.subscribe(onNext: { [weak self] in
-            self?.viewModel?.uploadDocument()
+            self?.viewModel?.reupload()
         })
         .disposed(by: disposeBag)
     }

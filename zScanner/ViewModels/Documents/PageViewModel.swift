@@ -31,6 +31,10 @@ class PageViewModel {
     
     // MARK: Interface
     func uploadPage() {
+        guard (try? pageUploadStatus.value()) == .awaitingInteraction else {
+            return
+        }
+        
         pageUploadStatus.onNext(.progress(0))
         setupBindings()
         
@@ -54,6 +58,12 @@ class PageViewModel {
                 self?.pageUploadStatus.onCompleted()
             })
             .disposed(by: disposeBag)
+    }
+    
+    func prepareForReupload() {
+        if (try? pageUploadStatus.value()) == .failed(nil) {
+            pageUploadStatus.onNext(.awaitingInteraction)
+        }
     }
     
     // MARK: Helpers

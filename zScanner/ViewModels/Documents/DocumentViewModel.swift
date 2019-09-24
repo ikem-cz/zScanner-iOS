@@ -41,11 +41,10 @@ class DocumentViewModel {
     // MARK: Instance part
     private var networkManager: NetworkManager
     private var database: Database
-    let document: DocumentDomainModel
     private let internalUploadStatus = BehaviorSubject<DocumentViewModel.UploadStatus>(value: .awaitingInteraction)
-    
-    private var uploadTasks = [Observable<RequestStatus<EmptyResponse>>]()
     private let pages: [PageViewModel]
+
+    let document: DocumentDomainModel
     
     init(document: DocumentDomainModel, networkManager: NetworkManager, database: Database) {
         self.document = document
@@ -62,30 +61,18 @@ class DocumentViewModel {
     
     // MARK: Interface
     func uploadDocument() {
-        internalUploadStatus.onNext(.progress(0))
-        setupBindings()
+        uploadInternalDocument()
+        checkUploadQueue()
+    }
+    
+    func reupload() {
+        if (try? internalUploadStatus.value()) == .failed(nil) {
+            internalUploadStatus.onNext(.awaitingInteraction)
+        }
         
-        let networkDocument = DocumentNetworkModel(from: document)
-        networkManager
-            .uploadDocument(networkDocument)
-            .subscribe(onNext: { [weak self] requestStatus in
-                switch requestStatus {
-                case .progress(let percentage):
-                    self?.internalUploadStatus.onNext(.progress(percentage))
-                case .success:
-                    self?.internalUploadStatus.onNext(.progress(1))
-                    self?.internalUploadStatus.onNext(.success)
-                case .error(let error):
-                    self?.internalUploadStatus.onNext(.failed(error))
-                }
-            }, onError: { [weak self] error in
-                self?.internalUploadStatus.onError(error)
-            }, onCompleted: { [weak self] in
-                self?.internalUploadStatus.onCompleted()
-            })
-            .disposed(by: disposeBag)
+        pages.forEach({ $0.prepareForReupload() })
         
-        pages.forEach({ $0.uploadPage() })
+        uploadDocument()
     }
     
     lazy var documentUploadStatus: Observable<UploadStatus> = Observable
@@ -107,25 +94,57 @@ class DocumentViewModel {
             .disposed(by: disposeBag)
     }
     
+    private func uploadInternalDocument() {
+        guard (try? internalUploadStatus.value()) == .awaitingInteraction else {
+            return
+        }
+        
+        internalUploadStatus.onNext(.progress(0))
+        setupBindings()
+        
+        let networkDocument = DocumentNetworkModel(from: document)
+        
+        networkManager
+            .uploadDocument(networkDocument)
+            .subscribe(onNext: { [weak self] requestStatus in
+                switch requestStatus {
+                case .progress(let percentage):
+                    self?.internalUploadStatus.onNext(.progress(percentage))
+                case .success:
+                    self?.internalUploadStatus.onNext(.progress(1))
+                    self?.internalUploadStatus.onNext(.success)
+                case .error(let error):
+                    self?.internalUploadStatus.onNext(.failed(error))
+                }
+            }, onError: { [weak self] error in
+                self?.internalUploadStatus.onError(error)
+            }, onCompleted: { [weak self] in
+                self?.internalUploadStatus.onCompleted()
+            })
+            .disposed(by: disposeBag)
+    }
+    
     private var tasks: [Observable<UploadStatus>] {
         var tasks: [Observable<UploadStatus>] = pages.map({ $0.pageUploadStatus.asObservable() })
         tasks.append(internalUploadStatus.asObservable())
         return tasks
     }
     
-    private let statusToProgress: ([UploadStatus]) -> UploadStatus = { tasks in
+    private lazy var statusToProgress: ([UploadStatus]) -> UploadStatus = { [weak self] tasks in
         
         var progresses = [Double]()
-        var stillInProgress = false
+        var inProgressCount = 0
+        var awaitingCount = 0
         var failed = false
         var error: RequestError?
         
         for status in tasks {
             switch status {
             case .awaitingInteraction:
+                awaitingCount += 1
                 progresses.append(0)
             case .progress(let percentage):
-                stillInProgress = true
+                inProgressCount += 1
                 progresses.append(percentage * 0.9)
             case .success:
                 progresses.append(1)
@@ -136,7 +155,13 @@ class DocumentViewModel {
             }
         }
         
-        if !stillInProgress {
+        if awaitingCount > 0 && inProgressCount < Config.maximumNumberOfConcurentUploads {
+            DispatchQueue.main.async {
+                self?.checkUploadQueue()
+            }
+        }
+        
+        if inProgressCount == 0 && awaitingCount == 0 {
             if failed {
                 return .failed(error)
             } else {
@@ -146,6 +171,24 @@ class DocumentViewModel {
         
         let overallProgress = progresses.reduce(0, { $0 + $1 }) / Double(progresses.count)
         return .progress(overallProgress)
+    }
+    
+    private func checkUploadQueue() {
+        var activeUploadsCount = pages.filter({ page in
+            return (try? page.pageUploadStatus.value()) == .progress(0)
+        }).count
+        
+        if (try? internalUploadStatus.value()) == .progress(0) {
+            activeUploadsCount += 1
+        }
+        
+        if activeUploadsCount < Config.maximumNumberOfConcurentUploads {
+            pages
+                .first(where: { page -> Bool in
+                    return (try? page.pageUploadStatus.value()) == .awaitingInteraction
+                })?
+                .uploadPage()
+        }
     }
 }
 
