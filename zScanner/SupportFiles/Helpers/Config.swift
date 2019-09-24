@@ -17,3 +17,23 @@ enum Config {
     static let folderUsageHistoryCount = 3
     static let minimumSearchLength = 3
 }
+
+//MARK: -
+enum Environment {
+    case production
+    case testing
+    
+    var baseUrl: String {
+        switch self {
+            case .production: return Config.productionURL
+            case .testing: return Config.testingURL
+        }
+    }
+    
+    var authUrl: String {
+        switch self {
+            case .production: return Config.authUrl
+            case .testing: return ""
+        }
+    }
+}

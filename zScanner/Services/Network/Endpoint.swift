@@ -12,23 +12,3 @@ protocol Endpoint {
     var url: String { get }
     var rawValue: String { get }
 }
-
-//MARK: -
-enum Environment {
-    case production
-    case testing
-    
-    var baseUrl: String {
-        switch self {
-            case .production: return Config.productionURL
-            case .testing: return Config.testingURL
-        }
-    }
-    
-    var authUrl: String {
-        switch self {
-        case .production: return Config.authUrl
-        case .testing: return ""
-        }
-    }
-}

@@ -8,10 +8,6 @@
 
 import UIKit
 
-var isReady: Bool {
-    return SeaCatClient.isReady()
-}
-
 class AppCoordinator: Coordinator {
     
     //MARK: - Instance part
@@ -63,6 +59,10 @@ class AppCoordinator: Coordinator {
         }
         return nil
     }
+    
+    private func removeUserSession() {
+        database.deleteAll(of: LoginDatabaseModel.self)
+    }
 }
 
 // MARK: - SeaCatSplashCoordinator implementation
@@ -92,7 +92,7 @@ extension AppCoordinator: LoginFlowDelegate {
 // MARK: - DocumentsFlowDelegate implementation
 extension AppCoordinator: DocumentsFlowDelegate {
     func logout() {
-        database.deleteAll(of: LoginDatabaseModel.self)
+        removeUserSession()
         SeaCatClient.reset()
         tracker.track(.logout)
         runLoginFlow()
