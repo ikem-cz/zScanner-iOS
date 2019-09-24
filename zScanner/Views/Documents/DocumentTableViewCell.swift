@@ -204,7 +204,7 @@ class DocumentTableViewCell: UITableViewCell {
     
     private var retryButton: UIButton = {
         let button = UIButton()
-        button.setImage(#imageLiteral(resourceName: "retry"), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "refresh"), for: .normal)
         return button
     }()
     
