@@ -57,15 +57,12 @@ class SeaCatSplashViewController: BaseViewController, ErrorHandling {
     @objc private func seaCatStateChanged() {
         guard let state = SeaCatClient.getState() else { return }
        
-        if state[1] == "C" || state[1] == "*" {
+        if state[1] == "C" || SeaCatClient.isReady() {
             seaCatTimer?.invalidate()
             timeoutTimer?.invalidate()
             SeaCatClient.removeObserver(self)
             
-            // Give SeaCat a little bit extra time to init 😤😖
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.coordinator.seaCatInitialized()
-            }
+            self.coordinator.seaCatInitialized()
         }
     }
 
