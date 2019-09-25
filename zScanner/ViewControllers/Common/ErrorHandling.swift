@@ -22,6 +22,8 @@ extension ErrorHandling where Self: UIViewController {
     }
     
     func handleError(_ error: RequestError, okCallback: EmptyClosure?, retryCallback: EmptyClosure?) {
+        guard self.presentedViewController == nil else { return }
+        
         let title = "dialog.requestError.title".localized
         let message: String
         

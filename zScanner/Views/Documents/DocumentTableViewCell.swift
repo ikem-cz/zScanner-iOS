@@ -110,12 +110,10 @@ class DocumentTableViewCell: UITableViewCell {
                     self?.retryButton.isHidden = true
                 case .success:
                     onCompleted()
-                case .failed:
-                    onError(nil)
+                case .failed(let error):
+                    onError(error)
                 }
-            }, onError: onError,
-               onCompleted: onCompleted
-            )
+            })
             .disposed(by: disposeBag)
         
         retryButton.rx.tap.subscribe(onNext: { [weak self] in
