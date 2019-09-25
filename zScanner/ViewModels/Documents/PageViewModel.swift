@@ -52,10 +52,6 @@ class PageViewModel {
                 case .error(let error):
                     self?.pageUploadStatus.onNext(.failed(error))
                 }
-            }, onError: { [weak self] error in
-                self?.pageUploadStatus.onError(error)
-            }, onCompleted: { [weak self] in
-                self?.pageUploadStatus.onCompleted()
             })
             .disposed(by: disposeBag)
     }

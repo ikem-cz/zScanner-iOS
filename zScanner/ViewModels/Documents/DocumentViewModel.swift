@@ -116,10 +116,6 @@ class DocumentViewModel {
                 case .error(let error):
                     self?.internalUploadStatus.onNext(.failed(error))
                 }
-            }, onError: { [weak self] error in
-                self?.internalUploadStatus.onError(error)
-            }, onCompleted: { [weak self] in
-                self?.internalUploadStatus.onCompleted()
             })
             .disposed(by: disposeBag)
     }
