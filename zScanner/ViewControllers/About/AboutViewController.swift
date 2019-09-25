@@ -40,7 +40,7 @@ class AboutViewController: BaseViewController {
         stackView.snp.makeConstraints { make in
             make.top.greaterThanOrEqualTo(safeArea).inset(20)
             make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().multipliedBy(0.666).priority(900)
+            make.centerY.equalToSuperview().multipliedBy(0.666).priority(500)
             make.width.equalToSuperview().multipliedBy(0.85)
         }
         
