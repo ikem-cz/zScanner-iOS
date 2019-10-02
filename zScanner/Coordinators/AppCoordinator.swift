@@ -18,12 +18,7 @@ class AppCoordinator: Coordinator {
     
     // MARK: Inteface
     func begin() {
-        // Skip waiting in case of superfast SeaCat init. (with existing credentials)
-        if let userSession = restoredUserSession, SeaCatClient.isReady() {
-            startDocumentsCoordinator(with: userSession)
-        } else {
-            showSplashScreen()
-        }
+        showSplashScreen()
     }
     
     // MARK: Navigation methods

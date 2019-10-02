@@ -9,6 +9,10 @@
 // MARK: - Alert
 "alert.okButton.title" = "OK";
 
+// MARK: - Splash
+"splash.waitingForInternet.message" = "Čekám na internet";
+"splash.waitingForSeaCat.message" = "Čekám na SeaCat";
+
 // MARK: - Login
 "login.screen.title" = "zScanner";
 

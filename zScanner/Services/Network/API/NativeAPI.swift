@@ -11,7 +11,7 @@ import Foundation
 struct NativeAPI: API {
     
     func process<R, D>(_ request: R, with callback: @escaping (RequestStatus<D>) -> Void) where R : Request, D : Decodable, D == R.DataType {
-        guard Reachability.isConnectedToNetwork() else {
+        guard reachability.connection != .unavailable else {
             callback(.error(RequestError(.noInternetConnection)))
             return
         }
@@ -114,6 +114,10 @@ struct NativeAPI: API {
         
         callback(.progress(0))
     }
+    
+    
+    // MARK: - Helpers
+    private let reachability = try! Reachability()
     
     private func createBody(for request: FileUploading, parameters: Encodable?) -> Data? {
         var body = Data()
