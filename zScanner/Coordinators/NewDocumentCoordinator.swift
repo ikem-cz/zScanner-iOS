@@ -148,14 +148,7 @@ class NewDocumentCoordinator: Coordinator {
         }
     
     private static func steps(for mode: DocumentMode) -> [Step] {
-        switch mode {
-            case .document, .examination, .ext:
-                return [.folder, .documentType, .photos]
-            case .photo: 
-                return [.folder, .photos]
-            case .undefined:
-                return []
-        }
+            return [.folder, .photos, .documentType]
     }
     
     // MARK: - BaseCordinator implementation
