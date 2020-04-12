@@ -9,6 +9,8 @@
 import Foundation
 
 struct PageNetworkModel: Encodable {
+    var uploadType = "page"
+    var filetype = "image/jpg"
     var correlation: String
     var page: Int
     var pageUrl: URL

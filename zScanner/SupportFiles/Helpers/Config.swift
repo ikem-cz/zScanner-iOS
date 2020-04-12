@@ -18,6 +18,7 @@ enum Config {
     static let minimumSearchLength = 3
     static let maximumNumberOfConcurentUploads = 4
     static let maximumSecondsOfVideoRecording: Double = 5
+    static let numberOfTuskitRetries: Int32 = 3
 }
 
 //MARK: -
