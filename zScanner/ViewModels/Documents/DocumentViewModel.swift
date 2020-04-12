@@ -84,13 +84,16 @@ class DocumentViewModel {
     
     private func setupBindings() {
         internalUploadStatus
+            .asObservable()
+            .do(afterCompleted: { [weak self] in self?.checkUploadQueue() })
             .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self]  status in
-                guard let `self` = self else { return }
+            .subscribe(onNext: { [weak self] status in
+                guard let self = self else { return }
                 let databaseUploadStatus = DocumentUploadStatusDatabaseModel(documentId: self.document.id, status: status)
                 self.database.saveObject(databaseUploadStatus)
             })
             .disposed(by: disposeBag)
+
     }
     
     private func uploadInternalDocument() {
@@ -105,18 +108,25 @@ class DocumentViewModel {
         
         networkManager
             .uploadDocument(networkDocument)
-            .subscribe(onNext: { [weak self] requestStatus in
-                switch requestStatus {
-                case .progress(let percentage):
-                    self?.internalUploadStatus.onNext(.progress(percentage))
-                case .success:
-                    self?.internalUploadStatus.onNext(.progress(1))
-                    self?.internalUploadStatus.onNext(.success)
-                    self?.checkUploadQueue()
-                case .error(let error):
-                    self?.internalUploadStatus.onNext(.failed(error))
+            .subscribe(
+                onNext: { [weak self] requestStatus in
+                    switch requestStatus {
+                    case .progress(let percentage):
+                        self?.internalUploadStatus.onNext(.progress(percentage))
+                    case .success:
+                        self?.internalUploadStatus.onNext(.progress(1))
+                        self?.internalUploadStatus.onNext(.success)
+                    case .error(let error):
+                        self?.internalUploadStatus.onNext(.failed(error))
+                    }
+                },
+                onError: { [weak self] error in
+                    self?.internalUploadStatus.onError(error)
+                },
+                onCompleted: { [weak self] in
+                    self?.internalUploadStatus.onCompleted()
                 }
-            })
+            )
             .disposed(by: disposeBag)
     }
     
