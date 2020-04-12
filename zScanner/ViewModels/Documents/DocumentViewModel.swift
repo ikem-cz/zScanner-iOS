@@ -62,7 +62,6 @@ class DocumentViewModel {
     // MARK: Interface
     func uploadDocument() {
         uploadInternalDocument()
-        checkUploadQueue()
     }
     
     func reupload() {
@@ -113,6 +112,7 @@ class DocumentViewModel {
                 case .success:
                     self?.internalUploadStatus.onNext(.progress(1))
                     self?.internalUploadStatus.onNext(.success)
+                    self?.checkUploadQueue()
                 case .error(let error):
                     self?.internalUploadStatus.onNext(.failed(error))
                 }

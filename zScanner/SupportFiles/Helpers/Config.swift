@@ -10,10 +10,10 @@ import Foundation
 
 enum Config {
     static let productionURL: String = "https://tempra.ikem.seacat/api-zscanner/v3"
-    static let testingURL: String = "https://desolate-meadow-62603.herokuapp.com/api-zscanner/v3"
+    static let testingURL: String = "https://zscanner.ikem.dev.bindworks.eu/api-zscanner/v3"
     static let authUrl: String = "http://auth.ikem.seacat"
     
-    static let currentEnvironment: Environment = .production
+    static let currentEnvironment: Environment = .testing
     static let folderUsageHistoryCount = 3
     static let minimumSearchLength = 3
     static let maximumNumberOfConcurentUploads = 4

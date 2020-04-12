@@ -7,8 +7,12 @@
 //
 
 import Foundation
+import TUSKit
 
 struct NativeAPI: API {
+    
+    static var uploads = [TUSResumableUpload]()
+    static var tusSession: TUSSession?
     
     func process<R, D>(_ request: R, with callback: @escaping (RequestStatus<D>) -> Void) where R : Request, D : Decodable, D == R.DataType {
         guard reachability.connection != .unavailable else {
@@ -35,13 +39,14 @@ struct NativeAPI: API {
         
         if request is ParametersJsonEncoded {
             urlRequest.httpBody = request.parameters?.toJSONData()
-            urlRequest.addValue("application-json", forHTTPHeaderField: "Content-Type")
+            urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
         }
         
-        guard let configuration = SeaCatClient.getNSURLSessionConfiguration() else {
-            callback(.error(RequestError(.seacatError)))
-            return
-        }
+//        guard let configuration = SeaCatClient.getNSURLSessionConfiguration() else {
+//            callback(.error(RequestError(.seacatError)))
+//            return
+//        }
+        let configuration = URLSessionConfiguration.default
         
         let completionHandler: (Data?, URLResponse?, Error?) -> Void = { (data, response, error) in
             if let error = error {
@@ -78,31 +83,76 @@ struct NativeAPI: API {
             }
         }
         
-        let task: URLSessionDataTask
+        var task: URLSessionDataTask?
+        var upload: TUSResumableUpload?
         
         if let uploadingRequest = request as? FileUploading {
-            guard let requestBody = createBody(for: uploadingRequest, parameters: request.parameters) else {
-                callback(.error(RequestError(.dataCorruptedError)))
-                return
+            let page = (request as! UploadPageReuest).parameters as! PageNetworkModel
+            
+            
+            var uploadStore: TUSUploadStore? = nil
+            
+            var progressBlock:TUSUploadProgressBlock?
+            var resultBlock:TUSUploadResultBlock?
+            var failureBlock:TUSUploadFailureBlock?
+ 
+            if NativeAPI.tusSession == nil {
+            uploadStore = TUSFileUploadStore()
+                let session = TUSSession(endpoint: URL(string: request.endpoint.url)!, dataStore: uploadStore!, sessionConfiguration: configuration)
+                
+                NativeAPI.tusSession = session
+                
             }
-            
-            let uploadDelegate = UploadDelegate(callback: { status in
-                if case let .progress(percentage) = status {
-                    callback(.progress(percentage))
-                }
-            })
-            
-            urlRequest.addValue("multipart/form-data; boundary=\(uploadingRequest.boundary)", forHTTPHeaderField: "Content-Type")
-            
-            configuration.timeoutIntervalForRequest = 300
-            configuration.timeoutIntervalForResource = 300
-            let session = URLSession(configuration: configuration, delegate: uploadDelegate, delegateQueue: .main)
-            
-            task = session.uploadTask(
-                with: urlRequest as URLRequest,
-                from: requestBody,
-                completionHandler: completionHandler
+
+            progressBlock = { bytesWritten, bytesTotal in
+                print( "progress : \(bytesWritten) / \(bytesTotal)"  )
+               // uploadUIHandle.setProgress(progress: Int(bytesWritten), max: Int(bytesTotal))
+            }
+            resultBlock = { fileURL in
+                // Use the upload url
+                print("result uploaded url: \(fileURL)")
+            }
+            failureBlock = { error in
+                print(error)
+            }
+    
+            upload = NativeAPI.tusSession?.createUpload(
+                fromFile: uploadingRequest.fileUrl,
+                retry: 3,
+                headers: [:],
+                metadata: [
+                    "filetype": "image/jpg",
+                    "uploadType": "page",
+                    "pageIndex": String(page.page),
+                    "correlation": page.correlation
+                ]
             )
+            upload?.progressBlock = progressBlock
+            upload?.resultBlock = resultBlock
+            upload?.failureBlock = failureBlock
+            
+//            guard let requestBody = createBody(for: uploadingRequest, parameters: request.parameters) else {
+//                callback(.error(RequestError(.dataCorruptedError)))
+//                return
+//            }
+//
+//            let uploadDelegate = UploadDelegate(callback: { status in
+//                if case let .progress(percentage) = status {
+//                    callback(.progress(percentage))
+//                }
+//            })
+//
+//            urlRequest.addValue("multipart/form-data; boundary=\(uploadingRequest.boundary)", forHTTPHeaderField: "Content-Type")
+//
+//            configuration.timeoutIntervalForRequest = 300
+//            configuration.timeoutIntervalForResource = 300
+//            let session = URLSession(configuration: configuration, delegate: uploadDelegate, delegateQueue: .main)
+//
+//            task = session.uploadTask(
+//                with: urlRequest as URLRequest,
+//                from: requestBody,
+//                completionHandler: completionHandler
+//            )
         } else {
             let session = URLSession(configuration: configuration)
             task = session.dataTask(
@@ -110,7 +160,11 @@ struct NativeAPI: API {
                 completionHandler: completionHandler
             )
         }
-        task.resume()
+        task?.resume()
+        upload?.resume()
+        upload.flatMap({ NativeAPI.uploads.append($0) })
+        
+        NativeAPI.uploads.forEach({ print($0.state.rawValue) })
         
         callback(.progress(0))
     }
