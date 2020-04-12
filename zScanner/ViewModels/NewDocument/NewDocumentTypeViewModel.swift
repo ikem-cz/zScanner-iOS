@@ -53,7 +53,7 @@ class NewDocumentTypeViewModel {
                 TextInputField(title: "form.documentDecription.title".localized, validator: { _ in true }),
                 DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil }),
             ]
-        case .photo, .undefined:
+        case .photo, .video, .undefined:
             return []
         }
     }

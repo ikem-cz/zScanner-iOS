@@ -98,6 +98,7 @@ class DocumentsListViewModel {
     private func storeDocumentModes(from documentTypes: [DocumentTypeDomainModel]) {
         documentModes = Array(Set(documentTypes.map({ $0.mode })))
         documentModes.append(.photo)
+        documentModes.append(.video)
     }
     
     private func storeDocumentTypes(_ types: [DocumentTypeDomainModel]) {

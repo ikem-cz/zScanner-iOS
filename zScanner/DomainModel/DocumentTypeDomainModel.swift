@@ -9,11 +9,12 @@
 import Foundation
 
 enum DocumentMode: String {
-    case ext = "ext"
+    case ext
     case document = "doc"
     case examination = "exam"
-    case photo = "photo"
-    case undefined = "undefined"
+    case photo
+    case video
+    case undefined
     
     var title: String {
         return "documentMode.\(self.rawValue).name".localized

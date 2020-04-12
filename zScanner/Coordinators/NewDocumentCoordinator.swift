@@ -17,6 +17,7 @@ class NewDocumentCoordinator: Coordinator {
         case folder
         case documentType
         case photos
+        case videos
     }
     
     // MARK: Instance part
@@ -34,10 +35,13 @@ class NewDocumentCoordinator: Coordinator {
         self.mode = mode
         self.steps = NewDocumentCoordinator.steps(for: mode)
         
-        // If mode is .photo the step for setting documentType is skipped, but the documentMode is needed later.
+        // If mode is .photo or .video the step for setting documentType is skipped, but the documentMode is needed later.
         // The documentMode is set now to prevent unexpected behavior.
-        if mode == .photo {
-            newDocument.type.mode = .photo
+        switch mode {
+        case .photo, .video:
+            newDocument.type.mode = mode
+        default:
+            break
         }
         
         guard let firstStep = steps.first else { return nil }
@@ -64,6 +68,8 @@ class NewDocumentCoordinator: Coordinator {
             showDocumentTypeSelectionScreen()
         case .photos:
             showPhotosSelectionScreen()
+        case .videos:
+            showVideosSelectionScreen()
         }
     }
     
@@ -81,7 +87,13 @@ class NewDocumentCoordinator: Coordinator {
     
     private func showPhotosSelectionScreen() {
         let viewModel = NewDocumentPhotosViewModel(tracker: tracker)
-        let viewController = NewDocumentPhotosViewController(viewModel: viewModel, coordinator: self)
+        let viewController = NewDocumentPhotosViewController(for: .photo, viewModel: viewModel, coordinator: self)
+        push(viewController)
+    }
+    
+    private func showVideosSelectionScreen() {
+        let viewModel = NewDocumentPhotosViewModel(tracker: tracker)
+        let viewController = NewDocumentPhotosViewController(for: .video, viewModel: viewModel, coordinator: self)
         push(viewController)
     }
     
@@ -149,12 +161,14 @@ class NewDocumentCoordinator: Coordinator {
     
     private static func steps(for mode: DocumentMode) -> [Step] {
         switch mode {
-            case .document, .examination, .ext:
-                return [.folder, .documentType, .photos]
-            case .photo: 
-                return [.folder, .photos]
-            case .undefined:
-                return []
+        case .document, .examination, .ext:
+            return [.folder, .documentType, .photos]
+        case .photo:
+            return [.folder, .photos]
+        case .video:
+            return [.folder, .videos]
+        case .undefined:
+            return []
         }
     }
     

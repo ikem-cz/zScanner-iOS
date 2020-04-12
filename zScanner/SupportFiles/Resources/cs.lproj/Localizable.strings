@@ -27,6 +27,7 @@
 "documentMode.exam.name" = "Vyšetření";
 "documentMode.ext.name" = "Externí";
 "documentMode.photo.name" = "Fotografie";
+"documentMode.video.name" = "Videozáznam";
 "documentMode.undefined.name" = "Neznámý typ";
 
 // MARK: - Documents List

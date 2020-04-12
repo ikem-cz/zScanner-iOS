@@ -8,6 +8,7 @@
 
 import UIKit
 import RxSwift
+import MobileCoreServices
 
 protocol NewDocumentPhotosCoordinator: BaseCoordinator {
     func savePhotos(_ photos: [UIImage])
@@ -20,10 +21,12 @@ class NewDocumentPhotosViewController: BaseViewController {
     // MARK: Instance part
     private unowned let coordinator: NewDocumentPhotosCoordinator
     private let viewModel: NewDocumentPhotosViewModel
+    private let mode: DocumentMode
     
-    init(viewModel: NewDocumentPhotosViewModel, coordinator: NewDocumentPhotosCoordinator) {
+    init(for mode: DocumentMode, viewModel: NewDocumentPhotosViewModel, coordinator: NewDocumentPhotosCoordinator) {
         self.coordinator = coordinator
         self.viewModel = viewModel
+        self.mode = mode
         
         super.init(coordinator: coordinator)
     }
@@ -74,6 +77,7 @@ class NewDocumentPhotosViewController: BaseViewController {
     private lazy var imagePicker: UIImagePickerController = {
         let picker = UIImagePickerController()
         picker.delegate = self
+        picker.mediaTypes = mode == .photo ? [kUTTypeImage as String] : [kUTTypeMovie as String]
         return picker
     }()
     
