@@ -2,81 +2,85 @@ PODS:
   - Crashlytics (3.14.0):
     - Fabric (~> 1.10.2)
   - Fabric (1.10.2)
-  - Firebase/Analytics (6.8.1):
+  - Firebase/Analytics (6.23.0):
     - Firebase/Core
-  - Firebase/Core (6.8.1):
+  - Firebase/Core (6.23.0):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (= 6.1.1)
-  - Firebase/CoreOnly (6.8.1):
-    - FirebaseCore (= 6.2.3)
-  - FirebaseAnalytics (6.1.1):
-    - FirebaseCore (~> 6.2)
-    - FirebaseInstanceID (~> 4.2)
-    - GoogleAppMeasurement (= 6.1.1)
+    - FirebaseAnalytics (= 6.4.2)
+  - Firebase/CoreOnly (6.23.0):
+    - FirebaseCore (= 6.6.7)
+  - FirebaseAnalytics (6.4.2):
+    - FirebaseCore (~> 6.6)
+    - FirebaseInstallations (~> 1.2)
+    - GoogleAppMeasurement (= 6.4.2)
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
-    - nanopb (~> 0.3)
-  - FirebaseCore (6.2.3):
-    - FirebaseCoreDiagnostics (~> 1.0)
-    - FirebaseCoreDiagnosticsInterop (~> 1.0)
-    - GoogleUtilities/Environment (~> 6.2)
-    - GoogleUtilities/Logger (~> 6.2)
-  - FirebaseCoreDiagnostics (1.0.1):
-    - FirebaseCoreDiagnosticsInterop (~> 1.0)
-    - GoogleDataTransportCCTSupport (~> 1.0)
-    - GoogleUtilities/Environment (~> 6.2)
-    - GoogleUtilities/Logger (~> 6.2)
-  - FirebaseCoreDiagnosticsInterop (1.0.0)
-  - FirebaseInstanceID (4.2.5):
-    - FirebaseCore (~> 6.0)
-    - GoogleUtilities/Environment (~> 6.0)
-    - GoogleUtilities/UserDefaults (~> 6.0)
-  - GoogleAppMeasurement (6.1.1):
+    - nanopb (= 0.3.9011)
+  - FirebaseCore (6.6.7):
+    - FirebaseCoreDiagnostics (~> 1.2)
+    - FirebaseCoreDiagnosticsInterop (~> 1.2)
+    - GoogleUtilities/Environment (~> 6.5)
+    - GoogleUtilities/Logger (~> 6.5)
+  - FirebaseCoreDiagnostics (1.2.4):
+    - FirebaseCoreDiagnosticsInterop (~> 1.2)
+    - GoogleDataTransportCCTSupport (~> 3.0)
+    - GoogleUtilities/Environment (~> 6.5)
+    - GoogleUtilities/Logger (~> 6.5)
+    - nanopb (~> 0.3.901)
+  - FirebaseCoreDiagnosticsInterop (1.2.0)
+  - FirebaseInstallations (1.2.0):
+    - FirebaseCore (~> 6.6)
+    - GoogleUtilities/Environment (~> 6.6)
+    - GoogleUtilities/UserDefaults (~> 6.6)
+    - PromisesObjC (~> 1.2)
+  - GoogleAppMeasurement (6.4.2):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
-    - nanopb (~> 0.3)
-  - GoogleDataTransport (1.2.0)
-  - GoogleDataTransportCCTSupport (1.0.4):
-    - GoogleDataTransport (~> 1.2)
-    - nanopb
-  - GoogleUtilities/AppDelegateSwizzler (6.2.5):
+    - nanopb (= 0.3.9011)
+  - GoogleDataTransport (6.0.0)
+  - GoogleDataTransportCCTSupport (3.0.0):
+    - GoogleDataTransport (~> 6.0)
+    - nanopb (~> 0.3.901)
+  - GoogleUtilities/AppDelegateSwizzler (6.6.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (6.2.5)
-  - GoogleUtilities/Logger (6.2.5):
+  - GoogleUtilities/Environment (6.6.0):
+    - PromisesObjC (~> 1.2)
+  - GoogleUtilities/Logger (6.6.0):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (6.2.5):
+  - GoogleUtilities/MethodSwizzler (6.6.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (6.2.5):
+  - GoogleUtilities/Network (6.6.0):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (6.2.5)"
-  - GoogleUtilities/Reachability (6.2.5):
+  - "GoogleUtilities/NSData+zlib (6.6.0)"
+  - GoogleUtilities/Reachability (6.6.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (6.2.5):
+  - GoogleUtilities/UserDefaults (6.6.0):
     - GoogleUtilities/Logger
-  - nanopb (0.3.901):
-    - nanopb/decode (= 0.3.901)
-    - nanopb/encode (= 0.3.901)
-  - nanopb/decode (0.3.901)
-  - nanopb/encode (0.3.901)
-  - Realm (3.18.0):
-    - Realm/Headers (= 3.18.0)
-  - Realm/Headers (3.18.0)
-  - RealmSwift (3.18.0):
-    - Realm (= 3.18.0)
-  - RxCocoa (5.0.0):
+  - nanopb (0.3.9011):
+    - nanopb/decode (= 0.3.9011)
+    - nanopb/encode (= 0.3.9011)
+  - nanopb/decode (0.3.9011)
+  - nanopb/encode (0.3.9011)
+  - PromisesObjC (1.2.8)
+  - Realm (4.4.1):
+    - Realm/Headers (= 4.4.1)
+  - Realm/Headers (4.4.1)
+  - RealmSwift (4.4.1):
+    - Realm (= 4.4.1)
+  - RxCocoa (5.1.1):
     - RxRelay (~> 5)
     - RxSwift (~> 5)
-  - RxRelay (5.0.0):
+  - RxRelay (5.1.1):
     - RxSwift (~> 5)
-  - RxSwift (5.0.0)
+  - RxSwift (5.1.1)
   - SnapKit (5.0.1)
 
 DEPENDENCIES:
@@ -89,7 +93,7 @@ DEPENDENCIES:
   - SnapKit
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - Crashlytics
     - Fabric
     - Firebase
@@ -97,12 +101,13 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseCoreDiagnostics
     - FirebaseCoreDiagnosticsInterop
-    - FirebaseInstanceID
+    - FirebaseInstallations
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
     - GoogleUtilities
     - nanopb
+    - PromisesObjC
     - Realm
     - RealmSwift
     - RxCocoa
@@ -113,24 +118,25 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
-  Firebase: 9cbe4e5b5eaafa05dc932be58b7c8c3820d71e88
-  FirebaseAnalytics: 843c7f64a8f9c79f0d03281197ebe7bb1d58d477
-  FirebaseCore: e9d9bd1dae61c1e82bc1e0e617a9d832392086a0
-  FirebaseCoreDiagnostics: 4c04ae09d0ab027c30179828c6bb47764df1bd13
-  FirebaseCoreDiagnosticsInterop: 6829da2b8d1fc795ff1bd99df751d3788035d2cb
-  FirebaseInstanceID: 550df9be1f99f751d8fcde3ac342a1e21a0e6c42
-  GoogleAppMeasurement: 86a82f0e1f20b8eedf8e20326530138fd71409de
-  GoogleDataTransport: 8f9897b8e073687f24ca8d3c3a8013dec7d2d1cc
-  GoogleDataTransportCCTSupport: 7455d07b98851aa63e4c05a34dad356ca588479e
-  GoogleUtilities: e7dc37039b19df7fe543479d3e4a02ac8d11bb69
-  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  Realm: 7b3d04740facf45e958a514b466a32b04f1113d6
-  RealmSwift: c817b5f374668cf08f649afb05f55d92a787649c
-  RxCocoa: fcf32050ac00d801f34a7f71d5e8e7f23026dcd8
-  RxRelay: 4f7409406a51a55cd88483f21ed898c234d60f18
-  RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
+  Firebase: 585ae467b3edda6a5444e788fda6888f024d8d6f
+  FirebaseAnalytics: 558f7a03d19de451093032c806f39d5f9dff096e
+  FirebaseCore: a2788a0d5f6c1dff17b8f79b4a73654a8d4bfdbd
+  FirebaseCoreDiagnostics: b59c024493a409f8aecba02c99928d0d8431d159
+  FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
+  FirebaseInstallations: 2119fb3e46b0a88bfdbf12562f855ee3252462fa
+  GoogleAppMeasurement: 2253e99c1f22638cf234c059144660c338ad76c3
+  GoogleDataTransport: 061fe7d9b476710e3cd8ea51e8e07d8b67c2b420
+  GoogleDataTransportCCTSupport: 0f39025e8cf51f168711bd3fb773938d7e62ddb5
+  GoogleUtilities: 39530bc0ad980530298e9c4af8549e991fd033b1
+  nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
+  PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
+  Realm: 4eb04d7487bd43c0581256f40b424eafb711deff
+  RealmSwift: 3eb8924ff7100df5928c7602f71d0fec51e7c9c5
+  RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
+  RxRelay: d77f7d771495f43c556cbc43eebd1bb54d01e8e9
+  RxSwift: 81470a2074fa8780320ea5fe4102807cb7118178
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
 
 PODFILE CHECKSUM: b1feaf38884ec0fe53716c6f5b8b874b3dda7837
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.9.1
