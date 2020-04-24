@@ -37,6 +37,10 @@ struct PageDomainModel: Equatable {
             self.relativePath = filePath
         }
     }
+    
+    func deleteImage() {
+        try? FileManager.default.removeItem(at: URL(documentsWith: relativePath))
+    }
 }
 
 extension PageDomainModel {

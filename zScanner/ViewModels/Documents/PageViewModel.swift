@@ -42,17 +42,25 @@ class PageViewModel {
         
         networkManager
             .uploadPage(pageNetworkModel)
-            .subscribe(onNext: { [weak self] requestStatus in
-                switch requestStatus {
-                case .progress(let percentage):
-                    self?.pageUploadStatus.onNext(.progress(percentage))
-                case .success:
-                    self?.pageUploadStatus.onNext(.progress(1))
-                    self?.pageUploadStatus.onNext(.success)
-                case .error(let error):
-                    self?.pageUploadStatus.onNext(.failed(error))
+            .subscribe(
+                onNext: { [weak self] requestStatus in
+                    switch requestStatus {
+                    case .progress(let percentage):
+                        self?.pageUploadStatus.onNext(.progress(percentage))
+                    case .success:
+                        self?.pageUploadStatus.onNext(.progress(1))
+                        self?.pageUploadStatus.onNext(.success)
+                    case .error(let error):
+                        self?.pageUploadStatus.onNext(.failed(error))
+                    }
+                },
+                onError: { [weak self] error in
+                    self?.pageUploadStatus.onError(error)
+                },
+                onCompleted: { [weak self] in
+                    self?.pageUploadStatus.onCompleted()
                 }
-            })
+            )
             .disposed(by: disposeBag)
     }
     
@@ -67,7 +75,9 @@ class PageViewModel {
     
     private func setupBindings() {
         pageUploadStatus
+            .asObservable()
             .observeOn(MainScheduler.instance)
+            .do(afterCompleted: { [weak self] in self?.page.deleteImage() })
             .subscribe(onNext: { [weak self]  status in
                 guard let `self` = self else { return }
                 let pageUploadStatus = PageUploadStatusDatabaseModel(pageId: self.page.id, status: status)
