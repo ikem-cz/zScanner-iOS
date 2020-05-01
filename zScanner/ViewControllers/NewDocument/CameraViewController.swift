@@ -11,9 +11,20 @@ import AVFoundation
 
 class CameraViewController: UIViewController {
 
-    var captureSession: AVCaptureSession!
-    var stillImageOutput: AVCapturePhotoOutput!
-    var videoPreviewLayer: AVCaptureVideoPreviewLayer!
+    private var captureSession: AVCaptureSession!
+    private var stillImageOutput: AVCapturePhotoOutput!
+    private var videoPreviewLayer: AVCaptureVideoPreviewLayer!
+    private let viewModel: NewDocumentPhotosViewModel
+    
+    init(viewModel: NewDocumentPhotosViewModel) {
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +38,13 @@ class CameraViewController: UIViewController {
         captureButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalToSuperview().inset(8)
-            make.height.width.equalTo(50)
+            make.height.width.equalTo(70)
+        }
+        
+        captureButton.addSubview(middleCaptureButton)
+        middleCaptureButton.snp.makeConstraints { make in
+            make.centerX.centerY.equalTo(captureButton)
+            make.height.width.equalTo(60)
         }
     }
     
@@ -75,13 +92,44 @@ class CameraViewController: UIViewController {
     private lazy var captureButton: UIButton = {
         let captureButton = UIButton()
         captureButton.backgroundColor = .white
-        captureButton.layer.cornerRadius = 25
+        captureButton.layer.cornerRadius = 35
         captureButton.clipsToBounds = true
-        captureButton.addTarget(self, action: #selector(takePicture), for: .touchUpInside)
         return captureButton
     }()
     
+    private lazy var middleCaptureButton: UIButton = {
+        let middleCaptureButton = UIButton()
+        middleCaptureButton.layer.cornerRadius = 30
+        middleCaptureButton.layer.borderWidth = 2
+        middleCaptureButton.layer.borderColor = UIColor.black.cgColor
+        middleCaptureButton.backgroundColor = .white
+        middleCaptureButton.clipsToBounds = true
+        middleCaptureButton.addTarget(self, action: #selector(takePicture), for: .touchUpInside)
+        return middleCaptureButton
+    }()
+    
+    func animateCaptureButton(toValue: CGFloat, duration: Double) {
+        let animation:CABasicAnimation = CABasicAnimation(keyPath: "borderWidth")
+        animation.fromValue = middleCaptureButton.layer.borderWidth
+        animation.toValue = toValue
+        animation.duration = duration
+        middleCaptureButton.layer.add(animation, forKey: "Width")
+        middleCaptureButton.layer.borderWidth = toValue
+    }
+    
     @objc func takePicture() {
-        print("take picture")
+        animateCaptureButton(toValue: 4, duration: 0.3)
+        animateCaptureButton(toValue: 2, duration: 0.3)
+        let settings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
+        stillImageOutput.capturePhoto(with: settings, delegate: self)
+    }
+}
+
+extension CameraViewController: AVCapturePhotoCaptureDelegate {
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        if let imageData = photo.fileDataRepresentation(), let pickedImage = UIImage(data: imageData) {
+            viewModel.addImage(pickedImage, fromGallery: false)
+        }
+        self.dismiss(animated: true, completion: nil)
     }
 }
