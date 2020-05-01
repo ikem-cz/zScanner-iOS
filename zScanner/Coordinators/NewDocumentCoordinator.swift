@@ -87,8 +87,8 @@ class NewDocumentCoordinator: Coordinator {
     
     private func showPhotosSelectionScreen() {
         let viewModel = NewDocumentPhotosViewModel(tracker: tracker)
-        let viewController = NewDocumentPhotosViewController(for: .photo, viewModel: viewModel, coordinator: self)
-        push(viewController)
+        let cameraViewController = CameraViewController(viewModel: viewModel)
+        push(cameraViewController)
     }
     
     private func showVideosSelectionScreen() {
