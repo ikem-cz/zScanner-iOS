@@ -1,5 +1,5 @@
 //
-//  CollectionViewCell.swift
+//  MediaTypeCollectionViewCell.swift
 //  zScanner
 //
 //  Created by Jan Provazník on 01/05/2020.
@@ -24,7 +24,7 @@ class MediaTypeCollectionViewCell: UICollectionViewCell {
     private lazy var titleLabel: UILabel = {
         let titleLabel = UILabel()
         titleLabel.font = .body
-        titleLabel.textColor = .white
+        titleLabel.textColor = .red
         titleLabel.textAlignment = .center
         return titleLabel
     }()

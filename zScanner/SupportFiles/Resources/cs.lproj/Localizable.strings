@@ -57,6 +57,10 @@
 "newDocumentPhotos.actioSheet.galleryAction" = "Vybrat z galerie";
 "newDocumentPhotos.actioSheet.cancel" = "Zrušit";
 "newDocumentPhotos.emptyView.title" = "Nejsou vybrány žádné fotografie, fotografii vyberete klepnutím na tlačítko plus.";
+"newDocumentPhotos.mediaType.photo" = "FOTO";
+"newDocumentPhotos.mediaType.video" = "VIDEO";
+"newDocumentPhotos.mediaType.scan" = "SKENOVÁNÍ";
+"newDocumentPhotos.mediaType.audio" = "AUDIO";
 
 "newDocument.popAlert.title" = "Opravdu chcete jít o krok zpět?";
 "newDocument.popAlert.message" = "Změny provedené na této obrazovce nebudou uloženy.";

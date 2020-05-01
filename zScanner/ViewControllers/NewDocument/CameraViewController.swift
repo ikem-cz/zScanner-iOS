@@ -8,13 +8,34 @@
 
 import UIKit
 import AVFoundation
+import UPCarouselFlowLayout
 
 class CameraViewController: UIViewController {
 
+    enum mediaType {
+        case photo
+        case video
+        case scan
+        case audio
+        
+        var description: String {
+            switch self {
+            case .photo: return "newDocumentPhotos.mediaType.photo".localized
+            case .video: return "newDocumentPhotos.mediaType.video".localized
+            case .scan: return "newDocumentPhotos.mediaType.scan".localized
+            case .audio: return "newDocumentPhotos.mediaType.audio".localized
+            }
+        }
+    }
+    
     private var captureSession: AVCaptureSession!
     private var stillImageOutput: AVCapturePhotoOutput!
     private var videoPreviewLayer: AVCaptureVideoPreviewLayer!
     private let viewModel: NewDocumentPhotosViewModel
+    private let mediaSourceTypes = [
+        mediaType.photo,
+        mediaType.video
+    ]
     
     init(viewModel: NewDocumentPhotosViewModel) {
         self.viewModel = viewModel
@@ -29,8 +50,8 @@ class CameraViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupView()
         setupCaptureSession()
+        setupView()
     }
     
     func setupView() {
@@ -46,6 +67,20 @@ class CameraViewController: UIViewController {
             make.centerX.centerY.equalTo(captureButton)
             make.height.width.equalTo(60)
         }
+        
+        view.addSubview(mediaSourceTypeCollectionView)
+        mediaSourceTypeCollectionView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(captureButton.snp.top)
+            make.height.equalTo(40)
+            make.width.equalToSuperview()
+        }
+        
+        view.addSubview(cameraView)
+        cameraView.snp.makeConstraints { make in
+            make.top.width.equalToSuperview()
+            make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
+        }
     }
     
     func setupCaptureSession() {
@@ -60,34 +95,29 @@ class CameraViewController: UIViewController {
         do {
             let input = try AVCaptureDeviceInput(device: backCamera)
             stillImageOutput = AVCapturePhotoOutput()
-            stillImageOutput = AVCapturePhotoOutput()
 
             if captureSession.canAddInput(input) && captureSession.canAddOutput(stillImageOutput) {
                 captureSession.addInput(input)
                 captureSession.addOutput(stillImageOutput)
-                setupLivePreview()
+                videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
             }
         } catch let error  {
             print("Error Unable to initialize back camera:  \(error.localizedDescription)")
         }
     }
     
-    func setupLivePreview() {
-        videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        
-        videoPreviewLayer.videoGravity = .resizeAspect
-        videoPreviewLayer.connection?.videoOrientation = .portrait
-        view.layer.addSublayer(videoPreviewLayer)
-        
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self = self else { return }
-            
-            self.captureSession.startRunning()
-            DispatchQueue.main.async {
-                self.videoPreviewLayer.frame = self.view.bounds
-            }
-        }
-    }
+    private lazy var cameraView = CameraView(frame: .zero, videoPreviewLayer: self.videoPreviewLayer, captureSession: self.captureSession)
+    
+    private lazy var mediaSourceTypeCollectionView: UICollectionView = {
+        let layout = UPCarouselFlowLayout()
+        layout.itemSize = CGSize(width: 30, height: 20)
+        let mediaSourceTypeCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        mediaSourceTypeCollectionView.register(MediaTypeCollectionViewCell.self, forCellWithReuseIdentifier: "CollectionCell")
+        mediaSourceTypeCollectionView.delegate = self
+        mediaSourceTypeCollectionView.dataSource = self
+        mediaSourceTypeCollectionView.backgroundColor = .blue
+        return mediaSourceTypeCollectionView
+    }()
     
     private lazy var captureButton: UIButton = {
         let captureButton = UIButton()
@@ -131,5 +161,17 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
             viewModel.addImage(pickedImage, fromGallery: false)
         }
         self.dismiss(animated: true, completion: nil)
+    }
+}
+
+extension CameraViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return mediaSourceTypes.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = mediaSourceTypeCollectionView.dequeueReusableCell(withReuseIdentifier: "CollectionCell", for: indexPath) as! MediaTypeCollectionViewCell
+        cell.setup(with: mediaSourceTypes[indexPath.row].description)
+        return cell
     }
 }
