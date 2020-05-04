@@ -14,9 +14,11 @@ class NewDocumentPhotosViewModel {
     
     // MARK: Instance part
     private let tracker: Tracker
+    let folderName: String
     
-    init(tracker: Tracker) {
+    init(tracker: Tracker, folderName: String) {
         self.tracker = tracker
+        self.folderName = folderName
     }
     
     // MARK: Interface

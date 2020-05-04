@@ -85,6 +85,10 @@ class CameraViewController: UIViewController {
     }
     
     func setupView() {
+        title = viewModel.folderName
+        navigationItem.backBarButtonItem?.title = "newDocumentPhotos.navigationController.backButton.title".localized
+        #warning("How to change color?")
+        
         view.addSubview(captureButton)
         captureButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
@@ -154,6 +158,7 @@ class CameraViewController: UIViewController {
     
     private lazy var cameraView = CameraView(frame: .zero, videoPreviewLayer: self.videoPreviewLayer, captureSession: self.captureSession)
     
+    #warning("How to set it over the camera view?")
     private lazy var mediaSourceTypeCollectionView: UICollectionView = {
         let layout = UPCarouselFlowLayout()
         layout.itemSize = CGSize(width: 30, height: 20)
