@@ -9,6 +9,7 @@
 import UIKit
 import AVFoundation
 import UPCarouselFlowLayout
+import MobileCoreServices
 
 class CameraViewController: UIViewController {
 
@@ -56,6 +57,9 @@ class CameraViewController: UIViewController {
             case .video:
                 middleCaptureButton.isHidden = true
                 middleRecordButton.isHidden = false
+            case .scan:
+                middleCaptureButton.isHidden = false
+                middleCaptureButton.isHidden = true
             default:
                 print(captureButton.description, ": Not yet done")
             }
@@ -112,6 +116,11 @@ class CameraViewController: UIViewController {
         cameraView.snp.makeConstraints { make in
             make.top.width.equalToSuperview()
             make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
+        }
+        
+        view.addSubview(galleryButton)
+        galleryButton.snp.makeConstraints { make in
+            make.bottom.left.equalToSuperview().inset(8)
         }
     }
 
@@ -187,17 +196,25 @@ class CameraViewController: UIViewController {
         return middleRecordButton
     }()
     
+    private lazy var galleryButton: GalleryButton = {
+        let galleryButton = GalleryButton()
+        let tap = UITapGestureRecognizer(target: self, action: #selector(openGallery))
+        galleryButton.addGestureRecognizer(tap)
+        galleryButton.isUserInteractionEnabled = true
+        return galleryButton
+    }()
+    
     func animateCaptureButton(toValue: CGFloat, duration: Double) {
         let animation:CABasicAnimation = CABasicAnimation(keyPath: "borderWidth")
         animation.fromValue = middleCaptureButton.layer.borderWidth
         animation.toValue = toValue
-        animation.duration = 0.3
+        animation.duration = duration
         middleCaptureButton.layer.add(animation, forKey: "Width")
         middleCaptureButton.layer.borderWidth = toValue
     }
     
-    func animateRecordButton() {
-        UIView.animate(withDuration: 0.6,
+    func animateRecordButton(duration: Double) {
+        UIView.animate(withDuration: duration,
         animations: {
             self.middleRecordButton.transform = self.isRecording ? CGAffineTransform(scaleX: 0.8, y: 0.8) : CGAffineTransform.identity
             let animation = CABasicAnimation(keyPath: "cornerRadius")
@@ -218,6 +235,14 @@ class CameraViewController: UIViewController {
         photoOutput.capturePhoto(with: settings, delegate: self)
     }
     
+    @objc func openGallery() {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.mediaTypes = currentMode == .photo ? [kUTTypeImage as String] : [kUTTypeMovie as String]
+        picker.sourceType = .photoLibrary
+        present(picker, animated: true, completion: nil)
+    }
+    
     @objc func recordVideo() {
         guard let captureSession = self.captureSession, captureSession.isRunning else { return }
 
@@ -232,7 +257,7 @@ class CameraViewController: UIViewController {
             videoOutput!.startRecording(to: fileUrl, recordingDelegate: self)
             isRecording = true
         }
-        animateRecordButton()
+        animateRecordButton(duration: 0.6)
     }
 }
 
@@ -250,8 +275,22 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
         if let error = error {
             print(error)
         } else {
+            #warning("What to do?")
             print("Video was recorded")
         }
+    }
+}
+
+extension CameraViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let pickedImage = info[.originalImage] as? UIImage {
+            viewModel.addImage(pickedImage, fromGallery: picker.sourceType == .photoLibrary)
+        }
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        self.dismiss(animated: true, completion: nil)
     }
 }
 

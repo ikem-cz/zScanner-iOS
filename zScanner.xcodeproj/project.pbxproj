@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1663AAA8245C0AD3004A3472 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1663AAA7245C0AD3004A3472 /* CameraViewController.swift */; };
+		16647ECA2460657E00A374F2 /* GalleryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16647EC92460657E00A374F2 /* GalleryButton.swift */; };
 		16BF842C245C6631004CC132 /* MediaTypeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */; };
 		16BF842E245C7136004CC132 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BF842D245C7136004CC132 /* CameraView.swift */; };
 		434027612302212C0038A40C /* MenuCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434027602302212C0038A40C /* MenuCoordinator.swift */; };
@@ -145,6 +146,7 @@
 /* Begin PBXFileReference section */
 		0010D71E93DE2CB854BEA615 /* Pods-zScanner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zScanner.release.xcconfig"; path = "Target Support Files/Pods-zScanner/Pods-zScanner.release.xcconfig"; sourceTree = "<group>"; };
 		1663AAA7245C0AD3004A3472 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
+		16647EC92460657E00A374F2 /* GalleryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryButton.swift; sourceTree = "<group>"; };
 		16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTypeCollectionViewCell.swift; sourceTree = "<group>"; };
 		16BF842D245C7136004CC132 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		434027602302212C0038A40C /* MenuCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCoordinator.swift; sourceTree = "<group>"; };
@@ -612,6 +614,7 @@
 				BD678DA6230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift */,
 				16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */,
 				16BF842D245C7136004CC132 /* CameraView.swift */,
+				16647EC92460657E00A374F2 /* GalleryButton.swift */,
 			);
 			path = NewDocument;
 			sourceTree = "<group>";
@@ -971,6 +974,7 @@
 				BD59A05D22E36A8100FA9CD0 /* Coordinator.swift in Sources */,
 				BD59A09E22E36EF900FA9CD0 /* Endpoint.swift in Sources */,
 				BD80224D22F8B9E8009B8B69 /* DateTimePickerTableViewCell.swift in Sources */,
+				16647ECA2460657E00A374F2 /* GalleryButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
