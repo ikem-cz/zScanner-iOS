@@ -9,6 +9,16 @@
 import UIKit
 
 class MediaTypeCollectionViewCell: UICollectionViewCell {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        setupView()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: Interface
     func setup(with title: String) {
         titleLabel.text = title
@@ -16,15 +26,16 @@ class MediaTypeCollectionViewCell: UICollectionViewCell {
     
     // MARK: Helpers
     private func setupView() {
+        contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.centerX.centerY.equalToSuperview()
+            make.centerX.bottom.equalToSuperview()
         }
     }
     
     private lazy var titleLabel: UILabel = {
         let titleLabel = UILabel()
         titleLabel.font = .body
-        titleLabel.textColor = .red
+        titleLabel.textColor = .white
         titleLabel.textAlignment = .center
         return titleLabel
     }()

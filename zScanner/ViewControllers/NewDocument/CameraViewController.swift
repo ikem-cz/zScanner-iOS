@@ -37,6 +37,19 @@ class CameraViewController: UIViewController {
         mediaType.video
     ]
     
+    fileprivate var pageSize: CGSize {
+        let layout = self.mediaSourceTypeCollectionView.collectionViewLayout as! UPCarouselFlowLayout
+        var pageSize = layout.itemSize
+        pageSize.width += layout.minimumLineSpacing
+        return pageSize
+    }
+    
+    fileprivate var currentMode: Int = 0 {
+           didSet {
+                print(mediaSourceTypes[currentMode].description)
+           }
+       }
+    
     init(viewModel: NewDocumentPhotosViewModel) {
         self.viewModel = viewModel
         
@@ -71,7 +84,7 @@ class CameraViewController: UIViewController {
         view.addSubview(mediaSourceTypeCollectionView)
         mediaSourceTypeCollectionView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(captureButton.snp.top)
+            make.bottom.equalTo(captureButton.snp.top).inset(-10)
             make.height.equalTo(40)
             make.width.equalToSuperview()
         }
@@ -82,7 +95,7 @@ class CameraViewController: UIViewController {
             make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
         }
     }
-    
+
     func setupCaptureSession() {
         captureSession = AVCaptureSession()
         captureSession.sessionPreset = .medium
@@ -111,11 +124,11 @@ class CameraViewController: UIViewController {
     private lazy var mediaSourceTypeCollectionView: UICollectionView = {
         let layout = UPCarouselFlowLayout()
         layout.itemSize = CGSize(width: 30, height: 20)
+        layout.scrollDirection = .horizontal
         let mediaSourceTypeCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         mediaSourceTypeCollectionView.register(MediaTypeCollectionViewCell.self, forCellWithReuseIdentifier: "CollectionCell")
         mediaSourceTypeCollectionView.delegate = self
         mediaSourceTypeCollectionView.dataSource = self
-        mediaSourceTypeCollectionView.backgroundColor = .blue
         return mediaSourceTypeCollectionView
     }()
     
@@ -165,6 +178,10 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
 }
 
 extension CameraViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return mediaSourceTypes.count
     }
@@ -173,5 +190,12 @@ extension CameraViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let cell = mediaSourceTypeCollectionView.dequeueReusableCell(withReuseIdentifier: "CollectionCell", for: indexPath) as! MediaTypeCollectionViewCell
         cell.setup(with: mediaSourceTypes[indexPath.row].description)
         return cell
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let layout = self.mediaSourceTypeCollectionView.collectionViewLayout as! UPCarouselFlowLayout
+        let pageSide = (layout.scrollDirection == .horizontal) ? self.pageSize.width : self.pageSize.height
+        let offset = (layout.scrollDirection == .horizontal) ? scrollView.contentOffset.x : scrollView.contentOffset.y
+        currentMode = Int(floor((offset - pageSide / 2) / pageSide) + 1)
     }
 }
