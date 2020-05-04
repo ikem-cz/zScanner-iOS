@@ -29,13 +29,16 @@ class CameraViewController: UIViewController {
     }
     
     private var captureSession: AVCaptureSession!
-    private var stillImageOutput: AVCapturePhotoOutput!
+    private var photoOutput: AVCapturePhotoOutput!
+    private var videoOutput: AVCaptureMovieFileOutput!
     private var videoPreviewLayer: AVCaptureVideoPreviewLayer!
     private let viewModel: NewDocumentPhotosViewModel
     private let mediaSourceTypes = [
         mediaType.photo,
         mediaType.video
     ]
+    
+    private var isRecording: Bool
     
     fileprivate var pageSize: CGSize {
         let layout = self.mediaSourceTypeCollectionView.collectionViewLayout as! UPCarouselFlowLayout
@@ -44,14 +47,24 @@ class CameraViewController: UIViewController {
         return pageSize
     }
     
-    fileprivate var currentMode: Int = 0 {
-           didSet {
-                print(mediaSourceTypes[currentMode].description)
-           }
-       }
+    fileprivate var currentMode: mediaType = .photo {
+        didSet {
+            switch currentMode {
+            case .photo:
+                middleCaptureButton.isHidden = false
+                middleRecordButton.isHidden = true
+            case .video:
+                middleCaptureButton.isHidden = true
+                middleRecordButton.isHidden = false
+            default:
+                print(captureButton.description, ": Not yet done")
+            }
+        }
+    }
     
     init(viewModel: NewDocumentPhotosViewModel) {
         self.viewModel = viewModel
+        self.isRecording = false
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -77,6 +90,12 @@ class CameraViewController: UIViewController {
         
         captureButton.addSubview(middleCaptureButton)
         middleCaptureButton.snp.makeConstraints { make in
+            make.centerX.centerY.equalTo(captureButton)
+            make.height.width.equalTo(60)
+        }
+        
+        captureButton.addSubview(middleRecordButton)
+        middleRecordButton.snp.makeConstraints { make in
             make.centerX.centerY.equalTo(captureButton)
             make.height.width.equalTo(60)
         }
@@ -107,11 +126,16 @@ class CameraViewController: UIViewController {
         
         do {
             let input = try AVCaptureDeviceInput(device: backCamera)
-            stillImageOutput = AVCapturePhotoOutput()
-
-            if captureSession.canAddInput(input) && captureSession.canAddOutput(stillImageOutput) {
+            photoOutput = AVCapturePhotoOutput()
+            videoOutput = AVCaptureMovieFileOutput()
+            
+            if captureSession.canAddOutput(videoOutput) {
+                captureSession.addOutput(videoOutput)
+            }
+            
+            if captureSession.canAddInput(input) && captureSession.canAddOutput(photoOutput) {
                 captureSession.addInput(input)
-                captureSession.addOutput(stillImageOutput)
+                captureSession.addOutput(photoOutput)
                 videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
             }
         } catch let error  {
@@ -151,20 +175,64 @@ class CameraViewController: UIViewController {
         return middleCaptureButton
     }()
     
+    private lazy var middleRecordButton: UIButton = {
+        let middleRecordButton = UIButton()
+        middleRecordButton.layer.cornerRadius = 30
+        middleRecordButton.layer.borderWidth = 2
+        middleRecordButton.layer.borderColor = UIColor.black.cgColor
+        middleRecordButton.backgroundColor = .red
+        middleRecordButton.clipsToBounds = true
+        middleRecordButton.isHidden = true
+        middleRecordButton.addTarget(self, action: #selector(recordVideo), for: .touchUpInside)
+        return middleRecordButton
+    }()
+    
     func animateCaptureButton(toValue: CGFloat, duration: Double) {
         let animation:CABasicAnimation = CABasicAnimation(keyPath: "borderWidth")
         animation.fromValue = middleCaptureButton.layer.borderWidth
         animation.toValue = toValue
-        animation.duration = duration
+        animation.duration = 0.3
         middleCaptureButton.layer.add(animation, forKey: "Width")
         middleCaptureButton.layer.borderWidth = toValue
+    }
+    
+    func animateRecordButton() {
+        UIView.animate(withDuration: 0.6,
+        animations: {
+            self.middleRecordButton.transform = self.isRecording ? CGAffineTransform(scaleX: 0.8, y: 0.8) : CGAffineTransform.identity
+            let animation = CABasicAnimation(keyPath: "cornerRadius")
+            animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
+            animation.fillMode = CAMediaTimingFillMode.forwards
+            animation.isRemovedOnCompletion = false
+            animation.fromValue = self.middleRecordButton.layer.cornerRadius
+            animation.toValue = self.isRecording ? 10 : self.middleRecordButton.bounds.width/2
+            animation.duration = 1
+            self.middleRecordButton.layer.add(animation, forKey: "cornerRadius")
+        }, completion: nil )
     }
     
     @objc func takePicture() {
         animateCaptureButton(toValue: 4, duration: 0.3)
         animateCaptureButton(toValue: 2, duration: 0.3)
         let settings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
-        stillImageOutput.capturePhoto(with: settings, delegate: self)
+        photoOutput.capturePhoto(with: settings, delegate: self)
+    }
+    
+    @objc func recordVideo() {
+        guard let captureSession = self.captureSession, captureSession.isRunning else { return }
+
+        if isRecording {
+            videoOutput.stopRecording()
+            isRecording = false
+        } else {
+            let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+            #warning("How to save it?")
+            let fileUrl = paths[0].appendingPathComponent("output.mp4")
+            try? FileManager.default.removeItem(at: fileUrl)
+            videoOutput!.startRecording(to: fileUrl, recordingDelegate: self)
+            isRecording = true
+        }
+        animateRecordButton()
     }
 }
 
@@ -174,6 +242,16 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
             viewModel.addImage(pickedImage, fromGallery: false)
         }
         self.dismiss(animated: true, completion: nil)
+    }
+}
+
+extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
+    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+        if let error = error {
+            print(error)
+        } else {
+            print("Video was recorded")
+        }
     }
 }
 
@@ -196,6 +274,7 @@ extension CameraViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let layout = self.mediaSourceTypeCollectionView.collectionViewLayout as! UPCarouselFlowLayout
         let pageSide = (layout.scrollDirection == .horizontal) ? self.pageSize.width : self.pageSize.height
         let offset = (layout.scrollDirection == .horizontal) ? scrollView.contentOffset.x : scrollView.contentOffset.y
-        currentMode = Int(floor((offset - pageSide / 2) / pageSide) + 1)
+        let index = Int(floor((offset - pageSide / 2) / pageSide) + 1)
+        currentMode = mediaSourceTypes[index]
     }
 }
