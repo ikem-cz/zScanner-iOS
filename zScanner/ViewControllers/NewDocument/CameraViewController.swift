@@ -315,15 +315,11 @@ class CameraViewController: UIViewController {
     
     @objc func recordVideo() {
         guard let captureSession = self.captureSession, captureSession.isRunning else { return }
-
         if isRecording {
             videoOutput.stopRecording()
             isRecording = false
         } else {
-            let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-            #warning("How to save it?")
-            let fileUrl = paths[0].appendingPathComponent("output.mp4")
-            try? FileManager.default.removeItem(at: fileUrl)
+            let fileUrl = URL.init(documentsWith: UUID.init().uuidString + ".mp4")
             videoOutput!.startRecording(to: fileUrl, recordingDelegate: self)
             isRecording = true
         }
@@ -334,7 +330,6 @@ class CameraViewController: UIViewController {
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let imageData = photo.fileDataRepresentation(), let pickedImage = UIImage(data: imageData) {
-            cameraView.photoCaptured = pickedImage
             viewModel.addImage(pickedImage, fromGallery: false)
         }
         self.dismiss(animated: true, completion: nil)
