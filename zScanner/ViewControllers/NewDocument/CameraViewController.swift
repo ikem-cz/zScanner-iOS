@@ -39,7 +39,8 @@ class CameraViewController: UIViewController {
         mediaType.video
     ]
     
-    private var isRecording: Bool
+    private var isRecording: Bool = false
+    private var isFlashing: Bool = false
     
     fileprivate var pageSize: CGSize {
         let layout = self.mediaSourceTypeCollectionView.collectionViewLayout as! UPCarouselFlowLayout
@@ -68,7 +69,6 @@ class CameraViewController: UIViewController {
     
     init(viewModel: NewDocumentPhotosViewModel) {
         self.viewModel = viewModel
-        self.isRecording = false
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -87,6 +87,7 @@ class CameraViewController: UIViewController {
     func setupView() {
         title = viewModel.folderName
         navigationItem.backBarButtonItem?.title = "newDocumentPhotos.navigationController.backButton.title".localized
+        navigationItem.rightBarButtonItems = [flashButton]
         #warning("How to change color?")
         
         view.addSubview(captureButton)
@@ -209,6 +210,34 @@ class CameraViewController: UIViewController {
         return galleryButton
     }()
     
+    private lazy var flashButton = UIBarButtonItem(image: UIImage(systemName: "bolt.fill"), style: .plain, target: self, action: #selector(toggleTorch))
+
+    @objc func toggleTorch() {
+        guard let device = AVCaptureDevice.default(for: .video) else { return }
+
+        if device.hasTorch {
+            do {
+                try device.lockForConfiguration()
+
+                if isFlashing {
+                    device.torchMode = .off
+                    isFlashing = false
+                    flashButton.image = UIImage(systemName: "bolt.fill")
+                } else {
+                    device.torchMode = .on
+                    isFlashing = true
+                    flashButton.image = UIImage(systemName: "bolt.slash.fill")
+                }
+
+                device.unlockForConfiguration()
+            } catch {
+                print("Torch could not be used")
+            }
+        } else {
+            print("Torch is not available")
+        }
+    }
+    
     func animateCaptureButton(toValue: CGFloat, duration: Double) {
         let animation:CABasicAnimation = CABasicAnimation(keyPath: "borderWidth")
         animation.fromValue = middleCaptureButton.layer.borderWidth
@@ -269,6 +298,7 @@ class CameraViewController: UIViewController {
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let imageData = photo.fileDataRepresentation(), let pickedImage = UIImage(data: imageData) {
+            cameraView.photoCaptured = pickedImage
             viewModel.addImage(pickedImage, fromGallery: false)
         }
         self.dismiss(animated: true, completion: nil)
