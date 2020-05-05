@@ -1139,6 +1139,7 @@
 					"$(PROJECT_DIR)/zScanner",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/zScanner/SupportFiles/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1170,6 +1171,7 @@
 					"$(PROJECT_DIR)/zScanner",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/zScanner/SupportFiles/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
