@@ -42,6 +42,10 @@ class CameraViewController: UIViewController {
     private var isRecording: Bool = false
     private var isFlashing: Bool = false
     
+    private var navigationBarTitleTextAttributes: [NSAttributedString.Key : Any]?
+    private var navigationBarTintColor: UIColor?
+    private var navigationBarBarStyle: UIBarStyle?
+    
     fileprivate var pageSize: CGSize {
         let layout = self.mediaSourceTypeCollectionView.collectionViewLayout as! UPCarouselFlowLayout
         var pageSize = layout.itemSize
@@ -84,12 +88,44 @@ class CameraViewController: UIViewController {
         setupView()
     }
     
-    func setupView() {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        saveNavBarSettings()
+        setupNavBar()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        returnNavBarSettings()
+    }
+    
+    private func returnNavBarSettings() {
+        navigationController?.navigationBar.titleTextAttributes = navigationBarTitleTextAttributes
+        navigationController?.navigationBar.tintColor = navigationBarTintColor
+        
+        if let navigationBarBarStyle = navigationBarBarStyle {
+            navigationController?.navigationBar.barStyle = navigationBarBarStyle
+        }
+    }
+    
+    private func saveNavBarSettings() {
+        navigationBarTitleTextAttributes = navigationController?.navigationBar.titleTextAttributes
+        navigationBarTintColor = navigationController?.navigationBar.tintColor
+        navigationBarBarStyle = navigationController?.navigationBar.barStyle
+    }
+    
+    private func setupNavBar() {
         title = viewModel.folderName
         navigationItem.backBarButtonItem?.title = "newDocumentPhotos.navigationController.backButton.title".localized
         navigationItem.rightBarButtonItems = [flashButton]
-        #warning("How to change color?")
-        
+        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
+        navigationController?.navigationBar.tintColor = .white // Color of navigation controller items
+        navigationController?.navigationBar.barStyle = .black // Background-color of the navigation controller, which automatically adapts the color of the status bar (time, battery ..)
+    }
+    
+    private func setupView() {
         view.addSubview(captureButton)
         captureButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
