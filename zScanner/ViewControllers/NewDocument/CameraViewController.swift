@@ -13,7 +13,7 @@ import MobileCoreServices
 
 class CameraViewController: UIViewController {
 
-    enum mediaType {
+    enum MediaType {
         case photo
         case video
         case scan
@@ -27,6 +27,15 @@ class CameraViewController: UIViewController {
             case .audio: return "newDocumentPhotos.mediaType.audio".localized
             }
         }
+        
+        var index: Int {
+            switch self {
+            case .photo: return 0
+            case .video: return 1
+            case .scan: return 2
+            case .audio: return 3
+            }
+        }
     }
     
     private var captureSession: AVCaptureSession!
@@ -35,8 +44,8 @@ class CameraViewController: UIViewController {
     private var videoPreviewLayer: AVCaptureVideoPreviewLayer!
     private let viewModel: NewDocumentPhotosViewModel
     private let mediaSourceTypes = [
-        mediaType.photo,
-        mediaType.video
+        MediaType.photo,
+        MediaType.video
     ]
     
     private var isRecording: Bool = false
@@ -53,7 +62,7 @@ class CameraViewController: UIViewController {
         return pageSize
     }
     
-    fileprivate var currentMode: mediaType = .photo {
+    fileprivate var currentMode: MediaType = .photo {
         didSet {
             switch currentMode {
             case .photo:
@@ -155,7 +164,13 @@ class CameraViewController: UIViewController {
         
         view.addSubview(cameraView)
         cameraView.snp.makeConstraints { make in
-            make.top.width.equalToSuperview()
+            make.top.left.right.equalToSuperview()
+            make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
+        }
+        
+        view.addSubview(swipeMediaTypeView)
+        swipeMediaTypeView.snp.makeConstraints { make in
+            make.top.left.right.equalToSuperview()
             make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
         }
         
@@ -195,7 +210,6 @@ class CameraViewController: UIViewController {
     
     private lazy var cameraView = CameraView(frame: .zero, videoPreviewLayer: self.videoPreviewLayer, captureSession: self.captureSession)
     
-    #warning("How to set it over the camera view?")
     private lazy var mediaSourceTypeCollectionView: UICollectionView = {
         let layout = UPCarouselFlowLayout()
         layout.itemSize = CGSize(width: 30, height: 20)
@@ -205,6 +219,19 @@ class CameraViewController: UIViewController {
         mediaSourceTypeCollectionView.delegate = self
         mediaSourceTypeCollectionView.dataSource = self
         return mediaSourceTypeCollectionView
+    }()
+    
+    private lazy var swipeMediaTypeView: UIView = {
+        let swipeMediaTypeView = UIView()
+        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(mediaTypeSwipeHandler(gesture:)))
+        swipeLeft.direction = .left
+        swipeMediaTypeView.addGestureRecognizer(swipeLeft)
+
+        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(mediaTypeSwipeHandler(gesture:)))
+        swipeRight.direction = .right
+        swipeMediaTypeView.addGestureRecognizer(swipeRight)
+        swipeMediaTypeView.isUserInteractionEnabled = true
+        return swipeMediaTypeView
     }()
     
     private lazy var captureButton: UIButton = {
@@ -245,6 +272,25 @@ class CameraViewController: UIViewController {
         galleryButton.isUserInteractionEnabled = true
         return galleryButton
     }()
+    
+    @objc func mediaTypeSwipeHandler(gesture: UISwipeGestureRecognizer) {
+        let lastIndex = mediaSourceTypes.count - 1
+        if gesture.direction == .right {
+            if currentMode.index < lastIndex {
+                let newIndex = currentMode.index + 1
+                currentMode = mediaSourceTypes[newIndex]
+                mediaSourceTypeCollectionView.selectItem(at: IndexPath(row: newIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+            }
+        } else if gesture.direction == .left {
+            if currentMode.index > 0 {
+                let newIndex = currentMode.index - 1
+                currentMode = mediaSourceTypes[newIndex]
+                mediaSourceTypeCollectionView.selectItem(at: IndexPath(row: newIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+            }
+        } else {
+            print("Undefined swipe direction")
+        }
+    }
     
     private lazy var flashButton = UIBarButtonItem(image: UIImage(systemName: "bolt.fill"), style: .plain, target: self, action: #selector(toggleTorch))
 
