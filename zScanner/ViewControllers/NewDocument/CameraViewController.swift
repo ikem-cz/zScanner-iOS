@@ -42,7 +42,7 @@ class CameraViewController: UIViewController {
     private var photoOutput: AVCapturePhotoOutput!
     private var videoOutput: AVCaptureMovieFileOutput!
     private var videoPreviewLayer: AVCaptureVideoPreviewLayer!
-    private let viewModel: NewDocumentPhotosViewModel
+    private let viewModel: NewDocumentMediaViewModel
     private let mediaSourceTypes = [
         MediaType.photo,
         MediaType.video
@@ -80,7 +80,7 @@ class CameraViewController: UIViewController {
         }
     }
     
-    init(viewModel: NewDocumentPhotosViewModel) {
+    init(viewModel: NewDocumentMediaViewModel) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
@@ -275,13 +275,13 @@ class CameraViewController: UIViewController {
     
     @objc func mediaTypeSwipeHandler(gesture: UISwipeGestureRecognizer) {
         let lastIndex = mediaSourceTypes.count - 1
-        if gesture.direction == .right {
+        if gesture.direction == .left {
             if currentMode.index < lastIndex {
                 let newIndex = currentMode.index + 1
                 currentMode = mediaSourceTypes[newIndex]
                 mediaSourceTypeCollectionView.selectItem(at: IndexPath(row: newIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
             }
-        } else if gesture.direction == .left {
+        } else if gesture.direction == .right {
             if currentMode.index > 0 {
                 let newIndex = currentMode.index - 1
                 currentMode = mediaSourceTypes[newIndex]
