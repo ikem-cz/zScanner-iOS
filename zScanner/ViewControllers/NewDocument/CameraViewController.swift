@@ -39,8 +39,10 @@ class CameraViewController: UIViewController {
     }
     
     private var captureSession: AVCaptureSession!
-    private var photoOutput: AVCapturePhotoOutput!
-    private var videoOutput: AVCaptureMovieFileOutput!
+    private let photoOutput = AVCapturePhotoOutput()
+    private let videoOutput = AVCaptureMovieFileOutput()
+    private let videoDevice = AVCaptureDevice.default(for: AVMediaType.video)
+    private let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
     private var videoPreviewLayer: AVCaptureVideoPreviewLayer!
     private let viewModel: NewDocumentMediaViewModel
     private let mediaSourceTypes = [
@@ -66,9 +68,11 @@ class CameraViewController: UIViewController {
         didSet {
             switch currentMode {
             case .photo:
+                preparePhotoSession()
                 middleCaptureButton.isHidden = false
                 middleRecordButton.isHidden = true
             case .video:
+                prepareVideoSession()
                 middleCaptureButton.isHidden = true
                 middleRecordButton.isHidden = false
             case .scan:
@@ -179,33 +183,61 @@ class CameraViewController: UIViewController {
             make.bottom.left.equalToSuperview().inset(8)
         }
     }
+    
+    func preparePhotoSession() {
+        guard let videoDevice = videoDevice else { return }
+        
+        do {
+            let input = try AVCaptureDeviceInput(device: videoDevice)
+            
+            captureSession.beginConfiguration()
+            captureSession.inputs.forEach { captureSession.removeInput($0) }
+            captureSession.outputs.forEach { captureSession.removeOutput($0) }
+            
+            if captureSession.canAddInput(input) && captureSession.canAddOutput(photoOutput) {
+                captureSession.addInput(input)
+                captureSession.addOutput(photoOutput)
+            }
+            
+            captureSession.commitConfiguration()
+            captureSession.startRunning()
+        } catch(let error) {
+            print("Error Unable to initialize back camera:  \(error.localizedDescription)")
+        }
+    }
+    
+    func prepareVideoSession() {
+        guard let videoDevice = videoDevice, let audioDevice = audioDevice else { return }
+        
+        do {
+            let audioInput = try AVCaptureDeviceInput(device: audioDevice)
+            let videoInput = try AVCaptureDeviceInput(device: videoDevice)
+            
+            captureSession.beginConfiguration()
+            captureSession.inputs.forEach { captureSession.removeInput($0) }
+            captureSession.outputs.forEach { captureSession.removeOutput($0) }
+            
+            if captureSession.canAddInput(audioInput) && captureSession.canAddInput(videoInput) && captureSession.canAddOutput(videoOutput) {
+                captureSession.addInput(videoInput)
+                captureSession.addInput(audioInput)
+                captureSession.addOutput(videoOutput)
+            }
+            
+            captureSession.commitConfiguration()
+            captureSession.startRunning()
+        } catch(let error) {
+            print("Error Unable to initialize video with audio:  \(error.localizedDescription)")
+        }
+    }
 
     func setupCaptureSession() {
         captureSession = AVCaptureSession()
         captureSession.sessionPreset = .medium
         
-        guard let backCamera = AVCaptureDevice.default(for: AVMediaType.video) else {
-                print("Unable to access back camera!")
-                return
-        }
+        // TODO: Call it later after currentMode is set up
+        preparePhotoSession()
         
-        do {
-            let input = try AVCaptureDeviceInput(device: backCamera)
-            photoOutput = AVCapturePhotoOutput()
-            videoOutput = AVCaptureMovieFileOutput()
-            
-            if captureSession.canAddOutput(videoOutput) {
-                captureSession.addOutput(videoOutput)
-            }
-            
-            if captureSession.canAddInput(input) && captureSession.canAddOutput(photoOutput) {
-                captureSession.addInput(input)
-                captureSession.addOutput(photoOutput)
-                videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-            }
-        } catch let error  {
-            print("Error Unable to initialize back camera:  \(error.localizedDescription)")
-        }
+        videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
     }
     
     private lazy var cameraView = CameraView(frame: .zero, videoPreviewLayer: self.videoPreviewLayer, captureSession: self.captureSession)

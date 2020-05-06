@@ -14,6 +14,6 @@ extension URL {
     }
     
     init(documentsWith relativePath: String) {
-        self.init(fileURLWithPath: URL.documentsPath + relativePath)
+        self.init(fileURLWithPath: URL.documentsPath + "/" + relativePath)
     }
 }
