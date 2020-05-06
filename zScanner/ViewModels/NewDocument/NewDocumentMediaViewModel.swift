@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 import RxRelay
 
-class NewDocumentPhotosViewModel {
+class NewDocumentMediaViewModel<MediaType: Equatable> {
     
     // MARK: Instance part
     private let tracker: Tracker
@@ -22,25 +22,25 @@ class NewDocumentPhotosViewModel {
     }
     
     // MARK: Interface
-    let pictures = BehaviorRelay<[UIImage]>(value: [])
+    let mediaArray = BehaviorRelay<[MediaType]>(value: [])
     
-    func addImage(_ image: UIImage, fromGallery: Bool) {
+    func addMedia(_ media: MediaType, fromGallery: Bool) {
         // Tracking
         tracker.track(.galleryUsed(fromGallery))
         
         // Add image
-        var newArray = pictures.value
-        newArray.append(image)
-        pictures.accept(newArray)
+        var newArray = mediaArray.value
+        newArray.append(media)
+        mediaArray.accept(newArray)
     }
     
-    func removeImage(_ image: UIImage) {
+    func removeMedia(_ media: MediaType) {
         // Tracking
         tracker.track(.deleteImage)
 
         // Remove image
-        var newArray = pictures.value
-        _ = newArray.remove(image)
-        pictures.accept(newArray)
+        var newArray = mediaArray.value
+        _ = newArray.remove(media)
+        mediaArray.accept(newArray)
     }
 }
