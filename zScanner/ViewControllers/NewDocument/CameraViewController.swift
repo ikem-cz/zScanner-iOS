@@ -21,14 +21,12 @@ class CameraViewController: UIViewController {
         case photo
         case video
         case scan
-        case audio
         
         var description: String {
             switch self {
             case .photo: return "newDocumentPhotos.mediaType.photo".localized
             case .video: return "newDocumentPhotos.mediaType.video".localized
             case .scan: return "newDocumentPhotos.mediaType.scan".localized
-            case .audio: return "newDocumentPhotos.mediaType.audio".localized
             }
         }
         
@@ -37,7 +35,6 @@ class CameraViewController: UIViewController {
             case .photo: return 0
             case .video: return 1
             case .scan: return 2
-            case .audio: return 3
             }
         }
     }
@@ -84,8 +81,6 @@ class CameraViewController: UIViewController {
             case .scan:
                 middleCaptureButton.isHidden = false
                 middleCaptureButton.isHidden = true
-            default:
-                print(captureButton.description, ": Not yet done")
             }
         }
     }

@@ -61,7 +61,6 @@
 "newDocumentPhotos.mediaType.photo" = "FOTO";
 "newDocumentPhotos.mediaType.video" = "VIDEO";
 "newDocumentPhotos.mediaType.scan" = "SKENOVÁNÍ";
-"newDocumentPhotos.mediaType.audio" = "AUDIO";
 
 "newDocument.popAlert.title" = "Opravdu chcete jít o krok zpět?";
 "newDocument.popAlert.message" = "Změny provedené na této obrazovce nebudou uloženy.";
