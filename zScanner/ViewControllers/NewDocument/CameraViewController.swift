@@ -11,6 +11,10 @@ import AVFoundation
 import UPCarouselFlowLayout
 import MobileCoreServices
 
+protocol CameraDelegate: BaseCoordinator {
+    func getMediaURL(fileURL: URL)
+}
+
 class CameraViewController: UIViewController {
 
     enum MediaType {
@@ -44,11 +48,13 @@ class CameraViewController: UIViewController {
     private let videoDevice = AVCaptureDevice.default(for: AVMediaType.video)
     private let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
     private var videoPreviewLayer: AVCaptureVideoPreviewLayer!
-    private let viewModel: NewDocumentMediaViewModel
     private let mediaSourceTypes = [
         MediaType.photo,
         MediaType.video
     ]
+    
+    private let folderName: String
+    private weak var delegate: CameraDelegate?
     
     private var isRecording: Bool = false
     private var isFlashing: Bool = false
@@ -84,8 +90,9 @@ class CameraViewController: UIViewController {
         }
     }
     
-    init(viewModel: NewDocumentMediaViewModel) {
-        self.viewModel = viewModel
+    init(folderName: String, delegate: CameraDelegate) {
+        self.folderName = folderName
+        self.delegate = delegate
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -130,7 +137,7 @@ class CameraViewController: UIViewController {
     }
     
     private func setupNavBar() {
-        title = viewModel.folderName
+        title = folderName
         navigationItem.backBarButtonItem?.title = "newDocumentPhotos.navigationController.backButton.title".localized
         navigationItem.rightBarButtonItems = [flashButton]
         navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
@@ -397,8 +404,9 @@ class CameraViewController: UIViewController {
             videoOutput.stopRecording()
             isRecording = false
         } else {
-            let fileUrl = URL.init(documentsWith: UUID.init().uuidString + ".mp4")
-            videoOutput!.startRecording(to: fileUrl, recordingDelegate: self)
+            let fileName = UUID().uuidString + ".mp4"
+            let fileURL = URL.init(documentsWith: fileName)
+            videoOutput.startRecording(to: fileURL, recordingDelegate: self)
             isRecording = true
         }
         animateRecordButton(duration: 0.6)
@@ -407,9 +415,14 @@ class CameraViewController: UIViewController {
 
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        if let imageData = photo.fileDataRepresentation(), let pickedImage = UIImage(data: imageData) {
-            viewModel.addImage(pickedImage, fromGallery: false)
+        if let delegate = delegate {
+            let fileName = UUID().uuidString + ".jpg"
+            let fileURL = URL.init(documentsWith: fileName)
+            delegate.getMediaURL(fileURL: fileURL)
+        } else {
+            print("Unable to find CameraDelegate")
         }
+        
         self.dismiss(animated: true, completion: nil)
     }
 }
@@ -419,17 +432,27 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
         if let error = error {
             print(error)
         } else {
-            #warning("What to do?")
-            print("Video was recorded")
+            if let delegate = delegate {
+                let fileName = UUID().uuidString + ".mp4"
+                let fileURL = URL.init(documentsWith: fileName)
+                delegate.getMediaURL(fileURL: fileURL)
+            } else {
+                print("Unable to find CameraDelegate")
+            }
         }
     }
 }
 
 extension CameraViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let pickedImage = info[.originalImage] as? UIImage {
-            viewModel.addImage(pickedImage, fromGallery: picker.sourceType == .photoLibrary)
+        if let delegate = delegate {
+            let fileName = UUID().uuidString + ".jpg"
+            let fileURL = URL.init(documentsWith: fileName)
+            delegate.getMediaURL(fileURL: fileURL)
+        } else {
+            print("Unable to find CameraDelegate")
         }
+
         self.dismiss(animated: true, completion: nil)
     }
     

@@ -86,15 +86,14 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func showPhotosSelectionScreen() {
-        let viewModel = NewDocumentPhotosViewModel(tracker: tracker, folderName: newDocument.folder.name)
-        let cameraViewController = CameraViewController(viewModel: viewModel)
+        let cameraViewController = CameraViewController(folderName: newDocument.folder.name, delegate: self)
         push(cameraViewController)
     }
     
     private func showVideosSelectionScreen() {
-        let viewModel = NewDocumentPhotosViewModel(tracker: tracker, folderName: newDocument.folder.name)
-        let viewController = NewDocumentPhotosViewController(for: .video, viewModel: viewModel, coordinator: self)
-        push(viewController)
+//        let viewModel = NewDocumentMediaViewModel<<#MediaType: Equatable#>>(tracker: tracker, folderName: newDocument.folder.name)
+//        let viewController = NewDocumentPhotosViewController(for: .video, viewModel: viewModel, coordinator: self)
+//        push(viewController)
     }
     
     private func showListItemSelectionScreen<T: ListItem>(for list: ListPickerField<T>) {
@@ -250,7 +249,14 @@ extension NewDocumentCoordinator: ListItemSelectionCoordinator {}
 
 // MARK: - ListItemSelectionCoordinator implementation
 extension NewDocumentCoordinator: NewDocumentPhotosCoordinator {
+    // TODO: Change to array of URLs
     func savePhotos(_ photos: [UIImage]) {
         savePagesToDocument(photos)
+    }
+}
+
+extension NewDocumentCoordinator: CameraDelegate {
+    func getMediaURL(fileURL: URL) {
+        print(fileURL)
     }
 }
