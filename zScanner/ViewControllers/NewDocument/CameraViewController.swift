@@ -12,33 +12,11 @@ import UPCarouselFlowLayout
 import MobileCoreServices
 
 protocol CameraDelegate: BaseCoordinator {
-    func getMediaURL(fileURL: URL)
+    func getMediaURL(mediaType: MediaType, fileURL: URL)
 }
 
 class CameraViewController: UIViewController {
 
-    enum MediaType {
-        case photo
-        case video
-        case scan
-        
-        var description: String {
-            switch self {
-            case .photo: return "newDocumentPhotos.mediaType.photo".localized
-            case .video: return "newDocumentPhotos.mediaType.video".localized
-            case .scan: return "newDocumentPhotos.mediaType.scan".localized
-            }
-        }
-        
-        var index: Int {
-            switch self {
-            case .photo: return 0
-            case .video: return 1
-            case .scan: return 2
-            }
-        }
-    }
-    
     private var captureSession: AVCaptureSession!
     private let photoOutput = AVCapturePhotoOutput()
     private let videoOutput = AVCaptureMovieFileOutput()
@@ -85,8 +63,9 @@ class CameraViewController: UIViewController {
         }
     }
     
-    init(folderName: String, delegate: CameraDelegate) {
+    init(folderName: String, initialMode currentMode: MediaType,delegate: CameraDelegate) {
         self.folderName = folderName
+        self.currentMode = currentMode
         self.delegate = delegate
         
         super.init(nibName: nil, bundle: nil)
@@ -235,9 +214,6 @@ class CameraViewController: UIViewController {
     func setupCaptureSession() {
         captureSession = AVCaptureSession()
         captureSession.sessionPreset = .medium
-        
-        // TODO: Call it later after currentMode is set up
-        preparePhotoSession()
         
         videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
     }
@@ -413,11 +389,27 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         if let delegate = delegate {
             let fileName = UUID().uuidString + ".jpg"
             let fileURL = URL.init(documentsWith: fileName)
-            delegate.getMediaURL(fileURL: fileURL)
+            delegate.getMediaURL(mediaType: .photo, fileURL: fileURL)
         } else {
             print("Unable to find CameraDelegate")
         }
-        
+    }
+}
+
+extension CameraViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let delegate = delegate {
+            let fileName = UUID().uuidString + ".jpg"
+            let fileURL = URL.init(documentsWith: fileName)
+            delegate.getMediaURL(mediaType: .photo, fileURL: fileURL)
+        } else {
+            print("Unable to find CameraDelegate")
+        }
+
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         self.dismiss(animated: true, completion: nil)
     }
 }
@@ -430,29 +422,11 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
             if let delegate = delegate {
                 let fileName = UUID().uuidString + ".mp4"
                 let fileURL = URL.init(documentsWith: fileName)
-                delegate.getMediaURL(fileURL: fileURL)
+                delegate.getMediaURL(mediaType: .video, fileURL: fileURL)
             } else {
                 print("Unable to find CameraDelegate")
             }
         }
-    }
-}
-
-extension CameraViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let delegate = delegate {
-            let fileName = UUID().uuidString + ".jpg"
-            let fileURL = URL.init(documentsWith: fileName)
-            delegate.getMediaURL(fileURL: fileURL)
-        } else {
-            print("Unable to find CameraDelegate")
-        }
-
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        self.dismiss(animated: true, completion: nil)
     }
 }
 
