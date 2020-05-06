@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "unnamed.png",
-      "idiom" : "universal"
+      "filename" : "photoLibrary30x30.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "photoLibrary60x60.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "photoLibrary90x90.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {
