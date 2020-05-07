@@ -10,10 +10,10 @@ import Foundation
 
 extension URL {
     static var documentsPath: String {
-        return NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        return NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] + "/"
     }
     
     init(documentsWith relativePath: String) {
-        self.init(fileURLWithPath: URL.documentsPath + "/" + relativePath)
+        self.init(fileURLWithPath: URL.documentsPath + relativePath)
     }
 }
