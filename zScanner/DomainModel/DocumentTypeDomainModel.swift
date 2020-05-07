@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum MediaType {
+enum MediaType: Equatable {
     case photo
     case video
     case scan
@@ -18,14 +18,6 @@ enum MediaType {
         case .photo: return "newDocumentPhotos.mediaType.photo".localized
         case .video: return "newDocumentPhotos.mediaType.video".localized
         case .scan: return "newDocumentPhotos.mediaType.scan".localized
-        }
-    }
-    
-    var index: Int {
-        switch self {
-        case .photo: return 0
-        case .video: return 1
-        case .scan: return 2
         }
     }
 }

@@ -25,6 +25,10 @@ class NewDocumentCoordinator: Coordinator {
     private let mode: DocumentMode
     private let steps: [Step]
     private var currentStep: Step
+    private let mediaSourceTypes = [
+         MediaType.photo,
+         MediaType.video
+     ]
     
     init?(for mode: DocumentMode, flowDelegate: NewDocumentFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
         guard mode != .undefined else { return nil }
@@ -83,8 +87,9 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func showMediaSelectionScreen() {
-        let cameraViewController = CameraViewController(folderName: newDocument.folder.name, initialMode: .photo, delegate: self)
-        push(cameraViewController)
+        let viewModel = CameraViewModel(initialMode: .photo, folderName: newDocument.folder.name, mediaSourceTypes: mediaSourceTypes)
+        let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
+        push(viewController)
     }
     
     private func showListItemSelectionScreen<T: ListItem>(for list: ListPickerField<T>) {
@@ -246,8 +251,9 @@ extension NewDocumentCoordinator: NewDocumentPhotosCoordinator {
     }
 }
 
-extension NewDocumentCoordinator: CameraDelegate {
-    func getMediaURL(mediaType: MediaType, fileURL: URL) {
-        print(mediaType, fileURL)
+// MARK: - CameraCoordinator implementation
+extension NewDocumentCoordinator: CameraCoordinator {
+    func mediaCreated(_ type: MediaType, url: URL) {
+        print(type, url)
     }
 }

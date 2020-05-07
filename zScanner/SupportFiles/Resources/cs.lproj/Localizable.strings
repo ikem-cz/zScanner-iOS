@@ -56,7 +56,6 @@
 "newDocumentPhotos.actioSheet.cameraAction" = "Vyfotit";
 "newDocumentPhotos.actioSheet.galleryAction" = "Vybrat z galerie";
 "newDocumentPhotos.actioSheet.cancel" = "Zrušit";
-"newDocumentPhotos.navigationController.backButton.title" = "Zpět";
 "newDocumentPhotos.emptyView.title" = "Nejsou vybrány žádné fotografie, fotografii vyberete klepnutím na tlačítko plus.";
 "newDocumentPhotos.mediaType.photo" = "FOTO";
 "newDocumentPhotos.mediaType.video" = "VIDEO";

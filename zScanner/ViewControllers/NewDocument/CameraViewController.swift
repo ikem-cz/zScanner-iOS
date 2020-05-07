@@ -10,34 +10,39 @@ import UIKit
 import AVFoundation
 import UPCarouselFlowLayout
 import MobileCoreServices
+import RxSwift
 
-protocol CameraDelegate: BaseCoordinator {
-    func getMediaURL(mediaType: MediaType, fileURL: URL)
+protocol CameraCoordinator: BaseCoordinator {
+    func mediaCreated(_ type: MediaType, url: URL)
 }
 
-class CameraViewController: UIViewController {
+// MARK: -
+class CameraViewController: BaseViewController {
 
+    // MARK: Instance part
     private var captureSession: AVCaptureSession!
     private let photoOutput = AVCapturePhotoOutput()
     private let videoOutput = AVCaptureMovieFileOutput()
     private let videoDevice = AVCaptureDevice.default(for: AVMediaType.video)
     private let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
     private var videoPreviewLayer: AVCaptureVideoPreviewLayer!
-    private let mediaSourceTypes = [
-        MediaType.photo,
-        MediaType.video
-    ]
     
-    private let folderName: String
-    private weak var delegate: CameraDelegate?
+    private unowned let coordinator: CameraCoordinator
+    private let viewModel: CameraViewModel
+    let disposeBag = DisposeBag()
     
     private var isRecording: Bool = false
     private var isFlashing: Bool = false
     
     private var navigationBarTitleTextAttributes: [NSAttributedString.Key : Any]?
-    private var navigationBarTintColor: UIColor?
-    private var navigationBarBarStyle: UIBarStyle?
+    private var navigationBarBarStyle: UIBarStyle? // Background-color of the navigation controller, which automatically adapts the color of the status bar (time, battery ..)
+    override var navigationBarTintColor: UIColor? { .white } // Color of navigation controller items
     
+    override var rightBarButtonItems: [UIBarButtonItem] {
+        return [flashButton]
+    }
+    
+    // Used to find current mode in collection view
     fileprivate var pageSize: CGSize {
         let layout = self.mediaSourceTypeCollectionView.collectionViewLayout as! UPCarouselFlowLayout
         var pageSize = layout.itemSize
@@ -45,41 +50,20 @@ class CameraViewController: UIViewController {
         return pageSize
     }
     
-    fileprivate var currentMode: MediaType = .photo {
-        didSet {
-            switch currentMode {
-            case .photo:
-                preparePhotoSession()
-                middleCaptureButton.isHidden = false
-                middleRecordButton.isHidden = true
-            case .video:
-                prepareVideoSession()
-                middleCaptureButton.isHidden = true
-                middleRecordButton.isHidden = false
-            case .scan:
-                middleCaptureButton.isHidden = false
-                middleCaptureButton.isHidden = true
-            }
-        }
-    }
-    
-    init(folderName: String, initialMode currentMode: MediaType,delegate: CameraDelegate) {
-        self.folderName = folderName
-        self.currentMode = currentMode
-        self.delegate = delegate
+    init(viewModel: CameraViewModel, coordinator: CameraCoordinator) {
+        self.viewModel = viewModel
+        self.coordinator = coordinator
         
-        super.init(nibName: nil, bundle: nil)
+        super.init(coordinator: coordinator)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+    // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupCaptureSession()
         setupView()
+        setupBindings()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -93,11 +77,12 @@ class CameraViewController: UIViewController {
         super.viewWillDisappear(animated)
         
         returnNavBarSettings()
+        captureSession.stopRunning()
     }
     
+    // MARK: View setup
     private func returnNavBarSettings() {
         navigationController?.navigationBar.titleTextAttributes = navigationBarTitleTextAttributes
-        navigationController?.navigationBar.tintColor = navigationBarTintColor
         
         if let navigationBarBarStyle = navigationBarBarStyle {
             navigationController?.navigationBar.barStyle = navigationBarBarStyle
@@ -106,20 +91,38 @@ class CameraViewController: UIViewController {
     
     private func saveNavBarSettings() {
         navigationBarTitleTextAttributes = navigationController?.navigationBar.titleTextAttributes
-        navigationBarTintColor = navigationController?.navigationBar.tintColor
         navigationBarBarStyle = navigationController?.navigationBar.barStyle
     }
     
     private func setupNavBar() {
-        title = folderName
-        navigationItem.backBarButtonItem?.title = "newDocumentPhotos.navigationController.backButton.title".localized
-        navigationItem.rightBarButtonItems = [flashButton]
+        title = viewModel.folderName
         navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
-        navigationController?.navigationBar.tintColor = .white // Color of navigation controller items
-        navigationController?.navigationBar.barStyle = .black // Background-color of the navigation controller, which automatically adapts the color of the status bar (time, battery ..)
+        navigationController?.navigationBar.barStyle = .black
+    }
+    
+    private func setupBindings() {
+        viewModel.currentMode
+            .subscribe(onNext: { [unowned self] mode in
+                switch mode {
+                case .photo:
+                    self.preparePhotoSession()
+                    self.middleCaptureButton.isHidden = false
+                    self.middleRecordButton.isHidden = true
+                case .video:
+                    self.prepareVideoSession()
+                    self.middleCaptureButton.isHidden = true
+                    self.middleRecordButton.isHidden = false
+                case .scan:
+                    self.middleCaptureButton.isHidden = false
+                    self.middleCaptureButton.isHidden = true
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     private func setupView() {
+        view.backgroundColor = .clear
+        
         view.addSubview(captureButton)
         captureButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
@@ -165,8 +168,11 @@ class CameraViewController: UIViewController {
         }
     }
     
+    // MARK: Setup media session
     func preparePhotoSession() {
         guard let videoDevice = videoDevice else { return }
+        
+        if captureSession.isRunning { captureSession.stopRunning() }
         
         do {
             let input = try AVCaptureDeviceInput(device: videoDevice)
@@ -183,12 +189,14 @@ class CameraViewController: UIViewController {
             captureSession.commitConfiguration()
             captureSession.startRunning()
         } catch(let error) {
-            print("Error Unable to initialize back camera:  \(error.localizedDescription)")
+            print("Error Unable to initialize back camera:  \(error.localizedDescription).")
         }
     }
     
     func prepareVideoSession() {
         guard let videoDevice = videoDevice, let audioDevice = audioDevice else { return }
+        
+        if captureSession.isRunning { captureSession.stopRunning() }
         
         do {
             let audioInput = try AVCaptureDeviceInput(device: audioDevice)
@@ -207,7 +215,7 @@ class CameraViewController: UIViewController {
             captureSession.commitConfiguration()
             captureSession.startRunning()
         } catch(let error) {
-            print("Error Unable to initialize video with audio:  \(error.localizedDescription)")
+            print("Error Unable to initialize video with audio:  \(error.localizedDescription).")
         }
     }
 
@@ -217,7 +225,135 @@ class CameraViewController: UIViewController {
         
         videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
     }
+
+    // MARK: Helpers
+    @objc func mediaTypeSwipeHandler(gesture: UISwipeGestureRecognizer) {
+        guard let index = viewModel.mediaSourceTypes.firstIndex(of: viewModel.currentMode.value) else { return }
+        let lastIndex = viewModel.mediaSourceTypes.count - 1
+        if gesture.direction == .left {
+            if index < lastIndex {
+                let newIndex = index + 1
+                viewModel.newModeSelected(with: viewModel.mediaSourceTypes[newIndex])
+                mediaSourceTypeCollectionView.selectItem(at: IndexPath(row: newIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+            }
+        } else if gesture.direction == .right {
+            if index > 0 {
+                let newIndex = index - 1
+                viewModel.newModeSelected(with: viewModel.mediaSourceTypes[newIndex])
+                mediaSourceTypeCollectionView.selectItem(at: IndexPath(row: newIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+            }
+        } else {
+            print("Undefined swipe direction.")
+        }
+    }
+
+    @objc func toggleTorch() {
+        guard let device = AVCaptureDevice.default(for: .video) else { return }
+
+        if device.hasTorch {
+            do {
+                try device.lockForConfiguration()
+
+                if isFlashing {
+                    device.torchMode = .off
+                    isFlashing = false
+                    flashButton.image = UIImage(systemName: "bolt.fill")
+                } else {
+                    device.torchMode = .on
+                    isFlashing = true
+                    flashButton.image = UIImage(systemName: "bolt.slash.fill")
+                }
+
+                device.unlockForConfiguration()
+            } catch {
+                print("Torch could not be used.")
+            }
+        } else {
+            print("Torch is not available.")
+        }
+    }
     
+    func animateCaptureButton(toValue: CGFloat, duration: Double) {
+        let animation:CABasicAnimation = CABasicAnimation(keyPath: "borderWidth")
+        animation.fromValue = middleCaptureButton.layer.borderWidth
+        animation.toValue = toValue
+        animation.duration = duration
+        middleCaptureButton.layer.add(animation, forKey: "Width")
+        middleCaptureButton.layer.borderWidth = toValue
+    }
+    
+    func animateRecordButton(duration: Double) {
+        UIView.animate(withDuration: duration) {
+            // scale button
+            self.middleRecordButton.transform = self.isRecording ? CGAffineTransform(scaleX: 0.8, y: 0.8) : CGAffineTransform.identity
+            
+            // change circle shape to square and vice versa
+            let animation = CABasicAnimation(keyPath: "cornerRadius")
+            animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
+            animation.fillMode = CAMediaTimingFillMode.forwards
+            animation.isRemovedOnCompletion = false
+            animation.fromValue = self.middleRecordButton.layer.cornerRadius
+            animation.toValue = self.isRecording ? 10 : self.middleRecordButton.bounds.width/2
+            animation.duration = 1
+            self.middleRecordButton.layer.add(animation, forKey: "cornerRadius")
+        }
+    }
+    
+    func takePictureFlash() {
+        UIView.animate(withDuration: 0.1, animations: {
+            self.swipeMediaTypeView.backgroundColor = .black
+        }) { _ in
+            self.swipeMediaTypeView.backgroundColor = .clear
+        }
+    }
+    
+    @objc func takePicture() {
+        animateCaptureButton(toValue: 4, duration: 0.3)
+        takePictureFlash()
+        animateCaptureButton(toValue: 2, duration: 0.3)
+        let settings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
+        photoOutput.capturePhoto(with: settings, delegate: self)
+    }
+    
+    @objc func openGallery() {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.mediaTypes = viewModel.currentMode.value == .photo ? [kUTTypeImage as String] : [kUTTypeMovie as String]
+        picker.sourceType = .photoLibrary
+        present(picker, animated: true, completion: nil)
+    }
+    
+    @objc func recordVideo() {
+        guard let captureSession = self.captureSession, captureSession.isRunning else { return }
+        if isRecording {
+            videoOutput.stopRecording()
+            isRecording = false
+        } else {
+            let fileURL = createMediaURL(suffix: ".mp4")
+            print("Start recording video with url ", fileURL)
+            videoOutput.startRecording(to: fileURL, recordingDelegate: self)
+            isRecording = true
+        }
+        animateRecordButton(duration: 0.6)
+    }
+    
+    func createMediaURL(suffix: String) -> URL {
+        let fileName = UUID().uuidString + suffix
+        let fileURL = URL.init(documentsWith: fileName)
+        return fileURL
+    }
+    
+    func saveImage(withURL fileURL: URL, image: UIImage) {
+        guard let data = image.jpegData(compressionQuality: 1) else { return }
+        
+        do {
+            try data.write(to: fileURL)
+        } catch let error {
+            print("error saving file with error", error)
+        }
+    }
+    
+    // MARK: Lazy instance part
     private lazy var cameraView = CameraView(frame: .zero, videoPreviewLayer: self.videoPreviewLayer, captureSession: self.captureSession)
     
     private lazy var mediaSourceTypeCollectionView: UICollectionView = {
@@ -283,130 +419,30 @@ class CameraViewController: UIViewController {
         return galleryButton
     }()
     
-    @objc func mediaTypeSwipeHandler(gesture: UISwipeGestureRecognizer) {
-        let lastIndex = mediaSourceTypes.count - 1
-        if gesture.direction == .left {
-            if currentMode.index < lastIndex {
-                let newIndex = currentMode.index + 1
-                currentMode = mediaSourceTypes[newIndex]
-                mediaSourceTypeCollectionView.selectItem(at: IndexPath(row: newIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
-            }
-        } else if gesture.direction == .right {
-            if currentMode.index > 0 {
-                let newIndex = currentMode.index - 1
-                currentMode = mediaSourceTypes[newIndex]
-                mediaSourceTypeCollectionView.selectItem(at: IndexPath(row: newIndex, section: 0), animated: true, scrollPosition: .centeredHorizontally)
-            }
-        } else {
-            print("Undefined swipe direction")
-        }
-    }
-    
     private lazy var flashButton = UIBarButtonItem(image: UIImage(systemName: "bolt.fill"), style: .plain, target: self, action: #selector(toggleTorch))
-
-    @objc func toggleTorch() {
-        guard let device = AVCaptureDevice.default(for: .video) else { return }
-
-        if device.hasTorch {
-            do {
-                try device.lockForConfiguration()
-
-                if isFlashing {
-                    device.torchMode = .off
-                    isFlashing = false
-                    flashButton.image = UIImage(systemName: "bolt.fill")
-                } else {
-                    device.torchMode = .on
-                    isFlashing = true
-                    flashButton.image = UIImage(systemName: "bolt.slash.fill")
-                }
-
-                device.unlockForConfiguration()
-            } catch {
-                print("Torch could not be used")
-            }
-        } else {
-            print("Torch is not available")
-        }
-    }
-    
-    func animateCaptureButton(toValue: CGFloat, duration: Double) {
-        let animation:CABasicAnimation = CABasicAnimation(keyPath: "borderWidth")
-        animation.fromValue = middleCaptureButton.layer.borderWidth
-        animation.toValue = toValue
-        animation.duration = duration
-        middleCaptureButton.layer.add(animation, forKey: "Width")
-        middleCaptureButton.layer.borderWidth = toValue
-    }
-    
-    func animateRecordButton(duration: Double) {
-        UIView.animate(withDuration: duration,
-        animations: {
-            self.middleRecordButton.transform = self.isRecording ? CGAffineTransform(scaleX: 0.8, y: 0.8) : CGAffineTransform.identity
-            let animation = CABasicAnimation(keyPath: "cornerRadius")
-            animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
-            animation.fillMode = CAMediaTimingFillMode.forwards
-            animation.isRemovedOnCompletion = false
-            animation.fromValue = self.middleRecordButton.layer.cornerRadius
-            animation.toValue = self.isRecording ? 10 : self.middleRecordButton.bounds.width/2
-            animation.duration = 1
-            self.middleRecordButton.layer.add(animation, forKey: "cornerRadius")
-        }, completion: nil )
-    }
-    
-    @objc func takePicture() {
-        animateCaptureButton(toValue: 4, duration: 0.3)
-        animateCaptureButton(toValue: 2, duration: 0.3)
-        let settings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
-        photoOutput.capturePhoto(with: settings, delegate: self)
-    }
-    
-    @objc func openGallery() {
-        let picker = UIImagePickerController()
-        picker.delegate = self
-        picker.mediaTypes = currentMode == .photo ? [kUTTypeImage as String] : [kUTTypeMovie as String]
-        picker.sourceType = .photoLibrary
-        present(picker, animated: true, completion: nil)
-    }
-    
-    @objc func recordVideo() {
-        guard let captureSession = self.captureSession, captureSession.isRunning else { return }
-        if isRecording {
-            videoOutput.stopRecording()
-            isRecording = false
-        } else {
-            let fileName = UUID().uuidString + ".mp4"
-            let fileURL = URL.init(documentsWith: fileName)
-            videoOutput.startRecording(to: fileURL, recordingDelegate: self)
-            isRecording = true
-        }
-        animateRecordButton(duration: 0.6)
-    }
 }
 
+// MARK: - AVCapturePhotoCaptureDelegate implementation
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        if let delegate = delegate {
-            let fileName = UUID().uuidString + ".jpg"
-            let fileURL = URL.init(documentsWith: fileName)
-            delegate.getMediaURL(mediaType: .photo, fileURL: fileURL)
-        } else {
-            print("Unable to find CameraDelegate")
+        guard let imageData = photo.fileDataRepresentation() else { return }
+        
+        if let image = UIImage(data: imageData) {
+            let fileURL = createMediaURL(suffix: ".jpg")
+            saveImage(withURL: fileURL, image: image)
+            coordinator.mediaCreated(.photo, url: fileURL)
         }
     }
 }
 
+// MARK: - UIImagePickerControllerDelegate implementation
 extension CameraViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let delegate = delegate {
-            let fileName = UUID().uuidString + ".jpg"
-            let fileURL = URL.init(documentsWith: fileName)
-            delegate.getMediaURL(mediaType: .photo, fileURL: fileURL)
-        } else {
-            print("Unable to find CameraDelegate")
+        if let pickedImage = info[.originalImage] as? UIImage {
+            let fileURL = createMediaURL(suffix: ".jpg")
+            saveImage(withURL: fileURL, image: pickedImage)
+            coordinator.mediaCreated(.photo, url: fileURL)
         }
-
-        self.dismiss(animated: true, completion: nil)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -414,34 +450,31 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
     }
 }
 
+// MARK: - AVCaptureFileOutputRecordingDelegate implementation
 extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         if let error = error {
             print(error)
         } else {
-            if let delegate = delegate {
-                let fileName = UUID().uuidString + ".mp4"
-                let fileURL = URL.init(documentsWith: fileName)
-                delegate.getMediaURL(mediaType: .video, fileURL: fileURL)
-            } else {
-                print("Unable to find CameraDelegate")
-            }
+            coordinator.mediaCreated(.video, url: outputFileURL)
         }
     }
 }
 
+// MARK: - UICollectionViewDelegate, UICollectionViewDataSource implementation
 extension CameraViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return mediaSourceTypes.count
+        return viewModel.mediaSourceTypes.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = mediaSourceTypeCollectionView.dequeueReusableCell(withReuseIdentifier: "CollectionCell", for: indexPath) as! MediaTypeCollectionViewCell
-        cell.setup(with: mediaSourceTypes[indexPath.row].description)
+        let item = viewModel.mediaSourceTypes[indexPath.row]
+        cell.setup(with: item)
         return cell
     }
     
@@ -450,6 +483,6 @@ extension CameraViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let pageSide = (layout.scrollDirection == .horizontal) ? self.pageSize.width : self.pageSize.height
         let offset = (layout.scrollDirection == .horizontal) ? scrollView.contentOffset.x : scrollView.contentOffset.y
         let index = Int(floor((offset - pageSide / 2) / pageSide) + 1)
-        currentMode = mediaSourceTypes[index]
+        viewModel.newModeSelected(with: viewModel.mediaSourceTypes[index])
     }
 }

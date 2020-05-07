@@ -34,18 +34,6 @@ class CameraView: UIView {
         videoPreviewLayer?.frame = bounds
     }
     
-    override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        
-        captureSession.startRunning()
-    }
-    
-    override func removeFromSuperview() {
-        super.removeFromSuperview()
-        
-        captureSession.stopRunning()
-    }
-    
     // MARK: Helpers
     func setupView() {
         videoPreviewLayer.videoGravity = .resizeAspect

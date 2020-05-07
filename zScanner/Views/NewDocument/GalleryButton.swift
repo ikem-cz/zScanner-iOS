@@ -30,7 +30,7 @@ class GalleryButton: UIView {
         
         addSubview(galleryLabel)
         galleryLabel.snp.makeConstraints { make in
-            make.top.equalTo(galleryImage.snp.bottom).inset(-10)
+            make.top.equalTo(galleryImage.snp.bottom).offset(10)
             make.bottom.leading.trailing.equalToSuperview()
         }
     }

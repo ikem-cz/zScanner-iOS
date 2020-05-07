@@ -20,15 +20,15 @@ class MediaTypeCollectionViewCell: UICollectionViewCell {
     }
     
     // MARK: Interface
-    func setup(with title: String) {
-        titleLabel.text = title
+    func setup(with item: MediaType) {
+        titleLabel.text = item.description
     }
     
     // MARK: Helpers
     private func setupView() {
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.centerX.bottom.equalToSuperview()
+            make.centerX.centerY.equalToSuperview()
         }
     }
     
