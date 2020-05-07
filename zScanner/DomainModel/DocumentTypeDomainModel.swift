@@ -8,6 +8,20 @@
 
 import Foundation
 
+enum MediaType: Equatable {
+    case photo
+    case video
+    case scan
+    
+    var description: String {
+        switch self {
+        case .photo: return "newDocumentPhotos.mediaType.photo".localized
+        case .video: return "newDocumentPhotos.mediaType.video".localized
+        case .scan: return "newDocumentPhotos.mediaType.scan".localized
+        }
+    }
+}
+
 enum DocumentMode: String {
     case ext
     case document = "doc"

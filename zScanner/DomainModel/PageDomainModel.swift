@@ -21,7 +21,7 @@ struct PageDomainModel: Equatable {
         }
         set {
             // Create folder for document
-            let folderPath = "/" + correlationId
+            let folderPath = correlationId
             let absolutePath = URL.documentsPath + folderPath
             
             if !FileManager.default.fileExists(atPath: absolutePath) {
