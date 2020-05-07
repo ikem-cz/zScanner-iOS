@@ -86,9 +86,14 @@ class NewDocumentCoordinator: Coordinator {
         push(viewController)
     }
     
-    private func showMediaSelectionScreen() {
-        let viewModel = CameraViewModel(initialMode: .photo, folderName: newDocument.folder.name, mediaSourceTypes: mediaSourceTypes)
+    private func showMediaSelectionScreen(mediaType: MediaType = .photo) {
+        let viewModel = CameraViewModel(initialMode: mediaType, folderName: newDocument.folder.name, mediaSourceTypes: mediaSourceTypes)
         let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
+        push(viewController)
+    }
+    
+    private func showPhotoPreviewScreen(fileURL: URL) {
+        let viewController = PhotoPreviewViewController(imageURL: fileURL, coordinator: self)
         push(viewController)
     }
     
@@ -255,5 +260,18 @@ extension NewDocumentCoordinator: NewDocumentPhotosCoordinator {
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ type: MediaType, url: URL) {
         print(type, url)
+        if type == .photo {
+            showPhotoPreviewScreen(fileURL: url)
+        }
+    }
+}
+
+extension NewDocumentCoordinator: PhotoPreviewCoordinator {
+    func photoApproved() {
+        print("ImageApproved")
+    }
+    
+    func createNewPhoto() {
+        showMediaSelectionScreen(mediaType: .photo)
     }
 }
