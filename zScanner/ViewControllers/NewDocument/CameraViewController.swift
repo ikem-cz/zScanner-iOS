@@ -358,7 +358,7 @@ class CameraViewController: BaseViewController {
     
     private lazy var mediaSourceTypeCollectionView: UICollectionView = {
         let layout = UPCarouselFlowLayout()
-        layout.itemSize = CGSize(width: 30, height: 20)
+        layout.itemSize = CGSize(width: 50, height: 20)
         layout.scrollDirection = .horizontal
         let mediaSourceTypeCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         mediaSourceTypeCollectionView.register(MediaTypeCollectionViewCell.self, forCellWithReuseIdentifier: "CollectionCell")
