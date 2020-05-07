@@ -30,10 +30,11 @@ class BackButton: UIBarButtonItem {
     // MARK: Helpers
     private func setup() {
         let view = UIView()
-        let image = UIImageView(image: #imageLiteral(resourceName: "backButton"))
-        view.addSubview(image)
+        let image = #imageLiteral(resourceName: "backButton").withRenderingMode(.alwaysTemplate)
+        let imageView = UIImageView(image: image)
+        view.addSubview(imageView)
         
-        image.snp.makeConstraints { make in
+        imageView.snp.makeConstraints { make in
             make.centerY.left.equalToSuperview()
         }
         

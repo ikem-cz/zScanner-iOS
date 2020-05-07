@@ -16,8 +16,7 @@ class NewDocumentCoordinator: Coordinator {
     enum Step: Equatable {
         case folder
         case documentType
-        case photos
-        case videos
+        case media
     }
     
     // MARK: Instance part
@@ -26,6 +25,10 @@ class NewDocumentCoordinator: Coordinator {
     private let mode: DocumentMode
     private let steps: [Step]
     private var currentStep: Step
+    private let mediaSourceTypes = [
+         MediaType.photo,
+         MediaType.video
+     ]
     
     init?(for mode: DocumentMode, flowDelegate: NewDocumentFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
         guard mode != .undefined else { return nil }
@@ -66,10 +69,8 @@ class NewDocumentCoordinator: Coordinator {
             showFolderSelectionScreen()
         case .documentType:
             showDocumentTypeSelectionScreen()
-        case .photos:
-            showPhotosSelectionScreen()
-        case .videos:
-            showVideosSelectionScreen()
+        case .media:
+            showMediaSelectionScreen()
         }
     }
     
@@ -85,15 +86,9 @@ class NewDocumentCoordinator: Coordinator {
         push(viewController)
     }
     
-    private func showPhotosSelectionScreen() {
-        let viewModel = NewDocumentPhotosViewModel(tracker: tracker)
-        let viewController = NewDocumentPhotosViewController(for: .photo, viewModel: viewModel, coordinator: self)
-        push(viewController)
-    }
-    
-    private func showVideosSelectionScreen() {
-        let viewModel = NewDocumentPhotosViewModel(tracker: tracker)
-        let viewController = NewDocumentPhotosViewController(for: .video, viewModel: viewModel, coordinator: self)
+    private func showMediaSelectionScreen() {
+        let viewModel = CameraViewModel(initialMode: .photo, folderName: newDocument.folder.name, mediaSourceTypes: mediaSourceTypes)
+        let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
     
@@ -162,11 +157,11 @@ class NewDocumentCoordinator: Coordinator {
     private static func steps(for mode: DocumentMode) -> [Step] {
         switch mode {
         case .document, .examination, .ext:
-            return [.folder, .documentType, .photos]
+            return [.folder, .documentType, .media]
         case .photo:
-            return [.folder, .photos]
+            return [.folder, .media]
         case .video:
-            return [.folder, .videos]
+            return [.folder, .media]
         case .undefined:
             return []
         }
@@ -250,7 +245,15 @@ extension NewDocumentCoordinator: ListItemSelectionCoordinator {}
 
 // MARK: - ListItemSelectionCoordinator implementation
 extension NewDocumentCoordinator: NewDocumentPhotosCoordinator {
+    // TODO: Change to array of URLs
     func savePhotos(_ photos: [UIImage]) {
         savePagesToDocument(photos)
+    }
+}
+
+// MARK: - CameraCoordinator implementation
+extension NewDocumentCoordinator: CameraCoordinator {
+    func mediaCreated(_ type: MediaType, url: URL) {
+        print(type, url)
     }
 }
