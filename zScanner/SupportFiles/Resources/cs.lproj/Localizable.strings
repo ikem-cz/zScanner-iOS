@@ -60,6 +60,9 @@
 "newDocumentPhotos.mediaType.photo" = "FOTO";
 "newDocumentPhotos.mediaType.video" = "VIDEO";
 "newDocumentPhotos.mediaType.scan" = "SKENOVÁNÍ";
+"newDocumentPhotos.againButton.title" = "Znovu";
+"newDocumentPhotos.continue.title" = "Pokračovat";
+"newDocumentPhotos.nextPhoto.title" = "Vyfotit další";
 
 "newDocument.popAlert.title" = "Opravdu chcete jít o krok zpět?";
 "newDocument.popAlert.message" = "Změny provedené na této obrazovce nebudou uloženy.";
