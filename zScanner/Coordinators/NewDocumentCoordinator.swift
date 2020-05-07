@@ -16,8 +16,7 @@ class NewDocumentCoordinator: Coordinator {
     enum Step: Equatable {
         case folder
         case documentType
-        case photos
-        case videos
+        case media
     }
     
     // MARK: Instance part
@@ -66,10 +65,8 @@ class NewDocumentCoordinator: Coordinator {
             showFolderSelectionScreen()
         case .documentType:
             showDocumentTypeSelectionScreen()
-        case .photos:
-            showPhotosSelectionScreen()
-        case .videos:
-            showVideosSelectionScreen()
+        case .media:
+            showMediaSelectionScreen()
         }
     }
     
@@ -85,15 +82,9 @@ class NewDocumentCoordinator: Coordinator {
         push(viewController)
     }
     
-    private func showPhotosSelectionScreen() {
-        let cameraViewController = CameraViewController(folderName: newDocument.folder.name, delegate: self)
+    private func showMediaSelectionScreen() {
+        let cameraViewController = CameraViewController(folderName: newDocument.folder.name, initialMode: .photo, delegate: self)
         push(cameraViewController)
-    }
-    
-    private func showVideosSelectionScreen() {
-//        let viewModel = NewDocumentMediaViewModel<<#MediaType: Equatable#>>(tracker: tracker, folderName: newDocument.folder.name)
-//        let viewController = NewDocumentPhotosViewController(for: .video, viewModel: viewModel, coordinator: self)
-//        push(viewController)
     }
     
     private func showListItemSelectionScreen<T: ListItem>(for list: ListPickerField<T>) {
@@ -161,11 +152,11 @@ class NewDocumentCoordinator: Coordinator {
     private static func steps(for mode: DocumentMode) -> [Step] {
         switch mode {
         case .document, .examination, .ext:
-            return [.folder, .documentType, .photos]
+            return [.folder, .documentType, .media]
         case .photo:
-            return [.folder, .photos]
+            return [.folder, .media]
         case .video:
-            return [.folder, .videos]
+            return [.folder, .media]
         case .undefined:
             return []
         }
@@ -256,7 +247,7 @@ extension NewDocumentCoordinator: NewDocumentPhotosCoordinator {
 }
 
 extension NewDocumentCoordinator: CameraDelegate {
-    func getMediaURL(fileURL: URL) {
-        print(fileURL)
+    func getMediaURL(mediaType: MediaType, fileURL: URL) {
+        print(mediaType, fileURL)
     }
 }
