@@ -21,13 +21,11 @@ class NewDocumentPhotosViewController: BaseViewController {
     // MARK: Instance part
     private unowned let coordinator: NewDocumentPhotosCoordinator
     private let viewModel: NewDocumentMediaViewModel<UIImage>
-//    private let mode: DocumentMode
     
     init(viewModel: NewDocumentMediaViewModel<UIImage>, coordinator: NewDocumentPhotosCoordinator) {
         self.coordinator = coordinator
         self.viewModel = viewModel
-//        self.mode = mode
-        
+
         super.init(coordinator: coordinator)
     }
     

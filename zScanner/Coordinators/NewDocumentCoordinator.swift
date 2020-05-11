@@ -26,6 +26,7 @@ class NewDocumentCoordinator: Coordinator {
     private let steps: [Step]
     private var currentStep: Step
     private var photoViewModel: NewDocumentMediaViewModel<UIImage>?
+    private let defaultMediaType = MediaType.photo
     private let mediaSourceTypes = [
          MediaType.photo,
          MediaType.video
@@ -71,7 +72,7 @@ class NewDocumentCoordinator: Coordinator {
         case .documentType:
             showDocumentTypeSelectionScreen()
         case .media:
-            showMediaSelectionScreen(mediaSourceTypes: mediaSourceTypes)
+            showMediaSelectionScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
         }
     }
     
@@ -87,7 +88,7 @@ class NewDocumentCoordinator: Coordinator {
         push(viewController)
     }
     
-    private func showMediaSelectionScreen(mediaType: MediaType = .photo, mediaSourceTypes: [MediaType]) {
+    private func showMediaSelectionScreen(mediaType: MediaType, mediaSourceTypes: [MediaType]) {
         let viewModel = CameraViewModel(initialMode: mediaType, folderName: newDocument.folder.name, mediaSourceTypes: mediaSourceTypes)
         let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
@@ -102,12 +103,9 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func showPhotosSelectionScreen() {
-        if let photoViewModel = photoViewModel {
-            let viewController = NewDocumentPhotosViewController(viewModel: photoViewModel, coordinator: self)
-            push(viewController)
-        } else {
-            print("PhotoViewModel is not initialized")
-        }
+        guard let photoViewModel = photoViewModel else { return }
+        let viewController = NewDocumentPhotosViewController(viewModel: photoViewModel, coordinator: self)
+        push(viewController)
     }
     
     private func showListItemSelectionScreen<T: ListItem>(for list: ListPickerField<T>) {

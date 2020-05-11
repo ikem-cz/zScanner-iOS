@@ -113,25 +113,15 @@ class PhotoPreviewViewController: BaseViewController {
     }
     
     @objc func createAnotherPhoto() {
-        if let image = image {
-            print(viewModel.mediaArray.value.count)
-            viewModel.addMedia(image, fromGallery: false)
-            print(viewModel.mediaArray.value.count)
-            coordinator.createNewPhoto()
-        } else {
-            print("Image is broken")
-        }
+        guard let image = image else { return }
+        viewModel.addMedia(image, fromGallery: false)
+        coordinator.createNewPhoto()
     }
     
     @objc func showPhotosSelection() {
-        if let image = image {
-            print(viewModel.mediaArray.value.count)
-            viewModel.addMedia(image, fromGallery: false)
-            print(viewModel.mediaArray.value.count)
-            coordinator.showPhotosSelection()
-        } else {
-            print("Image is broken")
-        }
+        guard let image = image else { return }
+        viewModel.addMedia(image, fromGallery: false)
+        coordinator.showPhotosSelection()
     }
     
     // MARK: Lazy instance part
