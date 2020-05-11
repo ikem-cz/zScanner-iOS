@@ -443,6 +443,7 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
             saveImage(withURL: fileURL, image: pickedImage)
             coordinator.mediaCreated(.photo, url: fileURL)
         }
+        self.dismiss(animated: true, completion: nil)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
