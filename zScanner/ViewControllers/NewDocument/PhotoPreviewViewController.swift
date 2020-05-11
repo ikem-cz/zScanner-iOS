@@ -9,8 +9,8 @@
 import UIKit
 
 protocol PhotoPreviewCoordinator: BaseCoordinator {
-    func photoApproved(image: UIImage, fromGallery: Bool)
     func createNewPhoto()
+    func showPhotosSelection()
 }
 
 class PhotoPreviewViewController: BaseViewController {
@@ -20,16 +20,16 @@ class PhotoPreviewViewController: BaseViewController {
     private var image: UIImage?
     
     private unowned let coordinator: PhotoPreviewCoordinator
-    private let folderName: String
+    private let viewModel: NewDocumentMediaViewModel<UIImage>
     
     private var navigationBarTitleTextAttributes: [NSAttributedString.Key : Any]?
     private var navigationBarBarStyle: UIBarStyle? // Background-color of the navigation controller, which automatically adapts the color of the status bar (time, battery ..)
     override var navigationBarTintColor: UIColor? { .white } // Color of navigation controller items
     
     // MARK: Lifecycle
-    init(imageURL: URL, folderName: String, coordinator: PhotoPreviewCoordinator) {
+    init(imageURL: URL, viewModel: NewDocumentMediaViewModel<UIImage>, coordinator: PhotoPreviewCoordinator) {
         self.imageURL = imageURL
-        self.folderName = folderName
+        self.viewModel = viewModel
         self.coordinator = coordinator
         
         super.init(coordinator: coordinator)
@@ -71,7 +71,7 @@ class PhotoPreviewViewController: BaseViewController {
     }
     
     private func setupNavBar() {
-        title = folderName
+        title = viewModel.folderName
         navigationItem.leftBarButtonItems = nil
         navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationController?.navigationBar.barStyle = .black
@@ -108,18 +108,32 @@ class PhotoPreviewViewController: BaseViewController {
         }
     }
     
-    @objc func retake() {
+    @objc func retakePhoto() {
         coordinator.createNewPhoto()
     }
     
-    @objc func approved() {
+    @objc func createAnotherPhoto() {
         if let image = image {
-            coordinator.photoApproved(image: image, fromGallery: false)
+            print(viewModel.mediaArray.value.count)
+            viewModel.addMedia(image, fromGallery: false)
+            print(viewModel.mediaArray.value.count)
+            coordinator.createNewPhoto()
         } else {
-            print("Image could not be approved")
+            print("Image is broken")
         }
     }
-     
+    
+    @objc func showPhotosSelection() {
+        if let image = image {
+            print(viewModel.mediaArray.value.count)
+            viewModel.addMedia(image, fromGallery: false)
+            print(viewModel.mediaArray.value.count)
+            coordinator.showPhotosSelection()
+        } else {
+            print("Image is broken")
+        }
+    }
+    
     // MARK: Lazy instance part
     private lazy var imageView = UIImageView(image: image)
     
@@ -135,7 +149,7 @@ class PhotoPreviewViewController: BaseViewController {
     private lazy var againButton: UIButton = {
         let againButton = UIButton()
         againButton.setTitle("newDocumentPhotos.againButton.title".localized, for: .normal)
-        againButton.addTarget(self, action: #selector(retake), for: .touchUpInside)
+        againButton.addTarget(self, action: #selector(retakePhoto), for: .touchUpInside)
         againButton.titleLabel?.font = .footnote
         againButton.titleLabel?.textColor = .white
         return againButton
@@ -144,7 +158,7 @@ class PhotoPreviewViewController: BaseViewController {
     private lazy var nextPhotoButton: UIButton = {
         let nextPhotoButton = UIButton()
         nextPhotoButton.setTitle("newDocumentPhotos.nextPhoto.title".localized, for: .normal)
-        nextPhotoButton.addTarget(self, action: #selector(retake), for: .touchUpInside)
+        nextPhotoButton.addTarget(self, action: #selector(createAnotherPhoto), for: .touchUpInside)
         nextPhotoButton.titleLabel?.font = .footnote
         nextPhotoButton.titleLabel?.textColor = .white
         nextPhotoButton.layer.cornerRadius = 8
@@ -157,7 +171,7 @@ class PhotoPreviewViewController: BaseViewController {
     private lazy var continueButton: UIButton = {
         let continueButton = UIButton()
         continueButton.setTitle("newDocumentPhotos.continue.title".localized, for: .normal)
-        continueButton.addTarget(self, action: #selector(approved), for: .touchUpInside)
+        continueButton.addTarget(self, action: #selector(showPhotosSelection), for: .touchUpInside)
         continueButton.titleLabel?.font = .footnote
         continueButton.titleLabel?.textColor = .white
         continueButton.layer.cornerRadius = 6

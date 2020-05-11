@@ -25,7 +25,7 @@ class NewDocumentCoordinator: Coordinator {
     private let mode: DocumentMode
     private let steps: [Step]
     private var currentStep: Step
-    private var mediaViewModel: Any?
+    private var photoViewModel: NewDocumentMediaViewModel<UIImage>?
     private let mediaSourceTypes = [
          MediaType.photo,
          MediaType.video
@@ -71,7 +71,7 @@ class NewDocumentCoordinator: Coordinator {
         case .documentType:
             showDocumentTypeSelectionScreen()
         case .media:
-            showMediaSelectionScreen()
+            showMediaSelectionScreen(mediaSourceTypes: mediaSourceTypes)
         }
     }
     
@@ -87,16 +87,27 @@ class NewDocumentCoordinator: Coordinator {
         push(viewController)
     }
     
-    private func showMediaSelectionScreen(mediaType: MediaType = .photo) {
+    private func showMediaSelectionScreen(mediaType: MediaType = .photo, mediaSourceTypes: [MediaType]) {
         let viewModel = CameraViewModel(initialMode: mediaType, folderName: newDocument.folder.name, mediaSourceTypes: mediaSourceTypes)
         let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
     
     private func showPhotoPreviewScreen(fileURL: URL) {
-        mediaViewModel = NewDocumentMediaViewModel<UIImage>(tracker: tracker, folderName: newDocument.folder.name)
-        let viewController = PhotoPreviewViewController(imageURL: fileURL, folderName: newDocument.folder.name, coordinator: self)
+        if photoViewModel == nil {
+            photoViewModel = NewDocumentMediaViewModel<UIImage>(tracker: tracker, folderName: newDocument.folder.name)
+        }
+        let viewController = PhotoPreviewViewController(imageURL: fileURL, viewModel: photoViewModel!, coordinator: self)
         push(viewController)
+    }
+    
+    private func showPhotosSelectionScreen() {
+        if let photoViewModel = photoViewModel {
+            let viewController = NewDocumentPhotosViewController(viewModel: photoViewModel, coordinator: self)
+            push(viewController)
+        } else {
+            print("PhotoViewModel is not initialized")
+        }
     }
     
     private func showListItemSelectionScreen<T: ListItem>(for list: ListPickerField<T>) {
@@ -261,7 +272,6 @@ extension NewDocumentCoordinator: NewDocumentPhotosCoordinator {
 // MARK: - CameraCoordinator implementation
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ type: MediaType, url: URL) {
-        print(type, url)
         if type == .photo {
             showPhotoPreviewScreen(fileURL: url)
         }
@@ -269,14 +279,11 @@ extension NewDocumentCoordinator: CameraCoordinator {
 }
 
 extension NewDocumentCoordinator: PhotoPreviewCoordinator {
-    func photoApproved(image: UIImage, fromGallery: Bool) {
-        print("ImageApproved")
-        if let mediaViewModel = mediaViewModel as? NewDocumentMediaViewModel<UIImage> {
-            mediaViewModel.addMedia(image, fromGallery: fromGallery)
-        }
+    func showPhotosSelection() {
+        showPhotosSelectionScreen()
     }
     
     func createNewPhoto() {
-        showMediaSelectionScreen(mediaType: .photo)
+        showMediaSelectionScreen(mediaType: .photo, mediaSourceTypes: [MediaType.photo])
     }
 }

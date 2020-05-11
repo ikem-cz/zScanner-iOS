@@ -20,13 +20,13 @@ class NewDocumentPhotosViewController: BaseViewController {
     
     // MARK: Instance part
     private unowned let coordinator: NewDocumentPhotosCoordinator
-    private let viewModel: NewDocumentPhotosViewModel
-    private let mode: DocumentMode
+    private let viewModel: NewDocumentMediaViewModel<UIImage>
+//    private let mode: DocumentMode
     
-    init(for mode: DocumentMode, viewModel: NewDocumentPhotosViewModel, coordinator: NewDocumentPhotosCoordinator) {
+    init(viewModel: NewDocumentMediaViewModel<UIImage>, coordinator: NewDocumentPhotosCoordinator) {
         self.coordinator = coordinator
         self.viewModel = viewModel
-        self.mode = mode
+//        self.mode = mode
         
         super.init(coordinator: coordinator)
     }
@@ -44,55 +44,11 @@ class NewDocumentPhotosViewController: BaseViewController {
         setupBindings()
     }
     
-    override var rightBarButtonItems: [UIBarButtonItem] {
-        return [
-            UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(takeNewPicture))
-        ]
-    }
-    
     // MARK: Helpers
     let disposeBag = DisposeBag()
     
-    @objc private func takeNewPicture() {
-        showActionSheet()
-    }
-    
-    private func showActionSheet() {
-        let alert = UIAlertController(title: "newDocumentPhotos.actioSheet.title".localized, message: nil, preferredStyle: .actionSheet)
-        
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            alert.addAction(UIAlertAction(title: "newDocumentPhotos.actioSheet.cameraAction".localized, style: .default, handler: { _ in
-                self.openCamera()
-            }))
-        }
-
-        alert.addAction(UIAlertAction(title: "newDocumentPhotos.actioSheet.galleryAction".localized, style: .default, handler: { _ in
-            self.openGallery()
-        }))
-
-        alert.addAction(UIAlertAction.init(title: "newDocumentPhotos.actioSheet.cancel".localized, style: .cancel, handler: nil))
-        present(alert, animated: true, completion: nil)
-    }
-    
-    private lazy var imagePicker: UIImagePickerController = {
-        let picker = UIImagePickerController()
-        picker.delegate = self
-        picker.mediaTypes = mode == .photo ? [kUTTypeImage as String] : [kUTTypeMovie as String]
-        return picker
-    }()
-    
-    private func openCamera() {
-       imagePicker.sourceType = .camera
-       present(imagePicker, animated: true, completion: nil)
-    }
-    
-    private func openGallery() {
-        imagePicker.sourceType = .photoLibrary
-        present(imagePicker, animated: true, completion: nil)
-    }
-    
     private func setupBindings() {
-        viewModel.pictures
+        viewModel.mediaArray
             .bind(
                 to: collectionView.rx.items(cellIdentifier: "PhotoSelectorCollectionViewCell", cellType: PhotoSelectorCollectionViewCell.self),
                 curriedArgument: { [unowned self] (row, image, cell) in
@@ -101,20 +57,20 @@ class NewDocumentPhotosViewController: BaseViewController {
             )
             .disposed(by: disposeBag)
         
-        viewModel.pictures
+        viewModel.mediaArray
             .subscribe(onNext: { [weak self] pictures in
                 self?.collectionView.backgroundView?.isHidden = pictures.count > 0
             })
             .disposed(by: disposeBag)
         
-        viewModel.pictures
+        viewModel.mediaArray
             .map({ !$0.isEmpty })
             .bind(to: continueButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
         continueButton.rx.tap
             .subscribe(onNext: { [unowned self] in
-                self.coordinator.savePhotos(self.viewModel.pictures.value)
+                self.coordinator.savePhotos(self.viewModel.mediaArray.value)
                 self.coordinator.showNextStep()
             })
             .disposed(by: disposeBag)
@@ -199,23 +155,9 @@ class NewDocumentPhotosViewController: BaseViewController {
     }()
 }
 
-// MARK: - UIImagePickerControllerDelegate implementation
-extension NewDocumentPhotosViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let pickedImage = info[.originalImage] as? UIImage {
-            viewModel.addImage(pickedImage, fromGallery: picker.sourceType == .photoLibrary)
-        }
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        self.dismiss(animated: true, completion: nil)
-    }
-}
-
 // MARK: - PhotoSelectorCellDelegate implementation
 extension NewDocumentPhotosViewController: PhotoSelectorCellDelegate {
     func delete(image: UIImage) {
-        viewModel.removeImage(image)
+        viewModel.removeMedia(image)
     }
 }
