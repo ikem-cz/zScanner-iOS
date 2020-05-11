@@ -22,7 +22,7 @@ enum IkemEndpoint: String, Endpoint {
         case .submitPassword, .seaCatStatus:
             return authUrl + self.rawValue
         case .uploadPage:
-            return "https://zscanner.ikem.dev.bindworks.eu/api-zscanner/upload"
+            return "https://tempra.ikem.seacat/api-zscanner-new/upload"
         default:
             return baseUrl + self.rawValue
         }

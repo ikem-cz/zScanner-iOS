@@ -128,6 +128,7 @@ struct NativeAPI: API {
                 headers: [:],
                 metadata: metadata
             )
+            upload?.setChunkSize(100_000)
             upload?.progressBlock = progressBlock
             upload?.resultBlock = resultBlock
             upload?.failureBlock = failureBlock
