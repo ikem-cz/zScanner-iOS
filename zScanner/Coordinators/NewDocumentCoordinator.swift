@@ -25,6 +25,7 @@ class NewDocumentCoordinator: Coordinator {
     private let mode: DocumentMode
     private let steps: [Step]
     private var currentStep: Step
+    private var mediaViewModel: Any?
     private let mediaSourceTypes = [
          MediaType.photo,
          MediaType.video
@@ -93,7 +94,8 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func showPhotoPreviewScreen(fileURL: URL) {
-        let viewController = PhotoPreviewViewController(imageURL: fileURL, coordinator: self)
+        mediaViewModel = NewDocumentMediaViewModel<UIImage>(tracker: tracker, folderName: newDocument.folder.name)
+        let viewController = PhotoPreviewViewController(imageURL: fileURL, folderName: newDocument.folder.name, coordinator: self)
         push(viewController)
     }
     
@@ -267,8 +269,11 @@ extension NewDocumentCoordinator: CameraCoordinator {
 }
 
 extension NewDocumentCoordinator: PhotoPreviewCoordinator {
-    func photoApproved() {
+    func photoApproved(image: UIImage, fromGallery: Bool) {
         print("ImageApproved")
+        if let mediaViewModel = mediaViewModel as? NewDocumentMediaViewModel<UIImage> {
+            mediaViewModel.addMedia(image, fromGallery: fromGallery)
+        }
     }
     
     func createNewPhoto() {

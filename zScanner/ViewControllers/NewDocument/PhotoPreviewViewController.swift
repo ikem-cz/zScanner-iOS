@@ -9,7 +9,7 @@
 import UIKit
 
 protocol PhotoPreviewCoordinator: BaseCoordinator {
-    func photoApproved()
+    func photoApproved(image: UIImage, fromGallery: Bool)
     func createNewPhoto()
 }
 
@@ -20,10 +20,16 @@ class PhotoPreviewViewController: BaseViewController {
     private var image: UIImage?
     
     private unowned let coordinator: PhotoPreviewCoordinator
+    private let folderName: String
+    
+    private var navigationBarTitleTextAttributes: [NSAttributedString.Key : Any]?
+    private var navigationBarBarStyle: UIBarStyle? // Background-color of the navigation controller, which automatically adapts the color of the status bar (time, battery ..)
+    override var navigationBarTintColor: UIColor? { .white } // Color of navigation controller items
     
     // MARK: Lifecycle
-    init(imageURL: URL, coordinator: PhotoPreviewCoordinator) {
+    init(imageURL: URL, folderName: String, coordinator: PhotoPreviewCoordinator) {
         self.imageURL = imageURL
+        self.folderName = folderName
         self.coordinator = coordinator
         
         super.init(coordinator: coordinator)
@@ -37,6 +43,40 @@ class PhotoPreviewViewController: BaseViewController {
     }
     
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        saveNavBarSettings()
+        setupNavBar()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        returnNavBarSettings()
+    }
+    
+    // MARK: View setup
+    private func returnNavBarSettings() {
+        navigationController?.navigationBar.titleTextAttributes = navigationBarTitleTextAttributes
+        
+        if let navigationBarBarStyle = navigationBarBarStyle {
+            navigationController?.navigationBar.barStyle = navigationBarBarStyle
+        }
+    }
+    
+    private func saveNavBarSettings() {
+        navigationBarTitleTextAttributes = navigationController?.navigationBar.titleTextAttributes
+        navigationBarBarStyle = navigationController?.navigationBar.barStyle
+    }
+    
+    private func setupNavBar() {
+        title = folderName
+        navigationItem.leftBarButtonItems = nil
+        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
+        navigationController?.navigationBar.barStyle = .black
+    }
+    
     func setupView() {
         view.backgroundColor = .black
         
@@ -46,9 +86,9 @@ class PhotoPreviewViewController: BaseViewController {
         
         view.addSubview(buttonStackView)
         buttonStackView.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(-10)
-            make.leading.trailing.equalToSuperview()
-            make.height.equalTo(80)
+            make.bottom.equalToSuperview().inset(10)
+            make.leading.trailing.equalToSuperview().inset(5)
+            make.height.equalTo(70)
         }
         
         view.addSubview(imageView)
@@ -73,7 +113,11 @@ class PhotoPreviewViewController: BaseViewController {
     }
     
     @objc func approved() {
-        coordinator.photoApproved()
+        if let image = image {
+            coordinator.photoApproved(image: image, fromGallery: false)
+        } else {
+            print("Image could not be approved")
+        }
     }
      
     // MARK: Lazy instance part
@@ -104,7 +148,7 @@ class PhotoPreviewViewController: BaseViewController {
         nextPhotoButton.titleLabel?.font = .footnote
         nextPhotoButton.titleLabel?.textColor = .white
         nextPhotoButton.layer.cornerRadius = 8
-        nextPhotoButton.layer.borderWidth = 2
+        nextPhotoButton.layer.borderWidth = 1
         nextPhotoButton.layer.borderColor = UIColor.white.cgColor
         nextPhotoButton.backgroundColor = .black
         return nextPhotoButton
@@ -118,7 +162,6 @@ class PhotoPreviewViewController: BaseViewController {
         continueButton.titleLabel?.textColor = .white
         continueButton.layer.cornerRadius = 6
         continueButton.backgroundColor = .blue
-        continueButton.buttonType = .
         return continueButton
     }()
 }
