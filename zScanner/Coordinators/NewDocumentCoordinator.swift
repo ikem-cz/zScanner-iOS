@@ -117,6 +117,12 @@ class NewDocumentCoordinator: Coordinator {
         push(viewController)
     }
     
+    private func showVideosSelectionScreen() {
+        guard let videoViewModel = videoViewModel else { return }
+        let viewController = NewDocumentVideosSelectionViewController(viewModel: videoViewModel, coordinator: self)
+        push(viewController)
+    }
+    
     private func showListItemSelectionScreen<T: ListItem>(for list: ListPickerField<T>) {
         let viewController = ListItemSelectionViewController(viewModel: list, coordinator: self)
         push(viewController)
@@ -276,6 +282,13 @@ extension NewDocumentCoordinator: NewDocumentPhotosCoordinator {
     }
 }
 
+extension NewDocumentCoordinator: NewDocumentVideosCoordinator {
+    // TODO: Change to array of URLs
+    func saveVideo(_ videos: [URL]) {
+        print("saveVideos")
+    }
+}
+
 // MARK: - CameraCoordinator implementation
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ type: MediaType, url: URL) {
@@ -305,7 +318,7 @@ extension NewDocumentCoordinator: MediumPreviewCoordinator {
         case .photo:
             showPhotosSelectionScreen()
         case .video:
-            print("* ShowMediaSelection of videos")
+            showVideosSelectionScreen()
         default:
             print(mediumType.description, " is not yet implemented")
         }
