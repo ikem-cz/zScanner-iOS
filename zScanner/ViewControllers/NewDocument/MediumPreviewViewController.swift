@@ -9,24 +9,26 @@
 import UIKit
 
 protocol MediumPreviewCoordinator: BaseCoordinator {
-    func createNewMedium()
-    func showMediaSelection()
+    func createNewMedium(mediumType: MediaType)
+    func showMediaSelection(mediumType: MediaType)
 }
 
 class MediumPreviewViewController: BaseViewController {
 
     // MARK: Instance part
-    private let mediumURL: URL
+    let mediumURL: URL
+    let mediaType: MediaType
     private let folderName: String
     
-    private unowned let coordinator: MediumPreviewCoordinator
+    unowned let coordinator: MediumPreviewCoordinator
     
     private var navigationBarTitleTextAttributes: [NSAttributedString.Key : Any]?
     private var navigationBarBarStyle: UIBarStyle? // Background-color of the navigation controller, which automatically adapts the color of the status bar (time, battery ..)
     override var navigationBarTintColor: UIColor? { .white } // Color of navigation controller items
     
     // MARK: Lifecycle
-    init(mediumURL: URL, folderName: String, coordinator: MediumPreviewCoordinator) {
+    init(mediaType: MediaType, mediumURL: URL, folderName: String, coordinator: MediumPreviewCoordinator) {
+        self.mediaType = mediaType
         self.mediumURL = mediumURL
         self.folderName = folderName
         self.coordinator = coordinator
@@ -97,12 +99,12 @@ class MediumPreviewViewController: BaseViewController {
     }
     
     // MARK: Helpers
-    private func loadMedium() {
+    func loadMedium() {
         fatalError("loadMedium function needs to override")
     }
     
     @objc func retake() {
-        fatalError("retake function needs to override")
+        coordinator.createNewMedium(mediumType: mediaType)
     }
     
     @objc func createAnotherMedium() {
@@ -114,7 +116,7 @@ class MediumPreviewViewController: BaseViewController {
     }
     
     // MARK: Lazy instance part
-    private lazy var buttonStackView: UIStackView = {
+    lazy var buttonStackView: UIStackView = {
         let buttonStackView = UIStackView()
         buttonStackView.alignment = .center
         buttonStackView.distribution = .fillEqually

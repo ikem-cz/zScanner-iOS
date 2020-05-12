@@ -73,7 +73,7 @@ class NewDocumentCoordinator: Coordinator {
         case .documentType:
             showDocumentTypeSelectionScreen()
         case .media:
-            showMediaSelectionScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
+            showMediaFactoryScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
         }
     }
     
@@ -89,7 +89,7 @@ class NewDocumentCoordinator: Coordinator {
         push(viewController)
     }
     
-    private func showMediaSelectionScreen(mediaType: MediaType, mediaSourceTypes: [MediaType]) {
+    private func showMediaFactoryScreen(mediaType: MediaType, mediaSourceTypes: [MediaType]) {
         let viewModel = CameraViewModel(initialMode: mediaType, folderName: newDocument.folder.name, mediaSourceTypes: mediaSourceTypes)
         let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
@@ -287,22 +287,28 @@ extension NewDocumentCoordinator: CameraCoordinator {
     }
 }
 
-extension NewDocumentCoordinator: PhotoPreviewCoordinator {
-    func showPhotosSelection() {
-        showPhotosSelectionScreen()
+// MARK: - MediumPreviewCoordinator implementation
+extension NewDocumentCoordinator: MediumPreviewCoordinator {
+    func createNewMedium(mediumType: MediaType) {
+        switch mediumType {
+        case .photo:
+            showMediaFactoryScreen(mediaType: .photo, mediaSourceTypes: [MediaType.photo])
+        case .video:
+            showMediaFactoryScreen(mediaType: .video, mediaSourceTypes: [MediaType.video])
+        default:
+            print(mediumType.description, " is not yet implemented")
+        }
     }
     
-    func createNewPhoto() {
-        showMediaSelectionScreen(mediaType: .photo, mediaSourceTypes: [MediaType.photo])
+    func showMediaSelection(mediumType: MediaType) {
+        switch mediumType {
+        case .photo:
+            showPhotosSelectionScreen()
+        case .video:
+            print("* ShowMediaSelection of videos")
+        default:
+            print(mediumType.description, " is not yet implemented")
+        }
     }
 }
 
-extension NewDocumentCoordinator: VideoPreviewCoordinator {
-    func createNewVideo() {
-        showMediaSelectionScreen(mediaType: .video, mediaSourceTypes: [MediaType.video])
-    }
-    
-    func showVideosSelection() {
-        print("Show videos")
-    }
-}
