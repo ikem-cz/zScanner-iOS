@@ -1140,8 +1140,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
-				DEVELOPMENT_TEAM = B8FL52PVGW;
+				CURRENT_PROJECT_VERSION = 18;
+				DEVELOPMENT_TEAM = 3S5GF6G6NK;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/zScanner",
@@ -1157,7 +1157,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = cz.ikem.zScanner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "zScanner/SupportFiles/zScanner-Bridging-Header.h";
@@ -1172,8 +1172,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
-				DEVELOPMENT_TEAM = B8FL52PVGW;
+				CURRENT_PROJECT_VERSION = 18;
+				DEVELOPMENT_TEAM = 3S5GF6G6NK;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/zScanner",
@@ -1189,7 +1189,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = cz.ikem.zScanner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "zScanner/SupportFiles/zScanner-Bridging-Header.h";
