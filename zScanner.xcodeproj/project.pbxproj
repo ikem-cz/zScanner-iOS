@@ -12,6 +12,7 @@
 		16BF842C245C6631004CC132 /* MediaTypeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */; };
 		16BF842E245C7136004CC132 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BF842D245C7136004CC132 /* CameraView.swift */; };
 		16CBB2B1246A7FA5003E5D64 /* VideoPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16CBB2B0246A7FA5003E5D64 /* VideoPreviewViewController.swift */; };
+		16CBB2B9246AAC86003E5D64 /* MediumPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16CBB2B8246AAC86003E5D64 /* MediumPreviewViewController.swift */; };
 		16D371FC246419F600B845B0 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D371FB246419F600B845B0 /* CameraViewModel.swift */; };
 		16D371FE24645E7A00B845B0 /* PhotoPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D371FD24645E7A00B845B0 /* PhotoPreviewViewController.swift */; };
 		434027612302212C0038A40C /* MenuCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434027602302212C0038A40C /* MenuCoordinator.swift */; };
@@ -153,6 +154,7 @@
 		16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTypeCollectionViewCell.swift; sourceTree = "<group>"; };
 		16BF842D245C7136004CC132 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		16CBB2B0246A7FA5003E5D64 /* VideoPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewViewController.swift; sourceTree = "<group>"; };
+		16CBB2B8246AAC86003E5D64 /* MediumPreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediumPreviewViewController.swift; sourceTree = "<group>"; };
 		16D371FB246419F600B845B0 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
 		16D371FD24645E7A00B845B0 /* PhotoPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewViewController.swift; sourceTree = "<group>"; };
 		434027602302212C0038A40C /* MenuCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCoordinator.swift; sourceTree = "<group>"; };
@@ -373,6 +375,7 @@
 				1663AAA7245C0AD3004A3472 /* CameraViewController.swift */,
 				16D371FD24645E7A00B845B0 /* PhotoPreviewViewController.swift */,
 				16CBB2B0246A7FA5003E5D64 /* VideoPreviewViewController.swift */,
+				16CBB2B8246AAC86003E5D64 /* MediumPreviewViewController.swift */,
 			);
 			path = NewDocument;
 			sourceTree = "<group>";
@@ -935,6 +938,7 @@
 				BD59A09922E36EF900FA9CD0 /* NativeAPI.swift in Sources */,
 				BD2B9E8822EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift in Sources */,
 				BDA25B2022EF9C33006DA7E4 /* Event.swift in Sources */,
+				16CBB2B9246AAC86003E5D64 /* MediumPreviewViewController.swift in Sources */,
 				BD59A0AD22E395AF00FA9CD0 /* UIColor.swift in Sources */,
 				BD59A09022E36EF900FA9CD0 /* RequestBehavior.swift in Sources */,
 				BD2F209222EBA7D300534916 /* RealmDatabase.swift in Sources */,
