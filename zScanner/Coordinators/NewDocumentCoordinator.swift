@@ -26,6 +26,7 @@ class NewDocumentCoordinator: Coordinator {
     private let steps: [Step]
     private var currentStep: Step
     private var photoViewModel: NewDocumentMediaViewModel<UIImage>?
+    private var videoViewModel: NewDocumentMediaViewModel<URL>?
     private let defaultMediaType = MediaType.photo
     private let mediaSourceTypes = [
          MediaType.photo,
@@ -99,6 +100,14 @@ class NewDocumentCoordinator: Coordinator {
             photoViewModel = NewDocumentMediaViewModel<UIImage>(tracker: tracker, folderName: newDocument.folder.name)
         }
         let viewController = PhotoPreviewViewController(imageURL: fileURL, viewModel: photoViewModel!, coordinator: self)
+        push(viewController)
+    }
+    
+    private func showVideoPreviewScreen(fileURL: URL) {
+        if videoViewModel == nil {
+            videoViewModel = NewDocumentMediaViewModel<URL>(tracker: tracker, folderName: newDocument.folder.name)
+        }
+        let viewController = VideoPreviewViewController(videoURL: fileURL, viewModel: videoViewModel!, coordinator: self)
         push(viewController)
     }
     
@@ -272,6 +281,8 @@ extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ type: MediaType, url: URL) {
         if type == .photo {
             showPhotoPreviewScreen(fileURL: url)
+        } else if type == .video {
+            showVideoPreviewScreen(fileURL: url)
         }
     }
 }
@@ -283,5 +294,15 @@ extension NewDocumentCoordinator: PhotoPreviewCoordinator {
     
     func createNewPhoto() {
         showMediaSelectionScreen(mediaType: .photo, mediaSourceTypes: [MediaType.photo])
+    }
+}
+
+extension NewDocumentCoordinator: VideoPreviewCoordinator {
+    func createNewVideo() {
+        showMediaSelectionScreen(mediaType: .video, mediaSourceTypes: [MediaType.video])
+    }
+    
+    func showVideosSelection() {
+        print("Show videos")
     }
 }
