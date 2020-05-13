@@ -37,4 +37,8 @@ class VideoPreviewViewController: MediumPreviewViewController {
         videoViewController.player = player
         videoViewController.view.frame = .zero
     }
+    
+    override func stopPlayingVideo() {
+        videoViewController.player?.pause()
+    }
 }

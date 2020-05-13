@@ -154,7 +154,7 @@ class MediaViewController: BaseViewController {
 }
 
 // MARK: - PhotoSelectorCellDelegate implementation
-extension NewDocumentMediaViewController: PhotoSelectorCellDelegate {
+extension MediaViewController: PhotoSelectorCellDelegate {
     func delete(image: UIImage) {
         guard let URLToDelete = self.viewModel.mediaArray.value.someKey(forValue: image) else { return }
         viewModel.removeMedia(URLToDelete)

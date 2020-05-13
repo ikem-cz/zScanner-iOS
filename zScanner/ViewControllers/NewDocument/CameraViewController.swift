@@ -330,7 +330,6 @@ class CameraViewController: BaseViewController {
             isRecording = false
         } else {
             let fileURL = createMediaURL(suffix: ".mp4")
-            print("Start recording video with url ", fileURL)
             videoOutput.startRecording(to: fileURL, recordingDelegate: self)
             isRecording = true
         }

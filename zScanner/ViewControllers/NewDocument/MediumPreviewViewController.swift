@@ -105,16 +105,23 @@ class MediumPreviewViewController: BaseViewController {
         fatalError("loadMedium function needs to override")
     }
     
+    func stopPlayingVideo() {
+        // When user will click on a button the video should stop playing, so in Video Preview ViewController should be this function is overridden and properly handle it
+    }
+    
     @objc func retake() {
+        stopPlayingVideo()
         coordinator.createNewMedium(mediumType: mediumType)
     }
     
     @objc func createAnotherMedium() {
+        stopPlayingVideo()
         viewModel.addMedia(mediumURL, fromGallery: false)
         coordinator.createNewMedium(mediumType: mediumType)
     }
     
     @objc func showMediaSelection() {
+        stopPlayingVideo()
         viewModel.addMedia(mediumURL, fromGallery: false)
         coordinator.showMediaSelection()
     }
