@@ -24,7 +24,7 @@ class PhotoPreviewViewController: MediumPreviewViewController {
         view.addSubview(imageView)
         imageView.snp.makeConstraints { make in
             make.bottom.equalTo(buttonStackView.snp.top)
-            make.top.leading.trailing.equalToSuperview()
+            make.top.leading.trailing.equalTo(safeArea)
         }
     }
     

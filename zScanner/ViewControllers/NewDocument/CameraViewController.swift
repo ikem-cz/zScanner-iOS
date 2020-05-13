@@ -126,7 +126,7 @@ class CameraViewController: BaseViewController {
         view.addSubview(captureButton)
         captureButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().inset(8)
+            make.bottom.equalTo(safeArea).inset(8)
             make.height.width.equalTo(70)
         }
         
@@ -152,25 +152,27 @@ class CameraViewController: BaseViewController {
         
         view.addSubview(cameraView)
         cameraView.snp.makeConstraints { make in
-            make.top.left.right.equalToSuperview()
+            make.top.equalTo(safeArea)
+            make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
         }
         
         view.addSubview(swipeMediaTypeView)
         swipeMediaTypeView.snp.makeConstraints { make in
-            make.top.left.right.equalToSuperview()
+            make.top.equalTo(safeArea)
+            make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
         }
         
         view.addSubview(galleryButton)
         galleryButton.snp.makeConstraints { make in
-            make.bottom.left.equalToSuperview().inset(8)
+            make.bottom.left.equalTo(safeArea).inset(8)
         }
         
         view.addSubview(timeLabel)
         timeLabel.snp.makeConstraints { make in
-            make.top.trailing.leading.centerX.equalTo(safeArea)
-            make.height.equalTo(30)
+            make.top.equalTo(safeArea).inset(5)
+            make.trailing.leading.centerX.equalToSuperview()
         }
     }
     

@@ -25,8 +25,7 @@ class VideoPreviewViewController: MediumPreviewViewController {
     override func setupView() {
         view.addSubview(videoViewController.view)
         videoViewController.view.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.width.equalToSuperview()
+            make.top.width.equalTo(safeArea)
             make.bottom.equalTo(buttonStackView.snp.top)
         }
     }

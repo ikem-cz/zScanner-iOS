@@ -94,7 +94,7 @@ class MediumPreviewViewController: BaseViewController {
         
         view.addSubview(buttonStackView)
         buttonStackView.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(10)
+            make.bottom.equalTo(safeArea).inset(10)
             make.leading.trailing.equalToSuperview().inset(5)
             make.height.equalTo(70)
         }
