@@ -166,6 +166,12 @@ class CameraViewController: BaseViewController {
         galleryButton.snp.makeConstraints { make in
             make.bottom.left.equalToSuperview().inset(8)
         }
+        
+        view.addSubview(timeLabel)
+        timeLabel.snp.makeConstraints { make in
+            make.top.trailing.leading.centerX.equalTo(safeArea)
+            make.height.equalTo(30)
+        }
     }
     
     // MARK: Setup media session
@@ -332,6 +338,7 @@ class CameraViewController: BaseViewController {
             let fileURL = createMediaURL(suffix: ".mp4")
             videoOutput.maxRecordedDuration = CMTime(seconds: Config.maximumSecondsOfVideoRecording, preferredTimescale: 600)
             videoOutput.startRecording(to: fileURL, recordingDelegate: self)
+            count()
             isRecording = true
         }
         animateRecordButton(duration: 0.6)
@@ -351,6 +358,22 @@ class CameraViewController: BaseViewController {
         } catch let error {
             print("error saving file with error", error)
         }
+    }
+    
+    func count(){
+        #warning("How to stop it?")
+        let timer = Observable<Int>.interval(0.1, scheduler: MainScheduler.instance)
+        timer.map{ self.stringFromTimeInterval(ms: $0) }
+            .bind{ duration in
+                self.timeLabel.text = duration
+                print(duration)
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    func stringFromTimeInterval(ms: Int) -> String {
+      return String(format: "%0.2d:%0.2d",
+        arguments: [(ms / 600) % 600, (ms % 600 ) / 10])
     }
     
     // MARK: Lazy instance part
@@ -417,6 +440,14 @@ class CameraViewController: BaseViewController {
         galleryButton.addGestureRecognizer(tap)
         galleryButton.isUserInteractionEnabled = true
         return galleryButton
+    }()
+    
+    private lazy var timeLabel: UILabel = {
+        let timeLabel = UILabel()
+        timeLabel.font = .headline
+        timeLabel.textAlignment = .center
+        timeLabel.textColor = .white
+        return timeLabel
     }()
     
     private lazy var flashButton = UIBarButtonItem(image: UIImage(systemName: "bolt.fill"), style: .plain, target: self, action: #selector(toggleTorch))
