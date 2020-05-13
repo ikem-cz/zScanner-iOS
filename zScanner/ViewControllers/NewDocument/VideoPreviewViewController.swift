@@ -14,13 +14,11 @@ class VideoPreviewViewController: MediumPreviewViewController {
 
     // MARK: Instance part
     private let videoViewController = AVPlayerViewController()
-    private let viewModel: NewDocumentMediaViewModel<URL>
     
     // MARK: Lifecycle
-    init(videoURL: URL, viewModel: NewDocumentMediaViewModel<URL>, coordinator: MediumPreviewCoordinator) {
-        self.viewModel = viewModel
+    init(videoURL: URL, viewModel: NewDocumentMediaViewModel, coordinator: MediumPreviewCoordinator) {
         
-        super.init(mediaType: .video, mediumURL: videoURL, folderName: viewModel.folderName, coordinator: coordinator)
+        super.init(viewModel: viewModel, mediumType: .video, mediumURL: videoURL, folderName: viewModel.folderName, coordinator: coordinator)
     }
     
     // MARK: View setup
@@ -38,15 +36,5 @@ class VideoPreviewViewController: MediumPreviewViewController {
         let player = AVPlayer(url: mediumURL)
         videoViewController.player = player
         videoViewController.view.frame = .zero
-    }
-    
-    @objc override func createAnotherMedium() {
-        viewModel.addMedia(mediumURL, fromGallery: false)
-        coordinator.createNewMedium(mediumType: .video)
-    }
-    
-    @objc override func showMediaSelection() {
-        viewModel.addMedia(mediumURL, fromGallery: false)
-        coordinator.showMediaSelection(mediumType: .video)
     }
 }

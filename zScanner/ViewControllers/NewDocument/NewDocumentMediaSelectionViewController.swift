@@ -12,17 +12,17 @@ import RxSwift
 import MobileCoreServices
 
 protocol NewDocumentMediaCoordinator: BaseCoordinator {
-    func saveMedia(mediumType: MediaType, videos: [URL], photos: [UIImage])
+    func saveMedia()
     func showNextStep()
 }
 
-class NewDocumentMediaSelectionViewController<MediumType: Equatable>: BaseViewController {
+class NewDocumentMediaViewController: BaseViewController {
     
     // MARK: Instance part
     unowned let coordinator: NewDocumentMediaCoordinator
-    let viewModel: NewDocumentMediaViewModel<MediumType>
+    let viewModel: NewDocumentMediaViewModel
     
-    init(viewModel: NewDocumentMediaViewModel<MediumType>, coordinator: NewDocumentMediaCoordinator) {
+    init(viewModel: NewDocumentMediaViewModel, coordinator: NewDocumentMediaCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         
@@ -45,34 +45,12 @@ class NewDocumentMediaSelectionViewController<MediumType: Equatable>: BaseViewCo
     // MARK: Helpers
     let disposeBag = DisposeBag()
     
-    func videoSnapshot(videoURL: URL) -> UIImage? {
-        let asset = AVURLAsset(url: videoURL)
-        let generator = AVAssetImageGenerator(asset: asset)
-        generator.appliesPreferredTrackTransform = true
-
-        let timestamp = CMTime(seconds: 1, preferredTimescale: 60)
-
-        do {
-            let imageRef = try generator.copyCGImage(at: timestamp, actualTime: nil)
-            return UIImage(cgImage: imageRef)
-        } catch let error as NSError {
-            print("Image generation failed with error \(error)")
-            return nil
-        }
-    }
-
     private func setupBindings() {
         viewModel.mediaArray
             .bind(
                 to: collectionView.rx.items(cellIdentifier: "PhotoSelectorCollectionViewCell", cellType: PhotoSelectorCollectionViewCell.self),
                 curriedArgument: { [unowned self] (row, medium, cell) in
-                    if let _ = MediumType.self as? UIImage {
-                        cell.setup(with: medium as! UIImage, delegate: self)
-                    } else if let _ = MediumType as? URL {
-                        if let videoPreviewImage = self.videoSnapshot(videoURL: video) {
-                            cell.setup(with: videoPreviewImage, delegate: self)
-                        }
-                    }
+                    cell.setup(with: medium.value, delegate: self)
                 }
             )
             .disposed(by: disposeBag)
@@ -90,7 +68,7 @@ class NewDocumentMediaSelectionViewController<MediumType: Equatable>: BaseViewCo
         
         continueButton.rx.tap
             .subscribe(onNext: { [unowned self] in
-                self.coordinator.savePhotos(self.viewModel.mediaArray.value)
+                self.coordinator.saveMedia()
                 self.coordinator.showNextStep()
             })
             .disposed(by: disposeBag)
@@ -176,8 +154,9 @@ class NewDocumentMediaSelectionViewController<MediumType: Equatable>: BaseViewCo
 }
 
 // MARK: - PhotoSelectorCellDelegate implementation
-extension NewDocumentPhotosViewController: PhotoSelectorCellDelegate {
+extension NewDocumentMediaViewController: PhotoSelectorCellDelegate {
     func delete(image: UIImage) {
-        viewModel.removeMedia(image)
+        guard let URLToDelete = self.viewModel.mediaArray.value.someKey(forValue: image) else { return }
+        viewModel.removeMedia(URLToDelete)
     }
 }

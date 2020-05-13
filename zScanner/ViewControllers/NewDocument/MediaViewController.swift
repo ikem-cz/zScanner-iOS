@@ -1,31 +1,31 @@
 //
-//  NewDocumentPhotosViewController.swift
+//  NewDocumentMediaSelectionViewController.swift
 //  zScanner
 //
-//  Created by Jakub Skořepa on 14/08/2019.
-//  Copyright © 2019 Institut klinické a experimentální medicíny. All rights reserved.
+//  Created by Jan Provazník on 12/05/2020.
+//  Copyright © 2020 Institut klinické a experimentální medicíny. All rights reserved.
 //
 
 import UIKit
+import AVFoundation
 import RxSwift
 import MobileCoreServices
 
-protocol NewDocumentPhotosCoordinator: BaseCoordinator {
-    func savePhotos(_ photos: [UIImage])
+protocol MediaCoordinator: BaseCoordinator {
+    func saveMedia()
     func showNextStep()
 }
 
-// MARK: -
-class NewDocumentPhotosViewController: BaseViewController {
+class MediaViewController: BaseViewController {
     
     // MARK: Instance part
-    private unowned let coordinator: NewDocumentPhotosCoordinator
-    private let viewModel: NewDocumentMediaViewModel<UIImage>
+    unowned let coordinator: MediaCoordinator
+    let viewModel: NewDocumentMediaViewModel
     
-    init(viewModel: NewDocumentMediaViewModel<UIImage>, coordinator: NewDocumentPhotosCoordinator) {
-        self.coordinator = coordinator
+    init(viewModel: NewDocumentMediaViewModel, coordinator: MediaCoordinator) {
         self.viewModel = viewModel
-
+        self.coordinator = coordinator
+        
         super.init(coordinator: coordinator)
     }
     
@@ -49,8 +49,8 @@ class NewDocumentPhotosViewController: BaseViewController {
         viewModel.mediaArray
             .bind(
                 to: collectionView.rx.items(cellIdentifier: "PhotoSelectorCollectionViewCell", cellType: PhotoSelectorCollectionViewCell.self),
-                curriedArgument: { [unowned self] (row, image, cell) in
-                    cell.setup(with: image, delegate: self)
+                curriedArgument: { [unowned self] (row, medium, cell) in
+                    cell.setup(with: medium.value, delegate: self)
                 }
             )
             .disposed(by: disposeBag)
@@ -68,7 +68,7 @@ class NewDocumentPhotosViewController: BaseViewController {
         
         continueButton.rx.tap
             .subscribe(onNext: { [unowned self] in
-                self.coordinator.savePhotos(self.viewModel.mediaArray.value)
+                self.coordinator.saveMedia()
                 self.coordinator.showNextStep()
             })
             .disposed(by: disposeBag)
@@ -154,8 +154,9 @@ class NewDocumentPhotosViewController: BaseViewController {
 }
 
 // MARK: - PhotoSelectorCellDelegate implementation
-extension NewDocumentPhotosViewController: PhotoSelectorCellDelegate {
+extension NewDocumentMediaViewController: PhotoSelectorCellDelegate {
     func delete(image: UIImage) {
-        viewModel.removeMedia(image)
+        guard let URLToDelete = self.viewModel.mediaArray.value.someKey(forValue: image) else { return }
+        viewModel.removeMedia(URLToDelete)
     }
 }
