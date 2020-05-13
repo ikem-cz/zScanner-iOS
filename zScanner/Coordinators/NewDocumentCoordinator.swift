@@ -25,8 +25,7 @@ class NewDocumentCoordinator: Coordinator {
     private let mode: DocumentMode
     private let steps: [Step]
     private var currentStep: Step
-    private var photoViewModel: NewDocumentMediaViewModel<UIImage>?
-    private var videoViewModel: NewDocumentMediaViewModel<URL>?
+    private var mediaViewModel: MediaViewModel?
     private let defaultMediaType = MediaType.photo
     private let mediaSourceTypes = [
          MediaType.photo,
@@ -96,30 +95,20 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func showPhotoPreviewScreen(fileURL: URL) {
-        if photoViewModel == nil {
-            photoViewModel = NewDocumentMediaViewModel<UIImage>(tracker: tracker, folderName: newDocument.folder.name)
-        }
-        let viewController = PhotoPreviewViewController(imageURL: fileURL, viewModel: photoViewModel!, coordinator: self)
+        guard let mediaViewModel = mediaViewModel else { return }
+        let viewController = PhotoPreviewViewController(imageURL: fileURL, viewModel: mediaViewModel, coordinator: self)
         push(viewController)
     }
     
     private func showVideoPreviewScreen(fileURL: URL) {
-        if videoViewModel == nil {
-            videoViewModel = NewDocumentMediaViewModel<URL>(tracker: tracker, folderName: newDocument.folder.name)
-        }
-        let viewController = VideoPreviewViewController(videoURL: fileURL, viewModel: videoViewModel!, coordinator: self)
+        guard let mediaViewModel = mediaViewModel else { return }
+        let viewController = VideoPreviewViewController(videoURL: fileURL, viewModel: mediaViewModel, coordinator: self)
         push(viewController)
     }
     
-    private func showPhotosSelectionScreen() {
-        guard let photoViewModel = photoViewModel else { return }
-        let viewController = NewDocumentPhotosViewController(viewModel: photoViewModel, coordinator: self)
-        push(viewController)
-    }
-    
-    private func showVideosSelectionScreen() {
-        guard let videoViewModel = videoViewModel else { return }
-        let viewController = NewDocumentVideosSelectionViewController(viewModel: videoViewModel, coordinator: self)
+    private func showMediaScreen() {
+        guard let mediaViewModel = mediaViewModel else { return }
+        let viewController = MediaViewController(viewModel: mediaViewModel, coordinator: self)
         push(viewController)
     }
     
@@ -202,7 +191,7 @@ class NewDocumentCoordinator: Coordinator {
     override func willPreventPop(for sender: BaseViewController) -> Bool {
         switch sender {
         case
-        is NewDocumentPhotosViewController,
+        is MediaViewController,
         is NewDocumentTypeViewController,
         is NewDocumentFolderViewController:
             return true
@@ -274,24 +263,13 @@ extension NewDocumentCoordinator: NewDocumentTypeCoordinator {
 // MARK: - ListItemSelectionCoordinator implementation
 extension NewDocumentCoordinator: ListItemSelectionCoordinator {}
 
-// MARK: - ListItemSelectionCoordinator implementation
-extension NewDocumentCoordinator: NewDocumentPhotosCoordinator {
-    // TODO: Change to array of URLs
-    func savePhotos(_ photos: [UIImage]) {
-        savePagesToDocument(photos)
-    }
-}
-
-extension NewDocumentCoordinator: NewDocumentVideosCoordinator {
-    // TODO: Change to array of URLs
-    func saveVideo(_ videos: [URL]) {
-        print("saveVideos")
-    }
-}
-
 // MARK: - CameraCoordinator implementation
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ type: MediaType, url: URL) {
+        if mediaViewModel == nil {
+            mediaViewModel = MediaViewModel(folderName: newDocument.folder.name, mediumType: type, tracker: tracker)
+        }
+        
         if type == .photo {
             showPhotoPreviewScreen(fileURL: url)
         } else if type == .video {
@@ -303,25 +281,25 @@ extension NewDocumentCoordinator: CameraCoordinator {
 // MARK: - MediumPreviewCoordinator implementation
 extension NewDocumentCoordinator: MediumPreviewCoordinator {
     func createNewMedium(mediumType: MediaType) {
-        switch mediumType {
-        case .photo:
-            showMediaFactoryScreen(mediaType: .photo, mediaSourceTypes: [MediaType.photo])
-        case .video:
-            showMediaFactoryScreen(mediaType: .video, mediaSourceTypes: [MediaType.video])
-        default:
-            print(mediumType.description, " is not yet implemented")
-        }
+        guard let mediaViewModel = mediaViewModel else { return }
+        showMediaFactoryScreen(mediaType: mediaViewModel.mediumType, mediaSourceTypes: [mediaViewModel.mediumType])
     }
     
-    func showMediaSelection(mediumType: MediaType) {
-        switch mediumType {
-        case .photo:
-            showPhotosSelectionScreen()
-        case .video:
-            showVideosSelectionScreen()
-        default:
-            print(mediumType.description, " is not yet implemented")
-        }
+    func showMediaSelection() {
+        showMediaScreen()
     }
 }
 
+// MARK: - NewDocumentMediaCoordinator implementation
+extension NewDocumentCoordinator: MediaCoordinator {
+    func saveMedia() {
+        #warning("Sending photo for this time")
+        if mediaViewModel?.mediumType == .photo {
+            var photos: [UIImage] = []
+            mediaViewModel?.mediaArray.value.forEach( { (_, image) in
+                photos.append(image)
+            })
+            savePagesToDocument(photos)
+        }
+    }
+}

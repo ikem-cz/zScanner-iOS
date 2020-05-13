@@ -12,13 +12,11 @@ class PhotoPreviewViewController: MediumPreviewViewController {
 
     // MARK: Instance part
     private var image: UIImage?
-    private let viewModel: NewDocumentMediaViewModel<UIImage>
     
     // MARK: Lifecycle
-    init(imageURL: URL, viewModel: NewDocumentMediaViewModel<UIImage>, coordinator: MediumPreviewCoordinator) {
-        self.viewModel = viewModel
+    init(imageURL: URL, viewModel: MediaViewModel, coordinator: MediumPreviewCoordinator) {
         
-        super.init(mediaType: .photo, mediumURL: imageURL, folderName: viewModel.folderName, coordinator: coordinator)
+        super.init(viewModel: viewModel, mediumType: .photo, mediumURL: imageURL, folderName: viewModel.folderName, coordinator: coordinator)
     }
     
     // MARK: View setup
@@ -38,18 +36,6 @@ class PhotoPreviewViewController: MediumPreviewViewController {
         } catch(let error) {
             print("Could not load data from url: ", error)
         }
-    }
-    
-    @objc override func createAnotherMedium() {
-        guard let image = image else { return }
-        viewModel.addMedia(image, fromGallery: false)
-        coordinator.createNewMedium(mediumType: .photo)
-    }
-    
-    @objc override func showMediaSelection() {
-        guard let image = image else { return }
-        viewModel.addMedia(image, fromGallery: false)
-        coordinator.showMediaSelection(mediumType: .photo)
     }
     
     // MARK: Lazy instance part

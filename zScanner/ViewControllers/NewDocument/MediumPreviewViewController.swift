@@ -10,14 +10,15 @@ import UIKit
 
 protocol MediumPreviewCoordinator: BaseCoordinator {
     func createNewMedium(mediumType: MediaType)
-    func showMediaSelection(mediumType: MediaType)
+    func showMediaSelection()
 }
 
 class MediumPreviewViewController: BaseViewController {
 
     // MARK: Instance part
     let mediumURL: URL
-    let mediaType: MediaType
+    let mediumType: MediaType
+    let viewModel: MediaViewModel
     private let folderName: String
     
     unowned let coordinator: MediumPreviewCoordinator
@@ -27,8 +28,9 @@ class MediumPreviewViewController: BaseViewController {
     override var navigationBarTintColor: UIColor? { .white } // Color of navigation controller items
     
     // MARK: Lifecycle
-    init(mediaType: MediaType, mediumURL: URL, folderName: String, coordinator: MediumPreviewCoordinator) {
-        self.mediaType = mediaType
+    init(viewModel: MediaViewModel, mediumType: MediaType, mediumURL: URL, folderName: String, coordinator: MediumPreviewCoordinator) {
+        self.viewModel = viewModel
+        self.mediumType = mediumType
         self.mediumURL = mediumURL
         self.folderName = folderName
         self.coordinator = coordinator
@@ -104,15 +106,17 @@ class MediumPreviewViewController: BaseViewController {
     }
     
     @objc func retake() {
-        coordinator.createNewMedium(mediumType: mediaType)
+        coordinator.createNewMedium(mediumType: mediumType)
     }
     
     @objc func createAnotherMedium() {
-        fatalError("createAnotherMedium function needs to override")
+        viewModel.addMedia(mediumURL, fromGallery: false)
+        coordinator.createNewMedium(mediumType: mediumType)
     }
     
     @objc func showMediaSelection() {
-        fatalError("showMediaSelection function needs to override")
+        viewModel.addMedia(mediumURL, fromGallery: false)
+        coordinator.showMediaSelection()
     }
     
     // MARK: Lazy instance part

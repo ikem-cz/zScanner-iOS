@@ -20,9 +20,9 @@ class MediaViewController: BaseViewController {
     
     // MARK: Instance part
     unowned let coordinator: MediaCoordinator
-    let viewModel: NewDocumentMediaViewModel
+    let viewModel: MediaViewModel
     
-    init(viewModel: NewDocumentMediaViewModel, coordinator: MediaCoordinator) {
+    init(viewModel: MediaViewModel, coordinator: MediaCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         
