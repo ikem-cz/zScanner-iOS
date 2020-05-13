@@ -330,6 +330,7 @@ class CameraViewController: BaseViewController {
             isRecording = false
         } else {
             let fileURL = createMediaURL(suffix: ".mp4")
+            videoOutput.maxRecordedDuration = CMTime(seconds: Config.maximumSecondsOfVideoRecording, preferredTimescale: 600)
             videoOutput.startRecording(to: fileURL, recordingDelegate: self)
             isRecording = true
         }
@@ -453,10 +454,13 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
 // MARK: - AVCaptureFileOutputRecordingDelegate implementation
 extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        if let error = error {
-            print(error)
-        } else {
+        #warning("How to handle error?")
+        // https://developer.apple.com/documentation/avfoundation/avcapturefileoutput/1387390-maxrecordedduration
+        if videoOutput.recordedDuration >= videoOutput.maxRecordedDuration {
+            recordVideo()
             coordinator.mediaCreated(.video, url: outputFileURL)
+        } else {
+            print(error)
         }
     }
 }
