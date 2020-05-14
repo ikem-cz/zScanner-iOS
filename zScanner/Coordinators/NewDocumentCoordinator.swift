@@ -89,9 +89,19 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func showMediaFactoryScreen(mediaType: MediaType, mediaSourceTypes: [MediaType]) {
+        if !(viewControllers.first is CameraViewController) {
+            popAll(animated: false)
+        }
+        
         let viewModel = CameraViewModel(initialMode: mediaType, folderName: newDocument.folder.name, mediaSourceTypes: mediaSourceTypes)
         let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
-        push(viewController)
+        
+        if let index = navigationController?.viewControllers.firstIndex(where: { $0 is CameraViewController }) {
+            navigationController?.viewControllers.insert(viewController, at: index)
+            pop(to: viewController, animated: true)
+        } else {
+            push(viewController, animated: true)
+        }
     }
     
     private func showPhotoPreviewScreen(fileURL: URL) {

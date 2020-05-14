@@ -362,15 +362,13 @@ class CameraViewController: BaseViewController {
         }
     }
     
+    var timerSubscription: Disposable?
+    
     func count(){
-        #warning("How to stop it?")
-        let timer = Observable<Int>.interval(0.1, scheduler: MainScheduler.instance)
-        timer.map{ self.stringFromTimeInterval(ms: $0) }
-            .bind{ duration in
-                self.timeLabel.text = duration
-                print(duration)
-            }
-            .disposed(by: disposeBag)
+        let timer = Observable<Int>.interval(RxTimeInterval.milliseconds(100), scheduler: MainScheduler.instance)
+        timerSubscription = timer
+            .map{ self.stringFromTimeInterval(ms: $0) }
+            .bind(to: timeLabel.rx.text)
     }
     
     func stringFromTimeInterval(ms: Int) -> String {
@@ -487,12 +485,20 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
 // MARK: - AVCaptureFileOutputRecordingDelegate implementation
 extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        #warning("How to handle error?")
-        // https://developer.apple.com/documentation/avfoundation/avcapturefileoutput/1387390-maxrecordedduration
-        if videoOutput.recordedDuration >= videoOutput.maxRecordedDuration {
-            recordVideo()
+        timerSubscription?.dispose()
+        switch error {
+        case .none:
+            if isRecording {
+                recordVideo()
+            }
             coordinator.mediaCreated(.video, url: outputFileURL)
-        } else {
+        case .some(let nsError as NSError) where (nsError.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool) == true:
+            if isRecording {
+                recordVideo()
+            }
+            coordinator.mediaCreated(.video, url: outputFileURL)
+        default:
+            // TODO: Handle this error
             print(error)
         }
     }
