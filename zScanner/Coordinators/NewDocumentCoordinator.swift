@@ -101,6 +101,9 @@ class NewDocumentCoordinator: Coordinator {
         
         if let index = navigationController?.viewControllers.firstIndex(where: { $0 is CameraViewController }) {
             navigationController?.viewControllers.insert(viewController, at: index)
+            if let localIndex = viewControllers.firstIndex(where: { $0 is CameraViewController }) {
+                viewControllers.insert(viewController, at: localIndex)
+            }
             pop(to: viewController, animated: true)
         } else {
             push(viewController, animated: true)
