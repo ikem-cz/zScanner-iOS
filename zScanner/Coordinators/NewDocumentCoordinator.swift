@@ -300,6 +300,13 @@ extension NewDocumentCoordinator: MediaPreviewCoordinator {
         guard let mediaViewModel = mediaViewModel else { return }
         showNewMediaScreen(mediaType: mediaViewModel.mediaType, mediaSourceTypes: [mediaViewModel.mediaType])
     }
+    
+    func showMedia() {
+        if let mediaListViewController = navigationController?.viewControllers.first(where: { $0 is MediaListViewController}) {
+            pop(to: mediaListViewController as! MediaListViewController, animated: false)
+        }
+        showMediaListScreen()
+    }
 }
 
 // MARK: - NewDocumentMediaCoordinator implementation
@@ -316,6 +323,9 @@ extension NewDocumentCoordinator: MediaListCoordinator {
     }
     
     func reeditMedium(fileURL: URL) {
+        if let photoPreviewViewController = navigationController?.viewControllers.first(where: { $0 is PhotoPreviewViewController}) {
+            pop(to: photoPreviewViewController as! PhotoPreviewViewController, animated: false)
+        }
         showPhotoPreviewScreen(fileURL: fileURL)
     }
 }
