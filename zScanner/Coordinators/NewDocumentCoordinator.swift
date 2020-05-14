@@ -311,4 +311,8 @@ extension NewDocumentCoordinator: MediaListCoordinator {
             savePagesToDocument(photos)
         }
     }
+    
+    func reeditMedium(fileURL: URL) {
+        showPhotoPreviewScreen(fileURL: fileURL)
+    }
 }

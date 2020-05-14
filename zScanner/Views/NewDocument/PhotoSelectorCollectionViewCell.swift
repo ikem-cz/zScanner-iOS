@@ -16,7 +16,7 @@ protocol PhotoSelectorCellDelegate: class {
 class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     
     // MARK: Instance part
-    private var element: Dictionary<URL, UIImage>.Element? {
+    private(set) var element: Dictionary<URL, UIImage>.Element? {
         didSet {
             imageView.image = element?.value
         }
@@ -48,7 +48,7 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     // MARK: Helpers
     private weak var delegate: PhotoSelectorCellDelegate?
     
-    @objc private func deleteImage() {
+    @objc private func deleteMedium() {
         guard let element = element else { return }
         delegate?.delete(fileURL: element.key)
     }
@@ -65,7 +65,7 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
             make.top.right.equalToSuperview().inset(4)
         }
         
-        deleteButton.addTarget(self, action: #selector(deleteImage), for: .touchUpInside)
+        deleteButton.addTarget(self, action: #selector(deleteMedium), for: .touchUpInside)
     }
     
     private var imageView: UIImageView = {

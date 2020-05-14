@@ -13,6 +13,7 @@ import MobileCoreServices
 
 protocol MediaListCoordinator: BaseCoordinator {
     func saveMediaList()
+    func reeditMedium(fileURL: URL)
     func showNextStep()
 }
 
@@ -54,6 +55,15 @@ class MediaListViewController: BaseViewController {
                 }
             )
             .disposed(by: disposeBag)
+        
+        collectionView
+            .rx
+            .itemSelected
+            .subscribe(onNext: { indexPath in
+                let cell = self.collectionView.cellForItem(at: indexPath) as! PhotoSelectorCollectionViewCell
+                guard let mediumURL = cell.element?.key else { return }
+                self.coordinator.reeditMedium(fileURL: mediumURL)
+            }).disposed(by: disposeBag)
         
         viewModel.mediaArray
             .subscribe(onNext: { [weak self] pictures in
