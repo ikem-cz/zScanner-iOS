@@ -10,6 +10,7 @@
 		1663AAA8245C0AD3004A3472 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1663AAA7245C0AD3004A3472 /* CameraViewController.swift */; };
 		16647ECA2460657E00A374F2 /* GalleryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16647EC92460657E00A374F2 /* GalleryButton.swift */; };
 		167129C2246C37E9000E1F08 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167129C1246C37E9000E1F08 /* Dictionary.swift */; };
+		16908399246D9582009967A1 /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16908398246D9582009967A1 /* Themes.swift */; };
 		16BF842C245C6631004CC132 /* MediaTypeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */; };
 		16BF842E245C7136004CC132 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BF842D245C7136004CC132 /* CameraView.swift */; };
 		16CBB2B1246A7FA5003E5D64 /* VideoPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16CBB2B0246A7FA5003E5D64 /* VideoPreviewViewController.swift */; };
@@ -153,6 +154,7 @@
 		1663AAA7245C0AD3004A3472 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		16647EC92460657E00A374F2 /* GalleryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryButton.swift; sourceTree = "<group>"; };
 		167129C1246C37E9000E1F08 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
+		16908398246D9582009967A1 /* Themes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Themes.swift; sourceTree = "<group>"; };
 		16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTypeCollectionViewCell.swift; sourceTree = "<group>"; };
 		16BF842D245C7136004CC132 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		16CBB2B0246A7FA5003E5D64 /* VideoPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewViewController.swift; sourceTree = "<group>"; };
@@ -554,6 +556,7 @@
 				BD000CAD22E3AA6F001EE38A /* UIViewController.swift */,
 				BD70566E23301D7E0074184A /* URL.swift */,
 				167129C1246C37E9000E1F08 /* Dictionary.swift */,
+				16908398246D9582009967A1 /* Themes.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -946,6 +949,7 @@
 				BD59A09022E36EF900FA9CD0 /* RequestBehavior.swift in Sources */,
 				BD2F209222EBA7D300534916 /* RealmDatabase.swift in Sources */,
 				BD88F15B230953C700569D71 /* PageNetworkModel.swift in Sources */,
+				16908399246D9582009967A1 /* Themes.swift in Sources */,
 				BDDA1271231408C10029A7DF /* SubmitPasswordRequest.swift in Sources */,
 				BD8F753E23241F660086B097 /* SplashViewController.swift in Sources */,
 				BDFC478522E907F200F312F0 /* DocumentDatabaseModel.swift in Sources */,

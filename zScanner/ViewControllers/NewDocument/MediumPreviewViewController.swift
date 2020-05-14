@@ -23,10 +23,6 @@ class MediumPreviewViewController: BaseViewController {
     
     unowned let coordinator: MediumPreviewCoordinator
     
-    private var navigationBarTitleTextAttributes: [NSAttributedString.Key : Any]?
-    private var navigationBarBarStyle: UIBarStyle? // Background-color of the navigation controller, which automatically adapts the color of the status bar (time, battery ..)
-    override var navigationBarTintColor: UIColor? { .white } // Color of navigation controller items
-    
     // MARK: Lifecycle
     init(viewModel: MediaViewModel, mediumType: MediaType, mediumURL: URL, folderName: String, coordinator: MediumPreviewCoordinator) {
         self.viewModel = viewModel
@@ -35,7 +31,7 @@ class MediumPreviewViewController: BaseViewController {
         self.folderName = folderName
         self.coordinator = coordinator
         
-        super.init(coordinator: coordinator)
+        super.init(coordinator: coordinator, theme: .dark)
     }
     
     override func viewDidLoad() {
@@ -46,47 +42,14 @@ class MediumPreviewViewController: BaseViewController {
         setupView()
     }
     
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        saveNavBarSettings()
-        setupNavBar()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        returnNavBarSettings()
-    }
-    
     // MARK: View setup
-    private func returnNavBarSettings() {
-        navigationController?.navigationBar.titleTextAttributes = navigationBarTitleTextAttributes
-        
-        if let navigationBarBarStyle = navigationBarBarStyle {
-            navigationController?.navigationBar.barStyle = navigationBarBarStyle
-        }
-    }
-    
-    private func saveNavBarSettings() {
-        navigationBarTitleTextAttributes = navigationController?.navigationBar.titleTextAttributes
-        navigationBarBarStyle = navigationController?.navigationBar.barStyle
-    }
-    
-    private func setupNavBar() {
-        title = folderName
-        navigationItem.leftBarButtonItems = nil
-        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
-        navigationController?.navigationBar.barStyle = .black
-    }
-    
     func setupView() {
         fatalError("setupView function needs to override")
     }
     
     func setupButtons() {
         view.backgroundColor = .black
+        title = viewModel.folderName
         
         buttonStackView.addArrangedSubview(againButton)
         buttonStackView.addArrangedSubview(nextPhotoButton)

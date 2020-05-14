@@ -34,10 +34,6 @@ class CameraViewController: BaseViewController {
     private var isRecording: Bool = false
     private var isFlashing: Bool = false
     
-    private var navigationBarTitleTextAttributes: [NSAttributedString.Key : Any]?
-    private var navigationBarBarStyle: UIBarStyle? // Background-color of the navigation controller, which automatically adapts the color of the status bar (time, battery ..)
-    override var navigationBarTintColor: UIColor? { .white } // Color of navigation controller items
-    
     override var rightBarButtonItems: [UIBarButtonItem] {
         return [flashButton]
     }
@@ -54,52 +50,25 @@ class CameraViewController: BaseViewController {
         self.viewModel = viewModel
         self.coordinator = coordinator
         
-        super.init(coordinator: coordinator)
+        super.init(coordinator: coordinator, theme: .dark)
     }
     
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setupCaptureSession()
         setupView()
         setupBindings()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        saveNavBarSettings()
-        setupNavBar()
-    }
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        returnNavBarSettings()
         captureSession.stopRunning()
     }
     
     // MARK: View setup
-    private func returnNavBarSettings() {
-        navigationController?.navigationBar.titleTextAttributes = navigationBarTitleTextAttributes
-        
-        if let navigationBarBarStyle = navigationBarBarStyle {
-            navigationController?.navigationBar.barStyle = navigationBarBarStyle
-        }
-    }
-    
-    private func saveNavBarSettings() {
-        navigationBarTitleTextAttributes = navigationController?.navigationBar.titleTextAttributes
-        navigationBarBarStyle = navigationController?.navigationBar.barStyle
-    }
-    
-    private func setupNavBar() {
-        title = viewModel.folderName
-        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
-        navigationController?.navigationBar.barStyle = .black
-    }
-    
     private func setupBindings() {
         viewModel.currentMode
             .subscribe(onNext: { [unowned self] mode in
@@ -122,6 +91,7 @@ class CameraViewController: BaseViewController {
     
     private func setupView() {
         view.backgroundColor = .clear
+        title = viewModel.folderName
         
         view.addSubview(captureButton)
         captureButton.snp.makeConstraints { make in
