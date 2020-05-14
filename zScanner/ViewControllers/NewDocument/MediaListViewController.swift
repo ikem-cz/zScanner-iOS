@@ -11,22 +11,18 @@ import AVFoundation
 import RxSwift
 import MobileCoreServices
 
-protocol MediaCoordinator: BaseCoordinator {
-    func saveMedia()
+protocol MediaListCoordinator: BaseCoordinator {
+    func saveMediaList()
     func showNextStep()
 }
 
-<<<<<<< Updated upstream
-class MediaViewController: BaseViewController {
-=======
 class MediaListViewController: BaseViewController {
->>>>>>> Stashed changes
     
     // MARK: Instance part
-    unowned let coordinator: MediaCoordinator
+    unowned let coordinator: MediaListCoordinator
     let viewModel: MediaViewModel
     
-    init(viewModel: MediaViewModel, coordinator: MediaCoordinator) {
+    init(viewModel: MediaViewModel, coordinator: MediaListCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         
@@ -53,8 +49,8 @@ class MediaListViewController: BaseViewController {
         viewModel.mediaArray
             .bind(
                 to: collectionView.rx.items(cellIdentifier: "PhotoSelectorCollectionViewCell", cellType: PhotoSelectorCollectionViewCell.self),
-                curriedArgument: { [unowned self] (row, medium, cell) in
-                    cell.setup(with: medium.value, delegate: self)
+                curriedArgument: { [unowned self] (row, media, cell) in
+                    cell.setup(with: media.self, delegate: self)
                 }
             )
             .disposed(by: disposeBag)
@@ -72,7 +68,7 @@ class MediaListViewController: BaseViewController {
         
         continueButton.rx.tap
             .subscribe(onNext: { [unowned self] in
-                self.coordinator.saveMedia()
+                self.coordinator.saveMediaList()
                 self.coordinator.showNextStep()
             })
             .disposed(by: disposeBag)
@@ -158,15 +154,8 @@ class MediaListViewController: BaseViewController {
 }
 
 // MARK: - PhotoSelectorCellDelegate implementation
-<<<<<<< Updated upstream
-extension MediaViewController: PhotoSelectorCellDelegate {
-    func delete(image: UIImage) {
-        guard let URLToDelete = self.viewModel.mediaArray.value.someKey(forValue: image) else { return }
-=======
 extension MediaListViewController: PhotoSelectorCellDelegate {
-    func delete(image: UIImage) {
-        guard let urlToDelete = self.viewModel.mediaArray.value.someKey(forValue: image) else { return }
->>>>>>> Stashed changes
-        viewModel.removeMedia(URLToDelete)
+    func delete(fileURL: URL) {
+        viewModel.removeMedia(fileURL)
     }
 }

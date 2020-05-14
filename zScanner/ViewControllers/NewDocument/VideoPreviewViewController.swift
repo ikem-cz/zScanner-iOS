@@ -10,15 +10,15 @@ import UIKit
 import AVKit
 import AVFoundation
 
-class VideoPreviewViewController: MediumPreviewViewController {
+class VideoPreviewViewController: MediaPreviewViewController {
 
     // MARK: Instance part
     private let videoViewController = AVPlayerViewController()
     
     // MARK: Lifecycle
-    init(videoURL: URL, viewModel: MediaViewModel, coordinator: MediumPreviewCoordinator) {
+    init(videoURL: URL, viewModel: MediaViewModel, coordinator: MediaPreviewCoordinator) {
         
-        super.init(viewModel: viewModel, mediumType: .video, mediumURL: videoURL, folderName: viewModel.folderName, coordinator: coordinator)
+        super.init(viewModel: viewModel, mediaType: .video, mediaURL: videoURL, folderName: viewModel.folderName, coordinator: coordinator)
     }
     
     // MARK: View setup
@@ -31,8 +31,8 @@ class VideoPreviewViewController: MediumPreviewViewController {
     }
     
     // MARK: Helpers
-    override func loadMedium() {
-        let player = AVPlayer(url: mediumURL)
+    override func loadMedia() {
+        let player = AVPlayer(url: mediaURL)
         videoViewController.player = player
         videoViewController.view.frame = .zero
     }

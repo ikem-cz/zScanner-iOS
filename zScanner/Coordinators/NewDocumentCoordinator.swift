@@ -17,6 +17,7 @@ class NewDocumentCoordinator: Coordinator {
         case folder
         case documentType
         case media
+        case mediaList
     }
     
     // MARK: Instance part
@@ -72,7 +73,9 @@ class NewDocumentCoordinator: Coordinator {
         case .documentType:
             showDocumentTypeSelectionScreen()
         case .media:
-            showMediaFactoryScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
+            showNewMediaScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
+        case .mediaList:
+            showMediaListScreen()
         }
     }
     
@@ -88,7 +91,7 @@ class NewDocumentCoordinator: Coordinator {
         push(viewController)
     }
     
-    private func showMediaFactoryScreen(mediaType: MediaType, mediaSourceTypes: [MediaType]) {
+    private func showNewMediaScreen(mediaType: MediaType, mediaSourceTypes: [MediaType]) {
         if !(viewControllers.first is CameraViewController) {
             popAll(animated: false)
         }
@@ -116,9 +119,9 @@ class NewDocumentCoordinator: Coordinator {
         push(viewController)
     }
     
-    private func showMediaScreen() {
+    private func showMediaListScreen() {
         guard let mediaViewModel = mediaViewModel else { return }
-        let viewController = MediaViewController(viewModel: mediaViewModel, coordinator: self)
+        let viewController = MediaListViewController(viewModel: mediaViewModel, coordinator: self)
         push(viewController)
     }
     
@@ -187,11 +190,11 @@ class NewDocumentCoordinator: Coordinator {
     private static func steps(for mode: DocumentMode) -> [Step] {
         switch mode {
         case .document, .examination, .ext:
-            return [.folder, .documentType, .media]
+            return [.folder, .documentType, .media, .mediaList]
         case .photo:
-            return [.folder, .media]
+            return [.folder, .media, .mediaList]
         case .video:
-            return [.folder, .media]
+            return [.folder, .media, .mediaList]
         case .undefined:
             return []
         }
@@ -201,7 +204,7 @@ class NewDocumentCoordinator: Coordinator {
     override func willPreventPop(for sender: BaseViewController) -> Bool {
         switch sender {
         case
-        is MediaViewController,
+        is MediaListViewController,
         is NewDocumentTypeViewController,
         is NewDocumentFolderViewController:
             return true
@@ -277,7 +280,7 @@ extension NewDocumentCoordinator: ListItemSelectionCoordinator {}
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ type: MediaType, url: URL) {
         if mediaViewModel == nil {
-            mediaViewModel = MediaViewModel(folderName: newDocument.folder.name, mediumType: type, tracker: tracker)
+            mediaViewModel = MediaViewModel(folderName: newDocument.folder.name, mediaType: type, tracker: tracker)
         }
         
         if type == .photo {
@@ -288,23 +291,19 @@ extension NewDocumentCoordinator: CameraCoordinator {
     }
 }
 
-// MARK: - MediumPreviewCoordinator implementation
-extension NewDocumentCoordinator: MediumPreviewCoordinator {
-    func createNewMedium(mediumType: MediaType) {
+// MARK: - MediaPreviewCoordinator implementation
+extension NewDocumentCoordinator: MediaPreviewCoordinator {
+    func createNewMedia(mediaType: MediaType) {
         guard let mediaViewModel = mediaViewModel else { return }
-        showMediaFactoryScreen(mediaType: mediaViewModel.mediumType, mediaSourceTypes: [mediaViewModel.mediumType])
-    }
-    
-    func showMediaSelection() {
-        showMediaScreen()
+        showNewMediaScreen(mediaType: mediaViewModel.mediaType, mediaSourceTypes: [mediaViewModel.mediaType])
     }
 }
 
 // MARK: - NewDocumentMediaCoordinator implementation
-extension NewDocumentCoordinator: MediaCoordinator {
-    func saveMedia() {
+extension NewDocumentCoordinator: MediaListCoordinator {
+    func saveMediaList() {
         #warning("Sending photo for this time")
-        if mediaViewModel?.mediumType == .photo {
+        if mediaViewModel?.mediaType == .photo {
             var photos: [UIImage] = []
             mediaViewModel?.mediaArray.value.forEach( { (_, image) in
                 photos.append(image)

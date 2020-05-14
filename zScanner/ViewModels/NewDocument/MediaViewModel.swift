@@ -15,12 +15,12 @@ class MediaViewModel {
     
     // MARK: Instance part
     private let tracker: Tracker
-    let mediumType: MediaType
+    let mediaType: MediaType
     let folderName: String
     
-    init(folderName: String, mediumType: MediaType, tracker: Tracker) {
+    init(folderName: String, mediaType: MediaType, tracker: Tracker) {
         self.tracker = tracker
-        self.mediumType = mediumType
+        self.mediaType = mediaType
         self.folderName = folderName
     }
     
@@ -53,37 +53,37 @@ class MediaViewModel {
         }
     }
     
-    func getMediaSnapshot(mediumURL: URL) -> UIImage? {
-        switch mediumType {
+    func getMediaSnapshot(mediaURL: URL) -> UIImage? {
+        switch mediaType {
         case .photo:
-            return getPhotoSnapshot(photoURL: mediumURL)
+            return getPhotoSnapshot(photoURL: mediaURL)
         case .video:
-            return getVideoSnapshot(videoURL: mediumURL)
+            return getVideoSnapshot(videoURL: mediaURL)
         default:
-            print(mediumType.description, " is not implemented yet")
+            print(mediaType.description, " is not implemented yet")
             return nil
         }
     }
     
-    func addMedia(_ mediumURL: URL, fromGallery: Bool) {
+    func addMedia(_ mediaURL: URL, fromGallery: Bool) {
         // Tracking
         tracker.track(.galleryUsed(fromGallery))
         
-        // Add medium with snapshot
+        // Add media with snapshot
         var newDict = mediaArray.value
-        if let mediaSnapshot = getMediaSnapshot(mediumURL: mediumURL) {
-            newDict[mediumURL] = mediaSnapshot
+        if let mediaSnapshot = getMediaSnapshot(mediaURL: mediaURL) {
+            newDict[mediaURL] = mediaSnapshot
         }
         mediaArray.accept(newDict)
     }
     
-    func removeMedia(_ mediumURL: URL) {
+    func removeMedia(_ mediaURL: URL) {
         // Tracking
         tracker.track(.deleteImage)
 
-        // Remove medium
+        // Remove media
         var newDict = mediaArray.value
-        _ = newDict.removeValue(forKey: mediumURL)
+        _ = newDict.removeValue(forKey: mediaURL)
         mediaArray.accept(newDict)
     }
 }

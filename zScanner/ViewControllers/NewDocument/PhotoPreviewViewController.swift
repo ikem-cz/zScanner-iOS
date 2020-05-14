@@ -8,15 +8,15 @@
 
 import UIKit
 
-class PhotoPreviewViewController: MediumPreviewViewController {
+class PhotoPreviewViewController: MediaPreviewViewController {
 
     // MARK: Instance part
     private var image: UIImage?
     
     // MARK: Lifecycle
-    init(imageURL: URL, viewModel: MediaViewModel, coordinator: MediumPreviewCoordinator) {
+    init(imageURL: URL, viewModel: MediaViewModel, coordinator: MediaPreviewCoordinator) {
         
-        super.init(viewModel: viewModel, mediumType: .photo, mediumURL: imageURL, folderName: viewModel.folderName, coordinator: coordinator)
+        super.init(viewModel: viewModel, mediaType: .photo, mediaURL: imageURL, folderName: viewModel.folderName, coordinator: coordinator)
     }
     
     // MARK: View setup
@@ -29,9 +29,9 @@ class PhotoPreviewViewController: MediumPreviewViewController {
     }
     
     // MARK: Helpers
-    override func loadMedium() {
+    override func loadMedia() {
         do {
-            let data = try Data(contentsOf: mediumURL)
+            let data = try Data(contentsOf: mediaURL)
             image = UIImage(data: data)
         } catch(let error) {
             print("Could not load data from url: ", error)

@@ -9,16 +9,16 @@
 import UIKit
 
 protocol PhotoSelectorCellDelegate: class {
-    func delete(image: UIImage)
+    func delete(fileURL: URL)
 }
 
 // MARK: -
 class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     
     // MARK: Instance part
-    private var image: UIImage? {
+    private var element: Dictionary<URL, UIImage>.Element? {
         didSet {
-            imageView.image = image
+            imageView.image = element?.value
         }
     }
     
@@ -36,12 +36,12 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        image = nil
+        element = nil
     }
     
     // MARK: Interface
-    func setup(with image: UIImage, delegate: PhotoSelectorCellDelegate) {
-        self.image = image
+    func setup(with element: Dictionary<URL, UIImage>.Element, delegate: PhotoSelectorCellDelegate) {
+        self.element = element
         self.delegate = delegate
     }
     
@@ -49,8 +49,8 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     private weak var delegate: PhotoSelectorCellDelegate?
     
     @objc private func deleteImage() {
-        guard let image = image else { return }
-        delegate?.delete(image: image)
+        guard let element = element else { return }
+        delegate?.delete(fileURL: element.key)
     }
     
     private func setupView() {

@@ -1,5 +1,5 @@
 //
-//  MediumPreviewViewController.swift
+//  MediaPreviewViewController.swift
 //  zScanner
 //
 //  Created by Jan Provazník on 12/05/2020.
@@ -8,26 +8,26 @@
 
 import UIKit
 
-protocol MediumPreviewCoordinator: BaseCoordinator {
-    func createNewMedium(mediumType: MediaType)
-    func showMediaSelection()
+protocol MediaPreviewCoordinator: BaseCoordinator {
+    func createNewMedia(mediaType: MediaType)
+    func showNextStep()
 }
 
-class MediumPreviewViewController: BaseViewController {
+class MediaPreviewViewController: BaseViewController {
 
     // MARK: Instance part
-    let mediumURL: URL
-    let mediumType: MediaType
+    let mediaURL: URL
+    let mediaType: MediaType
     let viewModel: MediaViewModel
     private let folderName: String
     
-    unowned let coordinator: MediumPreviewCoordinator
+    unowned let coordinator: MediaPreviewCoordinator
     
     // MARK: Lifecycle
-    init(viewModel: MediaViewModel, mediumType: MediaType, mediumURL: URL, folderName: String, coordinator: MediumPreviewCoordinator) {
+    init(viewModel: MediaViewModel, mediaType: MediaType, mediaURL: URL, folderName: String, coordinator: MediaPreviewCoordinator) {
         self.viewModel = viewModel
-        self.mediumType = mediumType
-        self.mediumURL = mediumURL
+        self.mediaType = mediaType
+        self.mediaURL = mediaURL
         self.folderName = folderName
         self.coordinator = coordinator
         
@@ -37,7 +37,7 @@ class MediumPreviewViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        loadMedium()
+        loadMedia()
         setupButtons()
         setupView()
     }
@@ -64,8 +64,8 @@ class MediumPreviewViewController: BaseViewController {
     }
     
     // MARK: Helpers
-    func loadMedium() {
-        fatalError("loadMedium function needs to override")
+    func loadMedia() {
+        fatalError("loadMedia function needs to override")
     }
     
     func stopPlayingVideo() {
@@ -74,19 +74,19 @@ class MediumPreviewViewController: BaseViewController {
     
     @objc func retake() {
         stopPlayingVideo()
-        coordinator.createNewMedium(mediumType: mediumType)
+        coordinator.createNewMedia(mediaType: mediaType)
     }
     
-    @objc func createAnotherMedium() {
+    @objc func createAnotherMedia() {
         stopPlayingVideo()
-        viewModel.addMedia(mediumURL, fromGallery: false)
-        coordinator.createNewMedium(mediumType: mediumType)
+        viewModel.addMedia(mediaURL, fromGallery: false)
+        coordinator.createNewMedia(mediaType: mediaType)
     }
     
     @objc func showMediaSelection() {
         stopPlayingVideo()
-        viewModel.addMedia(mediumURL, fromGallery: false)
-        coordinator.showMediaSelection()
+        viewModel.addMedia(mediaURL, fromGallery: false)
+        coordinator.showNextStep()
     }
     
     // MARK: Lazy instance part
@@ -111,7 +111,7 @@ class MediumPreviewViewController: BaseViewController {
     private lazy var nextPhotoButton: UIButton = {
         let nextPhotoButton = UIButton()
         nextPhotoButton.setTitle("newDocumentPhotos.nextPhoto.title".localized, for: .normal)
-        nextPhotoButton.addTarget(self, action: #selector(createAnotherMedium), for: .touchUpInside)
+        nextPhotoButton.addTarget(self, action: #selector(createAnotherMedia), for: .touchUpInside)
         nextPhotoButton.titleLabel?.font = .footnote
         nextPhotoButton.titleLabel?.textColor = .white
         nextPhotoButton.layer.cornerRadius = 8
