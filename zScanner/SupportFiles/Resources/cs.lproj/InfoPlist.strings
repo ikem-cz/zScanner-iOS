@@ -7,3 +7,4 @@
 */
 
 "NSCameraUsageDescription" = "Pro skenování potřebujeme použít fotoaparát.";
+"MicrophoneUsageDescription" = "Pro nahrávání videozáznamu potřebujeme použít mikrofon.";
