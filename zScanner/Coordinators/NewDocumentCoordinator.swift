@@ -324,7 +324,11 @@ extension NewDocumentCoordinator: MediaListCoordinator {
         finish()
     }
     
-    func reeditMedium(fileURL: URL) {
-        showPhotoPreviewScreen(fileURL: fileURL)
+    func reeditMedium(type: MediaType, url: URL) {
+        if type == .photo {
+            showPhotoPreviewScreen(fileURL: url)
+        } else if type == .video {
+            showVideoPreviewScreen(fileURL: url)
+        }
     }
 }
