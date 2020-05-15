@@ -11,7 +11,7 @@ import RxSwift
 
 protocol NewDocumentFolderCoordinator: BaseCoordinator {
     func saveFolder(_ folder: FolderDomainModel, searchMode: SearchMode)
-    func showNextStep()
+    func folderDidSelect()
 }
 
 // MARK: -
@@ -237,7 +237,7 @@ extension NewDocumentFolderViewController: UITableViewDelegate {
         guard item != .notFound else { return }
         
         coordinator.saveFolder(item, searchMode: searchMode)
-        coordinator.showNextStep()
+        coordinator.folderDidSelect()
     }
 }
 
