@@ -188,7 +188,7 @@ class NewDocumentCoordinator: Coordinator {
                 let page = PageDomainModel(image: image, index: index, correlationId: newDocument.id)
                 newDocument.pages.append(page)
             })
-        }
+    }
     
     private static func steps(for mode: DocumentMode) -> [Step] {
         switch mode {
@@ -301,17 +301,18 @@ extension NewDocumentCoordinator: MediaPreviewCoordinator {
         showNewMediaScreen(mediaType: mediaViewModel.mediaType, mediaSourceTypes: [mediaViewModel.mediaType])
     }
     
-    func showMedia() {
-        if let mediaListViewController = navigationController?.viewControllers.first(where: { $0 is MediaListViewController}) {
-            pop(to: mediaListViewController as! MediaListViewController, animated: false)
+    func finishEdit() {
+        if let mediaListViewController = navigationController?.viewControllers.first(where: { $0 is MediaListViewController }) as? BaseViewController {
+            pop(to: mediaListViewController)
+        } else {
+            showMediaListScreen()
         }
-        showMediaListScreen()
     }
 }
 
 // MARK: - NewDocumentMediaCoordinator implementation
 extension NewDocumentCoordinator: MediaListCoordinator {
-    func saveMediaList() {
+    func upload() {
         #warning("Sending photo for this time")
         if mediaViewModel?.mediaType == .photo {
             var photos: [UIImage] = []
@@ -320,12 +321,10 @@ extension NewDocumentCoordinator: MediaListCoordinator {
             })
             savePagesToDocument(photos)
         }
+        finish()
     }
     
     func reeditMedium(fileURL: URL) {
-        if let photoPreviewViewController = navigationController?.viewControllers.first(where: { $0 is PhotoPreviewViewController}) {
-            pop(to: photoPreviewViewController as! PhotoPreviewViewController, animated: false)
-        }
         showPhotoPreviewScreen(fileURL: fileURL)
     }
 }

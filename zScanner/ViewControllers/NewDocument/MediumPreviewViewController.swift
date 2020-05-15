@@ -10,7 +10,7 @@ import UIKit
 
 protocol MediaPreviewCoordinator: BaseCoordinator {
     func createNewMedia(mediaType: MediaType)
-    func showMedia()
+    func finishEdit()
 }
 
 class MediaPreviewViewController: BaseViewController {
@@ -86,7 +86,7 @@ class MediaPreviewViewController: BaseViewController {
     @objc func showMediaSelection() {
         stopPlayingVideo()
         viewModel.addMedia(mediaURL, fromGallery: false)
-        coordinator.showMedia()
+        coordinator.finishEdit()
     }
     
     // MARK: Lazy instance part

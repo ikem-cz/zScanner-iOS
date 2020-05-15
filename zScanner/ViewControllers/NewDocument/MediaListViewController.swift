@@ -12,9 +12,8 @@ import RxSwift
 import MobileCoreServices
 
 protocol MediaListCoordinator: BaseCoordinator {
-    func saveMediaList()
+    func upload()
     func reeditMedium(fileURL: URL)
-    func showNextStep()
 }
 
 class MediaListViewController: BaseViewController {
@@ -78,8 +77,7 @@ class MediaListViewController: BaseViewController {
         
         continueButton.rx.tap
             .subscribe(onNext: { [unowned self] in
-                self.coordinator.saveMediaList()
-                self.coordinator.showNextStep()
+                self.coordinator.upload()
             })
             .disposed(by: disposeBag)
     }
