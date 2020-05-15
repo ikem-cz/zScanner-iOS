@@ -334,16 +334,15 @@ class CameraViewController: BaseViewController {
     
     var timerSubscription: Disposable?
     
-    func count(){
+    func count() {
         let timer = Observable<Int>.interval(RxTimeInterval.milliseconds(100), scheduler: MainScheduler.instance)
         timerSubscription = timer
-            .map{ self.stringFromTimeInterval(ms: $0) }
+            .map { [weak self] in self?.stringFromTimeInterval(ms: $0) }
             .bind(to: timeLabel.rx.text)
     }
     
     func stringFromTimeInterval(ms: Int) -> String {
-      return String(format: "%0.2d:%0.2d",
-        arguments: [(ms / 600) % 600, (ms % 600 ) / 10])
+        return String(format: "%0.2d:%0.2d", arguments: [(ms / 600) % 600, (ms % 600 ) / 10])
     }
     
     // MARK: Lazy instance part

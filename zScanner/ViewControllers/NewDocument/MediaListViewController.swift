@@ -50,7 +50,7 @@ class MediaListViewController: BaseViewController {
             .bind(
                 to: collectionView.rx.items(cellIdentifier: "PhotoSelectorCollectionViewCell", cellType: PhotoSelectorCollectionViewCell.self),
                 curriedArgument: { [unowned self] (row, media, cell) in
-                    cell.setup(with: media.self, delegate: self)
+                    cell.setup(with: media, delegate: self)
                 }
             )
             .disposed(by: disposeBag)

@@ -40,14 +40,16 @@ class NewDocumentCoordinator: Coordinator {
     private let networkManager: NetworkManager = IkemNetworkManager(api: NativeAPI())
     private let tracker: Tracker = FirebaseAnalytics()
     
+    // TODO: Remove this function later
     private func showFolderSelectionScreen() {
         let viewModel = NewDocumentFolderViewModel(database: database, networkManager: networkManager, tracker: tracker)
         let viewController = NewDocumentFolderViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
     
+    // TODO: Remove this function later
     private func showDocumentTypeSelectionScreen() {
-        let viewModel = NewDocumentTypeViewModel(documentMode: .photo, database: database)
+        let viewModel = NewDocumentTypeViewModel(documentMode: .document, database: database)
         let viewController = NewDocumentTypeViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
@@ -107,7 +109,7 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func saveMediaToDocument(_ media: [UIImage]) {
-        // Store images
+        // Store media
         media
             .enumerated()
             .forEach({ (index, media) in
@@ -126,6 +128,15 @@ class NewDocumentCoordinator: Coordinator {
             return true
         default:
             return false
+        }
+    }
+    
+    override func backButtonPressed(sender: BaseViewController) {
+         if willPreventPop(for: sender) {
+             showPopConfirmationDialog(presentOn: sender, popHandler: { [unowned self] in
+                // 
+                self.pop()
+             })
         }
     }
     
