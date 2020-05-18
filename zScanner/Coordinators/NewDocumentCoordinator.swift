@@ -57,7 +57,7 @@ class NewDocumentCoordinator: Coordinator {
             popAll(animated: false)
         }
         
-        let viewModel = CameraViewModel(initialMode: mediaType, folderName: newDocument.folder.name, mediaSourceTypes: mediaSourceTypes)
+        let viewModel = CameraViewModel(initialMode: mediaType, folderName: newDocument.folder.name, correlationId: newDocument.id, mediaSourceTypes: mediaSourceTypes)
         let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
         
         if let index = navigationController?.viewControllers.firstIndex(where: { $0 is CameraViewController }) {
@@ -106,12 +106,13 @@ class NewDocumentCoordinator: Coordinator {
         flowDelegate.coordinatorDidFinish(self)
     }
     
-    private func saveMediaToDocument(_ media: [UIImage]) {
-        // Store images
+
+    private func saveMediaToDocument(_ media: [Media]) {
+        // Store media
         media
             .enumerated()
             .forEach({ (index, media) in
-                let media = PageDomainModel(image: media, index: index, correlationId: newDocument.id)
+                let media = MediaDomainModel(media: media, index: index)
                 newDocument.pages.append(media)
             })
     }
@@ -129,6 +130,16 @@ class NewDocumentCoordinator: Coordinator {
         }
     }
     
+    override func backButtonPressed(sender: BaseViewController) {
+        super.backButtonPressed(sender: sender)
+        
+         if willPreventPop(for: sender) {
+             showPopConfirmationDialog(presentOn: sender, popHandler: { [unowned self] in
+                self.pop()
+             })
+        }
+    }
+
     private func showPopConfirmationDialog(presentOn viewController: BaseViewController, popHandler: @escaping EmptyClosure) {
         let alert = UIAlertController(title: "newDocument.popAlert.title".localized, message: "newDocument.popAlert.message".localized, preferredStyle: .alert)
         
@@ -155,15 +166,15 @@ extension NewDocumentCoordinator: NewDocumentFolderCoordinator {
 
 // MARK: - CameraCoordinator implementation
 extension NewDocumentCoordinator: CameraCoordinator {
-    func mediaCreated(_ type: MediaType, url: URL) {
+    func mediaCreated(_ media: Media) {
         if mediaViewModel == nil {
-            mediaViewModel = MediaViewModel(folderName: newDocument.folder.name, mediaType: type, tracker: tracker)
+            mediaViewModel = MediaViewModel(folderName: newDocument.folder.name, mediaType: media.type, tracker: tracker)
         }
         
-        if type == .photo {
-            showPhotoPreviewScreen(fileURL: url)
-        } else if type == .video {
-            showVideoPreviewScreen(fileURL: url)
+        if media.type == .photo {
+            showPhotoPreviewScreen(fileURL: media.url)
+        } else if media.type == .video {
+            showVideoPreviewScreen(fileURL: media.url)
         }
     }
 }
@@ -188,14 +199,14 @@ extension NewDocumentCoordinator: MediaPreviewCoordinator {
 extension NewDocumentCoordinator: MediaListCoordinator {
     func upload() {
         #warning("Sending photo for this time")
-        if mediaViewModel?.mediaType == .photo {
-            var photos: [UIImage] = []
-            mediaViewModel?.mediaArray.value.forEach( { (_, image) in
-                photos.append(image)
-            })
-            saveMediaToDocument(photos)
-        }
-        finish()
+//        if mediaViewModel?.mediaType == .photo {
+//            var photos: [UIImage] = []
+//            mediaViewModel?.mediaArray.value.forEach( { (_, image) in
+//                photos.append(image)
+//            })
+//            saveMediaToDocument(photos)
+//        }
+//        finish()
     }
     
     func reeditMedium(type: MediaType, url: URL) {

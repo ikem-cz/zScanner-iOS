@@ -13,7 +13,7 @@ import MobileCoreServices
 import RxSwift
 
 protocol CameraCoordinator: BaseCoordinator {
-    func mediaCreated(_ type: MediaType, url: URL)
+    func mediaCreated(_ media: Media)
 }
 
 // MARK: -
@@ -298,6 +298,7 @@ class CameraViewController: BaseViewController {
         picker.delegate = self
         picker.mediaTypes = viewModel.currentMode.value == .photo ? [kUTTypeImage as String] : [kUTTypeMovie as String]
         picker.sourceType = .photoLibrary
+        picker.videoMaximumDuration = Config.maximumSecondsOfVideoRecording
         present(picker, animated: true, completion: nil)
     }
     
@@ -307,29 +308,13 @@ class CameraViewController: BaseViewController {
             videoOutput.stopRecording()
             isRecording = false
         } else {
-            let fileURL = createMediaURL(suffix: ".mp4")
+            viewModel.saveVideo(fromGallery: false)
             videoOutput.maxRecordedDuration = CMTime(seconds: Config.maximumSecondsOfVideoRecording, preferredTimescale: 600)
-            videoOutput.startRecording(to: fileURL, recordingDelegate: self)
+            videoOutput.startRecording(to: viewModel.media!.url, recordingDelegate: self)
             count()
             isRecording = true
         }
         animateRecordButton(duration: 0.6)
-    }
-    
-    func createMediaURL(suffix: String) -> URL {
-        let fileName = UUID().uuidString + suffix
-        let fileURL = URL.init(documentsWith: fileName)
-        return fileURL
-    }
-    
-    func saveImage(withURL fileURL: URL, image: UIImage) {
-        guard let data = image.jpegData(compressionQuality: 1) else { return }
-        
-        do {
-            try data.write(to: fileURL)
-        } catch let error {
-            print("error saving file with error", error)
-        }
     }
     
     var timerSubscription: Disposable?
@@ -429,9 +414,8 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         guard let imageData = photo.fileDataRepresentation() else { return }
         
         if let image = UIImage(data: imageData) {
-            let fileURL = createMediaURL(suffix: ".jpg")
-            saveImage(withURL: fileURL, image: image)
-            coordinator.mediaCreated(.photo, url: fileURL)
+            viewModel.saveImage(image: image, fromGallery: false)
+            coordinator.mediaCreated(viewModel.media!)
         }
     }
 }
@@ -440,9 +424,12 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
 extension CameraViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let pickedImage = info[.originalImage] as? UIImage {
-            let fileURL = createMediaURL(suffix: ".jpg")
-            saveImage(withURL: fileURL, image: pickedImage)
-            coordinator.mediaCreated(.photo, url: fileURL)
+            viewModel.saveImage(image: pickedImage, fromGallery: true)
+            coordinator.mediaCreated(viewModel.media!)
+        }
+        if let videoURL = info[.mediaURL] as? URL {
+            viewModel.saveVideo(fromGallery: true, url: videoURL)
+            coordinator.mediaCreated(viewModel.media!)
         }
         self.dismiss(animated: true, completion: nil)
     }
@@ -461,12 +448,12 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
             if isRecording {
                 recordVideo()
             }
-            coordinator.mediaCreated(.video, url: outputFileURL)
+            coordinator.mediaCreated(viewModel.media!)
         case .some(let nsError as NSError) where (nsError.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool) == true:
             if isRecording {
                 recordVideo()
             }
-            coordinator.mediaCreated(.video, url: outputFileURL)
+            coordinator.mediaCreated(viewModel.media!)
         default:
             // TODO: Handle this error
             print(error)
