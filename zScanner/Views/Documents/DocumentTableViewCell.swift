@@ -181,7 +181,6 @@ class DocumentTableViewCell: UITableViewCell {
         clipsToBounds = true
         layer.cornerRadius = radius
         layer.maskedCorners = corners
-        separatorInset = .zero
     }
     
     private var titleLabel: UILabel = {

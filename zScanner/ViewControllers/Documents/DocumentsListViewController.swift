@@ -185,6 +185,7 @@ extension DocumentsListViewController: UITableViewDataSource {
         let document = viewModel.documents[indexPath.row]
         let cell = tableView.dequeueCell(DocumentTableViewCell.self)
         cell.setup(with: document, delegate: self)
+        cell.selectionStyle = UITableViewCell.SelectionStyle.none
         
         // Set rounded top corners
         if indexPath.row == 0 {
@@ -194,6 +195,7 @@ extension DocumentsListViewController: UITableViewDataSource {
         // Set rounded bottom corners
         if indexPath.row == (viewModel.documents.count-1) {
             cell.roundedCorners(corners: [.layerMaxXMaxYCorner, .layerMinXMaxYCorner], radius: 16)
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
         }
         
         return cell
