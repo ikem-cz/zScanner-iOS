@@ -185,6 +185,17 @@ extension DocumentsListViewController: UITableViewDataSource {
         let document = viewModel.documents[indexPath.row]
         let cell = tableView.dequeueCell(DocumentTableViewCell.self)
         cell.setup(with: document, delegate: self)
+        
+        // Set rounded top corners
+        if indexPath.row == 0 {
+            cell.roundedCorners(corners: [.layerMinXMinYCorner, .layerMaxXMinYCorner], radius: 16)
+        }
+        
+        // Set rounded bottom corners
+        if indexPath.row == (viewModel.documents.count-1) {
+            cell.roundedCorners(corners: [.layerMaxXMaxYCorner, .layerMinXMaxYCorner], radius: 16)
+        }
+        
         return cell
     }
 }

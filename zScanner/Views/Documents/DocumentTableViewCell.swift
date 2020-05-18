@@ -127,6 +127,7 @@ class DocumentTableViewCell: UITableViewCell {
     
     private func setupView() {
         selectionStyle = .none
+        backgroundColor = UIColor.lightGray.withAlphaComponent(0.2)
         
         preservesSuperviewLayoutMargins = true
         contentView.preservesSuperviewLayoutMargins = true
@@ -174,6 +175,13 @@ class DocumentTableViewCell: UITableViewCell {
         retryButton.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+    
+    func roundedCorners(corners: CACornerMask, radius : CGFloat) {
+        clipsToBounds = true
+        layer.cornerRadius = radius
+        layer.maskedCorners = corners
+        separatorInset = .zero
     }
     
     private var titleLabel: UILabel = {
