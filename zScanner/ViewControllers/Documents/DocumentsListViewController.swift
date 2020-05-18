@@ -108,6 +108,11 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
     private func setupView() {
         navigationItem.title = "document.screen.title".localized
         
+        // Remove bottom line of navbar
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for:.default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.layoutIfNeeded()
+        
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.top.bottom.equalTo(safeArea)
