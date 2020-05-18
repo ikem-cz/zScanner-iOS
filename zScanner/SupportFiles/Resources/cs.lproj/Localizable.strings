@@ -29,6 +29,7 @@
 "documentMode.photo.name" = "Fotografie";
 "documentMode.video.name" = "Videozáznam";
 "documentMode.undefined.name" = "Neznámý typ";
+"documentMode.tableView.title" = "Historie pacientů";
 
 // MARK: - Documents List
 "document.screen.title" = "zScanner";

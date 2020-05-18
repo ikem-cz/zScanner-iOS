@@ -110,10 +110,17 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.bottom.equalTo(safeArea)
+            make.trailing.leading.equalToSuperview().inset(20)
         }
         
         tableView.backgroundView = emptyView
+        tableView.tableHeaderView = headerView
+        
+        if let header = tableView.tableHeaderView {
+            let newSize = header.systemLayoutSizeFitting(CGSize(width: tableView.bounds.width, height: 0))
+            header.frame.size.height = newSize.height + 20
+        }
         
         emptyView.addSubview(emptyViewLabel)
         emptyViewLabel.snp.makeConstraints { make in
@@ -135,6 +142,8 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         button.isEnabled = false
         return button
     }()
+    
+    private lazy var headerView = HeaderView(frame: .zero)
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -177,3 +186,12 @@ extension DocumentsListViewController: UITableViewDataSource {
 
 //MARK: - DocumentViewDelegate implementation
 extension DocumentsListViewController: DocumentViewDelegate {}
+
+extension UITableView {
+    func updateHeaderViewHeight() {
+        if let header = self.tableHeaderView {
+            let newSize = header.systemLayoutSizeFitting(CGSize(width: self.bounds.width, height: 0))
+            header.frame.size.height = newSize.height
+        }
+    }
+}
