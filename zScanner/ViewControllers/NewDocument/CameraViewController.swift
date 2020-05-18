@@ -308,6 +308,7 @@ class CameraViewController: BaseViewController {
         if isRecording {
             videoOutput.stopRecording()
             isRecording = false
+            animateRecordButton(duration: 0.6)
         } else {
             viewModel.saveVideo(fromGallery: false) { isSaved in
                 guard isSaved else { return }
@@ -317,10 +318,11 @@ class CameraViewController: BaseViewController {
                     self.videoOutput.startRecording(to: self.viewModel.media!.url, recordingDelegate: self)
                     self.count()
                     self.isRecording = true
+                    self.animateRecordButton(duration: 0.6)
                 }
             }
         }
-        animateRecordButton(duration: 0.6)
+        
     }
     
     var timerSubscription: Disposable?
