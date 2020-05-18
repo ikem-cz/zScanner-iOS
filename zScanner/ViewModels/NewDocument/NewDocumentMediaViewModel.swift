@@ -30,6 +30,8 @@ class NewDocumentMediaViewModel {
         // Tracking
         tracker.track(.galleryUsed(media.fromGallery))
 
+        if let _ = mediaArray.value.firstIndex(of: media) { return }
+        
         // Add media with snapshot
         var newArray = mediaArray.value
         if media.type == .video {
