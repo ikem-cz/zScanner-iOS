@@ -49,20 +49,25 @@ class CameraViewModel {
         }
     }
     
-    func saveVideo(fromGallery: Bool, url: URL? = nil)  {
+    func saveVideo(fromGallery: Bool, url: URL? = nil, _ completion: @escaping (Bool) -> ())  {
         media = Media(type: .video, correlationId: correlationId, fromGallery: fromGallery)
         
         createDocumentDirectory()
-        DispatchQueue.global(qos: .background).async {
+        
+        if fromGallery, let url = url {
+            DispatchQueue.global(qos: .background).async {
             // Copy video to documents folder
-            if fromGallery, let url = url {
                 do {
                     let videoData = try Data(contentsOf: url)
                     try videoData.write(to: self.media!.url)
+                    completion(true)
                 } catch(let error) {
                     print("Could not copy video to documents folder: \(error)")
+                    completion(false)
                 }
             }
+        } else {
+            completion(true)
         }
     }
     

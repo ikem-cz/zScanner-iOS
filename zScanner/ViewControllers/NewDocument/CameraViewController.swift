@@ -299,6 +299,7 @@ class CameraViewController: BaseViewController {
         picker.mediaTypes = viewModel.currentMode.value == .photo ? [kUTTypeImage as String] : [kUTTypeMovie as String]
         picker.sourceType = .photoLibrary
         picker.videoMaximumDuration = Config.maximumSecondsOfVideoRecording
+        picker.allowsEditing = true
         present(picker, animated: true, completion: nil)
     }
     
@@ -308,11 +309,16 @@ class CameraViewController: BaseViewController {
             videoOutput.stopRecording()
             isRecording = false
         } else {
-            viewModel.saveVideo(fromGallery: false)
-            videoOutput.maxRecordedDuration = CMTime(seconds: Config.maximumSecondsOfVideoRecording, preferredTimescale: 600)
-            videoOutput.startRecording(to: viewModel.media!.url, recordingDelegate: self)
-            count()
-            isRecording = true
+            viewModel.saveVideo(fromGallery: false) { isSaved in
+                guard isSaved else { return }
+                
+                DispatchQueue.main.async {
+                    self.videoOutput.maxRecordedDuration = CMTime(seconds: Config.maximumSecondsOfVideoRecording, preferredTimescale: 600)
+                    self.videoOutput.startRecording(to: self.viewModel.media!.url, recordingDelegate: self)
+                    self.count()
+                    self.isRecording = true
+                }
+            }
         }
         animateRecordButton(duration: 0.6)
     }
@@ -428,8 +434,13 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
             coordinator.mediaCreated(viewModel.media!)
         }
         if let videoURL = info[.mediaURL] as? URL {
-            viewModel.saveVideo(fromGallery: true, url: videoURL)
-            coordinator.mediaCreated(viewModel.media!)
+            viewModel.saveVideo(fromGallery: true, url: videoURL) { isSaved in
+                guard isSaved else { return }
+                
+                DispatchQueue.main.async {
+                    self.coordinator.mediaCreated(self.viewModel.media!)
+                }
+            }
         }
         self.dismiss(animated: true, completion: nil)
     }
