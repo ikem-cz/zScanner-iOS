@@ -20,12 +20,14 @@ class DocumentsListViewModel {
     //MARK: Instance part
     private let database: Database
     private let networkManager: NetworkManager
+    let login: LoginDomainModel
     
     private(set) var documents: [DocumentViewModel] = []
     private(set) var documentModes: [DocumentMode] = []
     
-    init(database: Database, ikemNetworkManager: NetworkManager) {
+    init(database: Database, login: LoginDomainModel, ikemNetworkManager: NetworkManager) {
         self.database = database
+        self.login = login
         self.networkManager = ikemNetworkManager
         
         loadDocuments()

@@ -19,6 +19,7 @@
 		16EB77FF2472940100B1CCF8 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EB77FE2472940100B1CCF8 /* Media.swift */; };
 		16EB78012472A30D00B1CCF8 /* MediumViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EB78002472A30D00B1CCF8 /* MediumViewModel.swift */; };
 		16EB78032472DB5100B1CCF8 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EB78022472DB5100B1CCF8 /* HeaderView.swift */; };
+		16EB78052472EBFA00B1CCF8 /* HambugerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EB78042472EBFA00B1CCF8 /* HambugerButton.swift */; };
 		16EC85FB246AF77200C525B9 /* MediaListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EC85FA246AF77200C525B9 /* MediaListViewController.swift */; };
 		434027612302212C0038A40C /* MenuCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434027602302212C0038A40C /* MenuCoordinator.swift */; };
 		435A3AF82309AE5000BF2D9C /* LoadingCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435A3AF72309AE5000BF2D9C /* LoadingCircle.swift */; };
@@ -164,6 +165,7 @@
 		16EB77FE2472940100B1CCF8 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 		16EB78002472A30D00B1CCF8 /* MediumViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediumViewModel.swift; sourceTree = "<group>"; };
 		16EB78022472DB5100B1CCF8 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
+		16EB78042472EBFA00B1CCF8 /* HambugerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HambugerButton.swift; sourceTree = "<group>"; };
 		16EC85FA246AF77200C525B9 /* MediaListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaListViewController.swift; sourceTree = "<group>"; };
 		434027602302212C0038A40C /* MenuCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCoordinator.swift; sourceTree = "<group>"; };
 		435A3AF72309AE5000BF2D9C /* LoadingCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingCircle.swift; sourceTree = "<group>"; };
@@ -727,6 +729,7 @@
 				BDC4A3DF22E5004900D1CF6A /* DocumentTableViewCell.swift */,
 				435A3AF72309AE5000BF2D9C /* LoadingCircle.swift */,
 				16EB78022472DB5100B1CCF8 /* HeaderView.swift */,
+				16EB78042472EBFA00B1CCF8 /* HambugerButton.swift */,
 			);
 			path = Documents;
 			sourceTree = "<group>";
@@ -937,6 +940,7 @@
 				43C14A102300F07800F7C24E /* AboutViewController.swift in Sources */,
 				BD59A0A822E380C400FA9CD0 /* LoginViewController.swift in Sources */,
 				16EB78012472A30D00B1CCF8 /* MediumViewModel.swift in Sources */,
+				16EB78052472EBFA00B1CCF8 /* HambugerButton.swift in Sources */,
 				BD88F1592309537F00569D71 /* UploadPageRequest.swift in Sources */,
 				BD000CDB22E4AD61001EE38A /* PrimaryButton.swift in Sources */,
 				BD94413D231F19F10085BB4D /* StatusNetworkModel.swift in Sources */,

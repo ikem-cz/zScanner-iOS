@@ -38,7 +38,7 @@ class DocumentsCoordinator: Coordinator {
     
     // MARK: Navigation methods
     private func showDocumentsListScreen() {
-        let viewModel = DocumentsListViewModel(database: database, ikemNetworkManager: networkManager)
+        let viewModel = DocumentsListViewModel(database: database, login: userSession.login, ikemNetworkManager: networkManager)
         let viewController = DocumentsListViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }

@@ -49,7 +49,7 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
     
     override var leftBarButtonItems: [UIBarButtonItem] {
         return [
-            UIBarButtonItem(image: #imageLiteral(resourceName: "menuIcon"),style: .plain, target: self, action: #selector(openMenu))
+            hambugerButton
         ]
     }
     
@@ -106,8 +106,6 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
     }
     
     private func setupView() {
-        navigationItem.title = "document.screen.title".localized
-        
         // Remove bottom line of navbar
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for:.default)
         navigationController?.navigationBar.shadowImage = UIImage()
@@ -139,6 +137,15 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
     private lazy var addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newDocument))
     
     private lazy var reloadButton = UIBarButtonItem(image: #imageLiteral(resourceName: "refresh"), style: .plain, target: self, action: #selector(reloadDocumentTypes))
+    
+    private lazy var hambugerButton: UIBarButtonItem = {
+        let hambugerButton = HambugerButton()
+        let tap = UITapGestureRecognizer(target: self, action: #selector(openMenu))
+        hambugerButton.addGestureRecognizer(tap)
+        hambugerButton.isUserInteractionEnabled = true
+        hambugerButton.setup(username: viewModel.login.username)
+        return UIBarButtonItem(customView: hambugerButton)
+    }()
     
     private lazy var loadingItem: UIBarButtonItem = {
         let loading = UIActivityIndicatorView(style: .gray)
