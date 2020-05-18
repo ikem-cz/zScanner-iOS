@@ -34,7 +34,7 @@ class DocumentDatabaseModel: Object {
         let realm = try! Realm()
         self.folder = realm.loadObject(FolderDatabaseModel.self, withId: document.folder.id) ?? FolderDatabaseModel(folder: document.folder)
         
-        self.pages.append(objectsIn: document.pages.map({ PageDatabaseModel(page: $0) }))
+        self.pages.append(objectsIn: document.pages.map({ PageDatabaseModel(media: $0) }))
     }
     
     override class func primaryKey() -> String {

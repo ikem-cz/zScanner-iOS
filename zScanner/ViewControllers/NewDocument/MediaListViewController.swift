@@ -13,16 +13,16 @@ import MobileCoreServices
 
 protocol MediaListCoordinator: BaseCoordinator {
     func upload()
-    func reeditMedium(type: MediaType, url: URL)
+    func reeditMedium(media: Media)
 }
 
 class MediaListViewController: BaseViewController {
     
     // MARK: Instance part
     unowned let coordinator: MediaListCoordinator
-    let viewModel: MediaViewModel
+    let viewModel: NewDocumentMediaViewModel
     
-    init(viewModel: MediaViewModel, coordinator: MediaListCoordinator) {
+    init(viewModel: NewDocumentMediaViewModel, coordinator: MediaListCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         
@@ -60,8 +60,8 @@ class MediaListViewController: BaseViewController {
             .itemSelected
             .subscribe(onNext: { indexPath in
                 let cell = self.collectionView.cellForItem(at: indexPath) as! PhotoSelectorCollectionViewCell
-                guard let fileURL = cell.element?.key else { return }
-                self.coordinator.reeditMedium(type: self.viewModel.mediaType, url: fileURL)
+                guard let media = cell.element else { return }
+                self.coordinator.reeditMedium(media: media)
             }).disposed(by: disposeBag)
         
         viewModel.mediaArray
@@ -163,7 +163,7 @@ class MediaListViewController: BaseViewController {
 
 // MARK: - PhotoSelectorCellDelegate implementation
 extension MediaListViewController: PhotoSelectorCellDelegate {
-    func delete(fileURL: URL) {
-        viewModel.removeMedia(fileURL)
+    func delete(media: Media) {
+        viewModel.removeMedia(media)
     }
 }

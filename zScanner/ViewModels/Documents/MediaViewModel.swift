@@ -1,5 +1,5 @@
 //
-//  PageViewModel.swift
+//  MediaViewModel.swift
 //  zScanner
 //
 //  Created by Jakub Skořepa on 08/09/2019.
@@ -9,16 +9,16 @@
 import Foundation
 import RxSwift
 
-class PageViewModel {
+class MediaViewModel {
     
     // MARK: Instance part
     private var networkManager: NetworkManager
     private var database: Database
-    let page: PageDomainModel
+    let page: MediaDomainModel
     let pageUploadStatus = BehaviorSubject<DocumentViewModel.UploadStatus>(value: .awaitingInteraction)
     
     
-    init(page: PageDomainModel, networkManager: NetworkManager, database: Database) {
+    init(page: MediaDomainModel, networkManager: NetworkManager, database: Database) {
         self.page = page
         
         self.networkManager = networkManager

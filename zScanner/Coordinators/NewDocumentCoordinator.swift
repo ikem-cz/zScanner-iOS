@@ -17,7 +17,7 @@ class NewDocumentCoordinator: Coordinator {
     // MARK: Instance part
     unowned private let flowDelegate: NewDocumentFlowDelegate
     private var newDocument = DocumentDomainModel.emptyDocument
-    private var mediaViewModel: MediaViewModel?
+    private var mediaViewModel: NewDocumentMediaViewModel?
     private let defaultMediaType = MediaType.photo
     private let mediaSourceTypes = [
          MediaType.photo,
@@ -71,15 +71,15 @@ class NewDocumentCoordinator: Coordinator {
         }
     }
     
-    private func showPhotoPreviewScreen(fileURL: URL) {
+    private func showPhotoPreviewScreen(media: Media) {
         guard let mediaViewModel = mediaViewModel else { return }
-        let viewController = PhotoPreviewViewController(imageURL: fileURL, viewModel: mediaViewModel, coordinator: self)
+        let viewController = PhotoPreviewViewController(media: media, viewModel: mediaViewModel, coordinator: self)
         push(viewController)
     }
     
-    private func showVideoPreviewScreen(fileURL: URL) {
+    private func showVideoPreviewScreen(media: Media) {
         guard let mediaViewModel = mediaViewModel else { return }
-        let viewController = VideoPreviewViewController(videoURL: fileURL, viewModel: mediaViewModel, coordinator: self)
+        let viewController = VideoPreviewViewController(media: media, viewModel: mediaViewModel, coordinator: self)
         push(viewController)
     }
     
@@ -168,13 +168,13 @@ extension NewDocumentCoordinator: NewDocumentFolderCoordinator {
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ media: Media) {
         if mediaViewModel == nil {
-            mediaViewModel = MediaViewModel(folderName: newDocument.folder.name, mediaType: media.type, tracker: tracker)
+            mediaViewModel = NewDocumentMediaViewModel(folderName: newDocument.folder.name, mediaType: media.type, tracker: tracker)
         }
         
         if media.type == .photo {
-            showPhotoPreviewScreen(fileURL: media.url)
+            showPhotoPreviewScreen(media: media)
         } else if media.type == .video {
-            showVideoPreviewScreen(fileURL: media.url)
+            showVideoPreviewScreen(media: media)
         }
     }
 }
@@ -198,22 +198,15 @@ extension NewDocumentCoordinator: MediaPreviewCoordinator {
 // MARK: - NewDocumentMediaCoordinator implementation
 extension NewDocumentCoordinator: MediaListCoordinator {
     func upload() {
-        #warning("Sending photo for this time")
-//        if mediaViewModel?.mediaType == .photo {
-//            var photos: [UIImage] = []
-//            mediaViewModel?.mediaArray.value.forEach( { (_, image) in
-//                photos.append(image)
-//            })
-//            saveMediaToDocument(photos)
-//        }
-//        finish()
+        saveMediaToDocument((mediaViewModel?.mediaArray.value)!)
+        finish()
     }
     
-    func reeditMedium(type: MediaType, url: URL) {
-        if type == .photo {
-            showPhotoPreviewScreen(fileURL: url)
-        } else if type == .video {
-            showVideoPreviewScreen(fileURL: url)
+    func reeditMedium(media: Media) {
+        if media.type == .photo {
+            showPhotoPreviewScreen(media: media)
+        } else if media.type == .video {
+            showVideoPreviewScreen(media: media)
         }
     }
 }

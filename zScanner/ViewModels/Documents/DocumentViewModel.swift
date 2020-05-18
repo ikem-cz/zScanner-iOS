@@ -42,7 +42,7 @@ class DocumentViewModel {
     private var networkManager: NetworkManager
     private var database: Database
     private let internalUploadStatus = BehaviorSubject<DocumentViewModel.UploadStatus>(value: .awaitingInteraction)
-    private let pages: [PageViewModel]
+    private let pages: [MediaViewModel]
 
     let document: DocumentDomainModel
     
@@ -52,7 +52,7 @@ class DocumentViewModel {
         self.networkManager = networkManager
         self.database = database
         
-        pages = document.pages.map({ PageViewModel(page: $0, networkManager: networkManager, database: database) })
+        pages = document.pages.map({ MediaViewModel(page: $0, networkManager: networkManager, database: database) })
         
         if let databaseModel = database.loadObjects(DocumentUploadStatusDatabaseModel.self).filter({ $0.documentId == document.id }).first {
             internalUploadStatus.onNext(databaseModel.uploadStatus == .success ? .success : .failed(nil))

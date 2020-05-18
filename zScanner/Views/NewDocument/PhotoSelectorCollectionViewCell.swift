@@ -9,16 +9,16 @@
 import UIKit
 
 protocol PhotoSelectorCellDelegate: class {
-    func delete(fileURL: URL)
+    func delete(media: Media)
 }
 
 // MARK: -
 class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     
     // MARK: Instance part
-    private(set) var element: Dictionary<URL, UIImage>.Element? {
+    private(set) var element: Media? {
         didSet {
-            imageView.image = element?.value
+            imageView.image = element?.thumbnail
         }
     }
     
@@ -40,7 +40,7 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     }
     
     // MARK: Interface
-    func setup(with element: Dictionary<URL, UIImage>.Element, delegate: PhotoSelectorCellDelegate) {
+    func setup(with element: Media, delegate: PhotoSelectorCellDelegate) {
         self.element = element
         self.delegate = delegate
     }
@@ -50,7 +50,7 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     
     @objc private func deleteMedium() {
         guard let element = element else { return }
-        delegate?.delete(fileURL: element.key)
+        delegate?.delete(media: element)
     }
     
     private func setupView() {

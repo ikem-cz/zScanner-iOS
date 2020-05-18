@@ -11,29 +11,6 @@ import AVFoundation
 import RxSwift
 import RxRelay
 
-struct Media {
-    let id: String
-    let type: MediaType
-    let correlationId: String
-    let relativePath: String
-    let url: URL
-    let thumbnail: UIImage?
-    let fromGallery: Bool
-}
-
-extension Media {
-    init(type: MediaType, correlationId: String, fromGallery: Bool, thumbnail: UIImage? = nil) {
-        #warning("Should create variable for suffix in Config file?")
-        let suffix = type == .photo ? ".jpg" : ".mp4"
-        let id = UUID().uuidString
-        let relativePath = correlationId + "/" + id + suffix
-        let absoluteURL = URL(documentsWith: relativePath)
-        
-        self.init(id: id, type: type, correlationId: correlationId, relativePath: relativePath, url: absoluteURL, thumbnail: thumbnail, fromGallery: fromGallery)
-    }
-}
-
-
 class CameraViewModel {
     
     // MARK: Instance part
@@ -52,7 +29,7 @@ class CameraViewModel {
         self.mediaSourceTypes = mediaSourceTypes
     }
     
-    func createDocumentDirectory() {
+    private func createDocumentDirectory() {
         let absolutePath = URL.documentsPath + correlationId
         if !FileManager.default.fileExists(atPath: absolutePath) {
             try! FileManager.default.createDirectory(atPath: absolutePath, withIntermediateDirectories: false, attributes: nil)
@@ -75,12 +52,12 @@ class CameraViewModel {
     func saveVideo(fromGallery: Bool, url: URL? = nil)  {
         media = Media(type: .video, correlationId: correlationId, fromGallery: fromGallery)
         
+        createDocumentDirectory()
         DispatchQueue.global(qos: .background).async {
             // Copy video to documents folder
             if fromGallery, let url = url {
                 do {
                     let videoData = try Data(contentsOf: url)
-                    self.createDocumentDirectory()
                     try videoData.write(to: self.media!.url)
                 } catch(let error) {
                     print("Could not copy video to documents folder: \(error)")

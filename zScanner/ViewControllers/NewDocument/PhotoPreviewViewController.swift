@@ -14,9 +14,9 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     private var image: UIImage?
     
     // MARK: Lifecycle
-    init(imageURL: URL, viewModel: MediaViewModel, coordinator: MediaPreviewCoordinator) {
+    init(media: Media, viewModel: NewDocumentMediaViewModel, coordinator: MediaPreviewCoordinator) {
         
-        super.init(viewModel: viewModel, mediaType: .photo, mediaURL: imageURL, folderName: viewModel.folderName, coordinator: coordinator)
+        super.init(viewModel: viewModel, media: media, coordinator: coordinator)
     }
     
     // MARK: View setup
@@ -31,7 +31,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     // MARK: Helpers
     override func loadMedia() {
         do {
-            let data = try Data(contentsOf: mediaURL)
+            let data = try Data(contentsOf: media.url)
             image = UIImage(data: data)
         } catch(let error) {
             print("Could not load data from url: ", error)
