@@ -148,7 +148,7 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
     }()
     
     private lazy var loadingItem: UIBarButtonItem = {
-        let loading = UIActivityIndicatorView(style: .gray)
+        let loading = UIActivityIndicatorView(style: .medium)
         loading.startAnimating()
         let button = UIBarButtonItem(customView: loading)
         button.isEnabled = false
