@@ -42,6 +42,9 @@ class DocumentTableViewCell: UITableViewCell {
         successImageView.isHidden = true
         retryButton.isHidden = true
         
+        // Remove rounded corners
+        layer.maskedCorners = []
+        
         disposeBag = DisposeBag()
     }
     
