@@ -15,7 +15,7 @@ protocol FlowDelegate: class {
 // MARK: -
 class Coordinator {
     private var childCoordinators: [Coordinator] = []
-    private(set) var viewControllers: [UIViewController] = []
+    var viewControllers: [UIViewController] = []
     
     let window: UIWindow
     var navigationController: UINavigationController?

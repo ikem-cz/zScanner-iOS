@@ -9,16 +9,16 @@
 import UIKit
 
 protocol PhotoSelectorCellDelegate: class {
-    func delete(image: UIImage)
+    func delete(media: Media)
 }
 
 // MARK: -
 class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     
     // MARK: Instance part
-    private var image: UIImage? {
+    private(set) var element: Media? {
         didSet {
-            imageView.image = image
+            imageView.image = element?.thumbnail
         }
     }
     
@@ -36,21 +36,21 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        image = nil
+        element = nil
     }
     
     // MARK: Interface
-    func setup(with image: UIImage, delegate: PhotoSelectorCellDelegate) {
-        self.image = image
+    func setup(with element: Media, delegate: PhotoSelectorCellDelegate) {
+        self.element = element
         self.delegate = delegate
     }
     
     // MARK: Helpers
     private weak var delegate: PhotoSelectorCellDelegate?
     
-    @objc private func deleteImage() {
-        guard let image = image else { return }
-        delegate?.delete(image: image)
+    @objc private func deleteMedium() {
+        guard let element = element else { return }
+        delegate?.delete(media: element)
     }
     
     private func setupView() {
@@ -65,7 +65,7 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
             make.top.right.equalToSuperview().inset(4)
         }
         
-        deleteButton.addTarget(self, action: #selector(deleteImage), for: .touchUpInside)
+        deleteButton.addTarget(self, action: #selector(deleteMedium), for: .touchUpInside)
     }
     
     private var imageView: UIImageView = {

@@ -13,7 +13,7 @@ import MobileCoreServices
 import RxSwift
 
 protocol CameraCoordinator: BaseCoordinator {
-    func mediaCreated(_ type: MediaType, url: URL)
+    func mediaCreated(_ media: Media)
 }
 
 // MARK: -
@@ -34,10 +34,6 @@ class CameraViewController: BaseViewController {
     private var isRecording: Bool = false
     private var isFlashing: Bool = false
     
-    private var navigationBarTitleTextAttributes: [NSAttributedString.Key : Any]?
-    private var navigationBarBarStyle: UIBarStyle? // Background-color of the navigation controller, which automatically adapts the color of the status bar (time, battery ..)
-    override var navigationBarTintColor: UIColor? { .white } // Color of navigation controller items
-    
     override var rightBarButtonItems: [UIBarButtonItem] {
         return [flashButton]
     }
@@ -54,52 +50,25 @@ class CameraViewController: BaseViewController {
         self.viewModel = viewModel
         self.coordinator = coordinator
         
-        super.init(coordinator: coordinator)
+        super.init(coordinator: coordinator, theme: .dark)
     }
     
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setupCaptureSession()
         setupView()
         setupBindings()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        saveNavBarSettings()
-        setupNavBar()
-    }
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        returnNavBarSettings()
         captureSession.stopRunning()
     }
     
     // MARK: View setup
-    private func returnNavBarSettings() {
-        navigationController?.navigationBar.titleTextAttributes = navigationBarTitleTextAttributes
-        
-        if let navigationBarBarStyle = navigationBarBarStyle {
-            navigationController?.navigationBar.barStyle = navigationBarBarStyle
-        }
-    }
-    
-    private func saveNavBarSettings() {
-        navigationBarTitleTextAttributes = navigationController?.navigationBar.titleTextAttributes
-        navigationBarBarStyle = navigationController?.navigationBar.barStyle
-    }
-    
-    private func setupNavBar() {
-        title = viewModel.folderName
-        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
-        navigationController?.navigationBar.barStyle = .black
-    }
-    
     private func setupBindings() {
         viewModel.currentMode
             .subscribe(onNext: { [unowned self] mode in
@@ -122,11 +91,12 @@ class CameraViewController: BaseViewController {
     
     private func setupView() {
         view.backgroundColor = .clear
+        title = viewModel.folderName
         
         view.addSubview(captureButton)
         captureButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().inset(8)
+            make.bottom.equalTo(safeArea).inset(8)
             make.height.width.equalTo(70)
         }
         
@@ -152,19 +122,27 @@ class CameraViewController: BaseViewController {
         
         view.addSubview(cameraView)
         cameraView.snp.makeConstraints { make in
-            make.top.left.right.equalToSuperview()
+            make.top.equalTo(safeArea)
+            make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
         }
         
         view.addSubview(swipeMediaTypeView)
         swipeMediaTypeView.snp.makeConstraints { make in
-            make.top.left.right.equalToSuperview()
+            make.top.equalTo(safeArea)
+            make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
         }
         
         view.addSubview(galleryButton)
         galleryButton.snp.makeConstraints { make in
-            make.bottom.left.equalToSuperview().inset(8)
+            make.bottom.left.equalTo(safeArea).inset(8)
+        }
+        
+        view.addSubview(timeLabel)
+        timeLabel.snp.makeConstraints { make in
+            make.top.equalTo(safeArea).inset(5)
+            make.trailing.leading.centerX.equalToSuperview()
         }
     }
     
@@ -320,6 +298,8 @@ class CameraViewController: BaseViewController {
         picker.delegate = self
         picker.mediaTypes = viewModel.currentMode.value == .photo ? [kUTTypeImage as String] : [kUTTypeMovie as String]
         picker.sourceType = .photoLibrary
+        picker.videoMaximumDuration = Config.maximumSecondsOfVideoRecording
+        picker.allowsEditing = true
         present(picker, animated: true, completion: nil)
     }
     
@@ -328,29 +308,35 @@ class CameraViewController: BaseViewController {
         if isRecording {
             videoOutput.stopRecording()
             isRecording = false
+            animateRecordButton(duration: 0.6)
         } else {
-            let fileURL = createMediaURL(suffix: ".mp4")
-            print("Start recording video with url ", fileURL)
-            videoOutput.startRecording(to: fileURL, recordingDelegate: self)
-            isRecording = true
+            viewModel.saveVideo(fromGallery: false) { isSaved in
+                guard isSaved else { return }
+                
+                DispatchQueue.main.async {
+                    self.videoOutput.maxRecordedDuration = CMTime(seconds: Config.maximumSecondsOfVideoRecording, preferredTimescale: 600)
+                    self.videoOutput.startRecording(to: self.viewModel.media!.url, recordingDelegate: self)
+                    self.count()
+                    self.isRecording = true
+                    self.animateRecordButton(duration: 0.6)
+                }
+            }
         }
-        animateRecordButton(duration: 0.6)
-    }
-    
-    func createMediaURL(suffix: String) -> URL {
-        let fileName = UUID().uuidString + suffix
-        let fileURL = URL.init(documentsWith: fileName)
-        return fileURL
-    }
-    
-    func saveImage(withURL fileURL: URL, image: UIImage) {
-        guard let data = image.jpegData(compressionQuality: 1) else { return }
         
-        do {
-            try data.write(to: fileURL)
-        } catch let error {
-            print("error saving file with error", error)
-        }
+    }
+    
+    var timerSubscription: Disposable?
+    
+    func count(){
+        let timer = Observable<Int>.interval(RxTimeInterval.milliseconds(100), scheduler: MainScheduler.instance)
+        timerSubscription = timer
+            .map{ self.stringFromTimeInterval(ms: $0) }
+            .bind(to: timeLabel.rx.text)
+    }
+    
+    func stringFromTimeInterval(ms: Int) -> String {
+      return String(format: "%0.2d:%0.2d",
+        arguments: [(ms / 600) % 600, (ms % 600 ) / 10])
     }
     
     // MARK: Lazy instance part
@@ -419,6 +405,14 @@ class CameraViewController: BaseViewController {
         return galleryButton
     }()
     
+    private lazy var timeLabel: UILabel = {
+        let timeLabel = UILabel()
+        timeLabel.font = .headline
+        timeLabel.textAlignment = .center
+        timeLabel.textColor = .white
+        return timeLabel
+    }()
+    
     private lazy var flashButton = UIBarButtonItem(image: UIImage(systemName: "bolt.fill"), style: .plain, target: self, action: #selector(toggleTorch))
 }
 
@@ -428,9 +422,8 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         guard let imageData = photo.fileDataRepresentation() else { return }
         
         if let image = UIImage(data: imageData) {
-            let fileURL = createMediaURL(suffix: ".jpg")
-            saveImage(withURL: fileURL, image: image)
-            coordinator.mediaCreated(.photo, url: fileURL)
+            viewModel.saveImage(image: image, fromGallery: false)
+            coordinator.mediaCreated(viewModel.media!)
         }
     }
 }
@@ -439,9 +432,17 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
 extension CameraViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let pickedImage = info[.originalImage] as? UIImage {
-            let fileURL = createMediaURL(suffix: ".jpg")
-            saveImage(withURL: fileURL, image: pickedImage)
-            coordinator.mediaCreated(.photo, url: fileURL)
+            viewModel.saveImage(image: pickedImage, fromGallery: true)
+            coordinator.mediaCreated(viewModel.media!)
+        }
+        if let videoURL = info[.mediaURL] as? URL {
+            viewModel.saveVideo(fromGallery: true, url: videoURL) { isSaved in
+                guard isSaved else { return }
+                
+                DispatchQueue.main.async {
+                    self.coordinator.mediaCreated(self.viewModel.media!)
+                }
+            }
         }
         self.dismiss(animated: true, completion: nil)
     }
@@ -454,10 +455,21 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
 // MARK: - AVCaptureFileOutputRecordingDelegate implementation
 extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        if let error = error {
+        timerSubscription?.dispose()
+        switch error {
+        case .none:
+            if isRecording {
+                recordVideo()
+            }
+            coordinator.mediaCreated(viewModel.media!)
+        case .some(let nsError as NSError) where (nsError.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool) == true:
+            if isRecording {
+                recordVideo()
+            }
+            coordinator.mediaCreated(viewModel.media!)
+        default:
+            // TODO: Handle this error
             print(error)
-        } else {
-            coordinator.mediaCreated(.video, url: outputFileURL)
         }
     }
 }

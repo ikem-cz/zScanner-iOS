@@ -19,9 +19,10 @@ class BaseViewController: PluggableViewController {
     // MARK: Instance part
     private unowned let coordinator: BaseCoordinator
     
-    init(coordinator: BaseCoordinator, services: [ViewControllerService] = []) {
+    init(coordinator: BaseCoordinator, services: [ViewControllerService] = [], theme: Theme = .light) {
         self.coordinator = coordinator
         self.injectedServices = services
+        self.theme = theme == .light ? LightTheme() : DarkTheme()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -39,9 +40,8 @@ class BaseViewController: PluggableViewController {
     
     var leftBarButtonItems: [UIBarButtonItem] { return [] } 
     var rightBarButtonItems: [UIBarButtonItem] { return [] }
-    var statusBarColor: UIColor { return .clear }
-    var statusBarStyle: UIStatusBarStyle { return .default }
-    var navigationBarTintColor: UIColor? { return nil }
+
+    var theme: ThemeProtocol
     
     // MARK: ViewController's lifecycle
     override func loadView() {
@@ -52,7 +52,7 @@ class BaseViewController: PluggableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        setupStatusBar()
+        setupNavBar()
         configureNavigationBarButtons()
     }
     
@@ -72,22 +72,10 @@ class BaseViewController: PluggableViewController {
         }
     }
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return statusBarStyle
-    }
-    
-    private func setupStatusBar() {
-        let tintColor = navigationBarTintColor ?? (statusBarStyle == .lightContent ? .white : .black)
-        navigationController?.navigationBar.tintColor = tintColor
-        
-        setStatusBar(background: statusBarColor)
-    }
-    
-    private func setStatusBar(background color: UIColor) {
-        let frame = UIApplication.shared.statusBarFrame
-        let backgroundView = UIView(frame: frame)
-        backgroundView.backgroundColor = color
-        view.addSubview(backgroundView)
+    func setupNavBar() {
+        navigationController?.navigationBar.barStyle = theme.navigationBarBarStyle
+        navigationController?.navigationBar.titleTextAttributes = theme.navigationBarTitleTextAttributes
+        navigationController?.navigationBar.tintColor = theme.navigationBarTintColor
     }
 }
 

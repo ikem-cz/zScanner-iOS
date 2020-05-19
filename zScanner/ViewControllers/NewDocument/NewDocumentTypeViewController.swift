@@ -12,7 +12,6 @@ import RxSwift
 protocol NewDocumentTypeCoordinator: BaseCoordinator {
     func showSelector<T: ListItem>(for list: ListPickerField<T>)
     func saveFields(_ fields: [FormField])
-    func showNextStep()
 }
 
 // MARK: -
@@ -81,7 +80,6 @@ class NewDocumentTypeViewController: BaseViewController {
         })
         .subscribe(onNext: { [unowned self] in
             self.coordinator.saveFields(self.viewModel.fields)
-            self.coordinator.showNextStep()
         }).disposed(by: disposeBag)
     }
     

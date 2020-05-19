@@ -20,6 +20,13 @@ enum MediaType: Equatable {
         case .scan: return "newDocumentPhotos.mediaType.scan".localized
         }
     }
+    
+    var suffix: String {
+        switch self {
+        case .photo, .scan: return ".jpg"
+        case .video: return ".mp4"
+        }
+    }
 }
 
 enum DocumentMode: String {

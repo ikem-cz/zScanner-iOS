@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 
 protocol DocumentsListCoordinator: BaseCoordinator {
-    func createNewDocument(with mode: DocumentMode)
+    func createNewDocument()
     func openMenu()
 }
 
@@ -94,7 +94,7 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
     }
     
     @objc private func newDocument() {
-        showDocumentModePicker()
+        coordinator.createNewDocument()
     }
     
     @objc private func openMenu() {
@@ -103,29 +103,6 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
     
     @objc private func reloadDocumentTypes() {
         viewModel.updateDocumentTypes()
-    }
-    
-    private func showDocumentModePicker() {
-        let modes = viewModel.documentModes
-        
-        let handler: (DocumentMode) -> Void = { [weak self] mode in
-            self?.coordinator.createNewDocument(with: mode)
-        }
-        
-        var actions = modes.map({ mode in
-            UIAlertAction(
-                title: mode.title,
-                style: .default,
-                handler: { _ in handler(mode) }
-            )
-        })
-        actions.append(
-            UIAlertAction(title: "document.modeSelector.cancel".localized, style: .cancel, handler: { _ in })
-        )
-        
-        let alert = UIAlertController(title: "document.modeSelector.title".localized, message: nil, preferredStyle: .actionSheet)
-        actions.forEach({ alert.addAction($0) })
-        present(alert, animated: true, completion: nil)
     }
     
     private func setupView() {
