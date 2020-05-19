@@ -15,13 +15,13 @@ class PageDatabaseModel: Object {
     @objc dynamic var correlationId = ""
     @objc dynamic var relativePath = ""
     
-    convenience init(page: PageDomainModel) {
+    convenience init(media: MediaDomainModel) {
         self.init()
         
-        self.id = page.id
-        self.correlationId = page.correlationId
-        self.index = page.index
-        self.relativePath = page.relativePath
+        self.id = media.id
+        self.correlationId = media.correlationId
+        self.index = media.index
+        self.relativePath = media.relativePath
     }
     
     override class func primaryKey() -> String {
@@ -30,12 +30,13 @@ class PageDatabaseModel: Object {
 }
 
 extension PageDatabaseModel {
-    func toDomainModel() -> PageDomainModel {
-        return PageDomainModel(
+    func toDomainModel() -> MediaDomainModel {
+        return MediaDomainModel(
             id: id,
             index: index,
             correlationId: correlationId,
-            relativePath: relativePath
+            relativePath: relativePath,
+            type: .photo
         )
     }
 }

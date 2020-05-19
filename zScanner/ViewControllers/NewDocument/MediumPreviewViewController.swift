@@ -16,19 +16,15 @@ protocol MediaPreviewCoordinator: BaseCoordinator {
 class MediaPreviewViewController: BaseViewController {
 
     // MARK: Instance part
-    let mediaURL: URL
-    let mediaType: MediaType
-    let viewModel: MediaViewModel
-    private let folderName: String
+    let media: Media
+    let viewModel: NewDocumentMediaViewModel
     
     unowned let coordinator: MediaPreviewCoordinator
     
     // MARK: Lifecycle
-    init(viewModel: MediaViewModel, mediaType: MediaType, mediaURL: URL, folderName: String, coordinator: MediaPreviewCoordinator) {
+    init(viewModel: NewDocumentMediaViewModel, media: Media, coordinator: MediaPreviewCoordinator) {
         self.viewModel = viewModel
-        self.mediaType = mediaType
-        self.mediaURL = mediaURL
-        self.folderName = folderName
+        self.media = media
         self.coordinator = coordinator
         
         super.init(coordinator: coordinator, theme: .dark)
@@ -74,18 +70,18 @@ class MediaPreviewViewController: BaseViewController {
     
     @objc func retake() {
         stopPlayingVideo()
-        coordinator.createNewMedia(mediaType: mediaType)
+        coordinator.createNewMedia(mediaType: media.type)
     }
     
     @objc func createAnotherMedia() {
         stopPlayingVideo()
-        viewModel.addMedia(mediaURL, fromGallery: false)
-        coordinator.createNewMedia(mediaType: mediaType)
+        viewModel.addMedia(media)
+        coordinator.createNewMedia(mediaType: media.type)
     }
     
     @objc func showMediaSelection() {
         stopPlayingVideo()
-        viewModel.addMedia(mediaURL, fromGallery: false)
+        viewModel.addMedia(media)
         coordinator.finishEdit()
     }
     

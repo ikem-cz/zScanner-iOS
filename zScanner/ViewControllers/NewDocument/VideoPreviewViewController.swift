@@ -16,9 +16,8 @@ class VideoPreviewViewController: MediaPreviewViewController {
     private let videoViewController = AVPlayerViewController()
     
     // MARK: Lifecycle
-    init(videoURL: URL, viewModel: MediaViewModel, coordinator: MediaPreviewCoordinator) {
-        
-        super.init(viewModel: viewModel, mediaType: .video, mediaURL: videoURL, folderName: viewModel.folderName, coordinator: coordinator)
+    init(media: Media, viewModel: NewDocumentMediaViewModel, coordinator: MediaPreviewCoordinator) {
+        super.init(viewModel: viewModel, media: media, coordinator: coordinator)
     }
     
     // MARK: View setup
@@ -32,7 +31,7 @@ class VideoPreviewViewController: MediaPreviewViewController {
     
     // MARK: Helpers
     override func loadMedia() {
-        let player = AVPlayer(url: mediaURL)
+        let player = AVPlayer(url: media.url)
         videoViewController.player = player
         videoViewController.view.frame = .zero
     }
