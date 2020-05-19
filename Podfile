@@ -10,6 +10,7 @@ def common_pods
     pod 'Fabric'               # Analytics
     pod 'Crashlytics'          # Crash reporting
     pod 'Firebase/Analytics'   # Analytics
+    pod 'TUSKit'               # Large file upload
     pod 'UPCarouselFlowLayout' # Horizontal picker
 end
 

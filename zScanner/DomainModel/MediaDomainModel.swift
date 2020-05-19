@@ -14,9 +14,11 @@ struct MediaDomainModel: Equatable {
     var relativePath: String
     var type: MediaType
     var url: URL {
-        get {
-            return URL.init(documentsWith: relativePath)
-        }
+        URL.init(documentsWith: relativePath)
+    }
+    
+    func deleteMedia() {
+        try? FileManager.default.removeItem(at: url)
     }
 }
 

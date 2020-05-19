@@ -132,13 +132,13 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     override func backButtonPressed(sender: BaseViewController) {
-         if willPreventPop(for: sender) {
-             showPopConfirmationDialog(presentOn: sender, popHandler: { [unowned self] in
+        if willPreventPop(for: sender) {
+            showPopConfirmationDialog(presentOn: sender, popHandler: { [unowned self] in
                 self.pop()
-             })
-         } else {
+            })
+        } else {
             super.backButtonPressed(sender: sender)
-         }
+        }
     }
 
     private func showPopConfirmationDialog(presentOn viewController: BaseViewController, popHandler: @escaping EmptyClosure) {
