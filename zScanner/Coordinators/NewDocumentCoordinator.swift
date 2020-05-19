@@ -131,12 +131,13 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     override func backButtonPressed(sender: BaseViewController) {
-        super.backButtonPressed(sender: sender)
-        
          if willPreventPop(for: sender) {
              showPopConfirmationDialog(presentOn: sender, popHandler: { [unowned self] in
-                self.pop()
+                super.backButtonPressed(sender: sender)
              })
+         } else {
+            super.backButtonPressed(sender: sender)
+         }
         }
     }
 
@@ -239,4 +240,3 @@ extension NewDocumentCoordinator: NewDocumentTypeCoordinator {
 
 // MARK: - ListItemSelectionCoordinator implementation
 extension NewDocumentCoordinator: ListItemSelectionCoordinator {}
-
