@@ -35,8 +35,8 @@ class DocumentTableViewCell: UITableViewCell {
         
         viewModel = nil
         delegate = nil
-        titleLabel.text = nil
-        detailLabel.text = nil
+        nameLabel.text = nil
+        pinLabel.text = nil
         loadingCircle.isHidden = true
         loadingCircle.progressValue(is: 0, animated: false)
         successImageView.isHidden = true
@@ -49,16 +49,9 @@ class DocumentTableViewCell: UITableViewCell {
     func setup(with model: DocumentViewModel, delegate: DocumentViewDelegate) {
         self.viewModel = model
         self.delegate = delegate
-        
-        // Make sure the label will keep the space even when empty while respecting the dynamic font size
-        titleLabel.text = String(format: "%@ %@", model.document.folder.externalId, model.document.folder.name)
-        detailLabel.text = [
-            model.document.type.mode.title,
-            model.document.type.name,
-            String(format: "document.documentCell.numberOfPagesFormat".localized, model.document.pages.count),
-        ]
-        .filter({ !$0.isEmpty })
-        .joined(separator: " - ")
+
+        nameLabel.text = model.document.folder.name
+        pinLabel.text = model.document.folder.externalId
         
         let onCompleted: () -> Void = { [weak self] in
             self?.retryButton.isHidden = true
@@ -136,41 +129,37 @@ class DocumentTableViewCell: UITableViewCell {
         textContainer.snp.makeConstraints { make in
             make.top.equalTo(contentView.snp.topMargin)
             make.bottom.equalTo(contentView.snp.bottomMargin)
-            make.left.equalTo(contentView.snp.leftMargin)
+            make.right.equalTo(contentView.snp.rightMargin)
         }
         
-        textContainer.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.top.right.left.equalToSuperview()
+        textContainer.addSubview(nameLabel)
+        nameLabel.snp.makeConstraints { make in
+            make.top.left.bottom.equalToSuperview()
         }
         
-        titleLabel.setContentHuggingPriority(.init(rawValue: 251), for: .vertical)
-        titleLabel.setContentCompressionResistancePriority(.init(rawValue: 751), for: .vertical)
-        
-        textContainer.addSubview(detailLabel)
-        detailLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(4)
-            make.right.left.bottom.equalToSuperview()
+        textContainer.addSubview(pinLabel)
+        pinLabel.snp.makeConstraints { make in
+            make.top.right.bottom.equalToSuperview()
         }
         
         contentView.addSubview(statusContainer)
         statusContainer.snp.makeConstraints { make in
-            make.right.equalTo(contentView.snp.rightMargin)
-            make.left.equalTo(textContainer.snp.right).offset(8)
+            make.left.equalTo(contentView.snp.leftMargin)
+            make.right.equalTo(textContainer.snp.left).offset(-8)
             make.width.height.equalTo(30)
             make.centerY.equalToSuperview()
         }
-        
+
         statusContainer.addSubview(loadingCircle)
         loadingCircle.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
-        
+
         statusContainer.addSubview(successImageView)
         successImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        
+
         statusContainer.addSubview(retryButton)
         retryButton.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -183,18 +172,17 @@ class DocumentTableViewCell: UITableViewCell {
         layer.maskedCorners = corners
     }
     
-    private var titleLabel: UILabel = {
+    private var nameLabel: UILabel = {
         let label = UILabel()
         label.font = .body
         label.textColor = .black
         return label
     }()
     
-    private var detailLabel: UILabel = {
+    private var pinLabel: UILabel = {
         let label = UILabel()
-        label.font = .footnote
-        label.textColor = UIColor.black.withAlphaComponent(0.7)
-        label.numberOfLines = 0
+        label.font = .body
+        label.textColor = .black
         return label
     }()
     
