@@ -27,12 +27,13 @@ class NewDocumentMediaViewModel {
     
     // MARK: Interface
     func addMedia(_ media: Media) {
+        // Checking for adding media multiple times after reedit
+        guard mediaArray.value.firstIndex(of: media) == nil else { return }
+        
         // Tracking
         tracker.track(.galleryUsed(media.fromGallery))
-
-        if let _ = mediaArray.value.firstIndex(of: media) { return }
         
-        // Add media with snapshot
+        // Add media
         var newArray = mediaArray.value
         if media.type == .video {
             media.makeVideoThumbnail()

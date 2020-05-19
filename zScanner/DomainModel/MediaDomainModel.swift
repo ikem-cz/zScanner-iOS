@@ -22,6 +22,12 @@ struct MediaDomainModel: Equatable {
 
 extension MediaDomainModel {
     init(media: Media, index: Int) {
-        self.init(id: media.id, index: index, correlationId: media.correlationId, relativePath: media.relativePath, type: media.type)
+        self.init(
+            id: media.id,
+            index: index,
+            correlationId: media.correlationId,
+            relativePath: media.relativePath,
+            type: media.type
+        )
     }
 }

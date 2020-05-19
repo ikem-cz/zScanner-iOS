@@ -34,13 +34,10 @@ class Media {
     }
     
     init(type: MediaType, correlationId: String, fromGallery: Bool, thumbnail: UIImage? = nil) {
-        #warning("Should create variable for suffix in Config file?")
-        let suffix = type == .photo ? ".jpg" : ".mp4"
-        
         self.id = UUID().uuidString
         self.type = type
         self.correlationId = correlationId
-        self.relativePath = correlationId + "/" + id + suffix
+        self.relativePath = correlationId + "/" + id + type.suffix
         self.url = URL(documentsWith: relativePath)
         self.fromGallery = fromGallery
         self.thumbnail = thumbnail

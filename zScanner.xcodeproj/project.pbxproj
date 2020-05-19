@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		1663AAA8245C0AD3004A3472 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1663AAA7245C0AD3004A3472 /* CameraViewController.swift */; };
 		16647ECA2460657E00A374F2 /* GalleryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16647EC92460657E00A374F2 /* GalleryButton.swift */; };
-		167129C2246C37E9000E1F08 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167129C1246C37E9000E1F08 /* Dictionary.swift */; };
 		16908399246D9582009967A1 /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16908398246D9582009967A1 /* Themes.swift */; };
 		16BF842C245C6631004CC132 /* MediaTypeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */; };
 		16BF842E245C7136004CC132 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BF842D245C7136004CC132 /* CameraView.swift */; };
@@ -154,7 +153,6 @@
 		0010D71E93DE2CB854BEA615 /* Pods-zScanner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zScanner.release.xcconfig"; path = "Target Support Files/Pods-zScanner/Pods-zScanner.release.xcconfig"; sourceTree = "<group>"; };
 		1663AAA7245C0AD3004A3472 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		16647EC92460657E00A374F2 /* GalleryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryButton.swift; sourceTree = "<group>"; };
-		167129C1246C37E9000E1F08 /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		16908398246D9582009967A1 /* Themes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Themes.swift; sourceTree = "<group>"; };
 		16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTypeCollectionViewCell.swift; sourceTree = "<group>"; };
 		16BF842D245C7136004CC132 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
@@ -558,7 +556,6 @@
 				BD88F14F23087F1300569D71 /* UIView.swift */,
 				BD000CAD22E3AA6F001EE38A /* UIViewController.swift */,
 				BD70566E23301D7E0074184A /* URL.swift */,
-				167129C1246C37E9000E1F08 /* Dictionary.swift */,
 				16908398246D9582009967A1 /* Themes.swift */,
 			);
 			path = Extensions;
@@ -971,7 +968,6 @@
 				BDBE340622FA3A50000F8498 /* Encodable.swift in Sources */,
 				BD2B9E7E22EDC1B700FFCD3B /* DocumentTypeNetworkModel.swift in Sources */,
 				BD678DA523048A3A00AE5B15 /* NewDocumentMediaViewModel.swift in Sources */,
-				167129C2246C37E9000E1F08 /* Dictionary.swift in Sources */,
 				BD2F209022EBA33600534916 /* Database.swift in Sources */,
 				BD678DA7230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift in Sources */,
 				BD80224522F82604009B8B69 /* FormFieldTableViewCell.swift in Sources */,

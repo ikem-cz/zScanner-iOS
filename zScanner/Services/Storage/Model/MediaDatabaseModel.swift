@@ -31,7 +31,13 @@ class PageDatabaseModel: Object {
 
 extension PageDatabaseModel {
     func toDomainModel() -> MediaDomainModel {
-        return MediaDomainModel(id: id, index: index, correlationId: correlationId, relativePath: relativePath, type: .photo)
+        return MediaDomainModel(
+            id: id,
+            index: index,
+            correlationId: correlationId,
+            relativePath: relativePath,
+            type: .photo
+        )
     }
 }
 
