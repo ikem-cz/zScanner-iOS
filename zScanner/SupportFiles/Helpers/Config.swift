@@ -9,8 +9,8 @@
 import Foundation
 
 enum Config {
-    static let productionURL: String = "https://tempra.ikem.seacat/api-zscanner/v3"
-    static let testingURL: String = "https://desolate-meadow-62603.herokuapp.com/api-zscanner/v3"
+    static let productionURL: String = "https://tempra.ikem.seacat/api-zscanner-new/v3"
+    static let testingURL: String = "https://zscanner.ikem.dev.bindworks.eu/api-zscanner/v3"
     static let authUrl: String = "http://auth.ikem.seacat"
     
     static let currentEnvironment: Environment = .production
@@ -18,6 +18,7 @@ enum Config {
     static let minimumSearchLength = 3
     static let maximumNumberOfConcurentUploads = 4
     static let maximumSecondsOfVideoRecording: Double = 5
+    static let numberOfTuskitRetries: Int32 = 3
 }
 
 //MARK: -

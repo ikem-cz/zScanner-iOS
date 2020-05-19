@@ -7,8 +7,12 @@
 //
 
 import Foundation
+import TUSKit
 
 struct NativeAPI: API {
+    
+    static var uploads = [TUSResumableUpload]()
+    static var tusSession: TUSSession?
     
     func process<R, D>(_ request: R, with callback: @escaping (RequestStatus<D>) -> Void) where R : Request, D : Decodable, D == R.DataType {
         guard reachability.connection != .unavailable else {
@@ -35,7 +39,7 @@ struct NativeAPI: API {
         
         if request is ParametersJsonEncoded {
             urlRequest.httpBody = request.parameters?.toJSONData()
-            urlRequest.addValue("application-json", forHTTPHeaderField: "Content-Type")
+            urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
         }
         
         guard let configuration = SeaCatClient.getNSURLSessionConfiguration() else {
@@ -78,97 +82,70 @@ struct NativeAPI: API {
             }
         }
         
-        let task: URLSessionDataTask
+        var task: URLSessionDataTask?
         
         if let uploadingRequest = request as? FileUploading {
-            guard let requestBody = createBody(for: uploadingRequest, parameters: request.parameters) else {
-                callback(.error(RequestError(.dataCorruptedError)))
-                return
+            var upload: TUSResumableUpload?
+            if NativeAPI.tusSession == nil {
+                let uploadStore = TUSFileUploadStore()
+                let session = TUSSession(
+                    endpoint: URL(string: request.endpoint.url)!,
+                    dataStore: uploadStore,
+                    sessionConfiguration: configuration
+                )
+                NativeAPI.tusSession = session
             }
             
-            let uploadDelegate = UploadDelegate(callback: { status in
-                if case let .progress(percentage) = status {
-                    callback(.progress(percentage))
-                }
-            })
+            var progressBlock: TUSUploadProgressBlock?
+            var resultBlock: TUSUploadResultBlock?
+            var failureBlock: TUSUploadFailureBlock?
+
+            progressBlock = { bytesWritten, bytesTotal in
+                let percentage = Double(bytesWritten) / Double(bytesTotal)
+                callback(.progress(percentage))
+            }
             
-            urlRequest.addValue("multipart/form-data; boundary=\(uploadingRequest.boundary)", forHTTPHeaderField: "Content-Type")
+            resultBlock = { fileURL in
+                callback(.success(data: EmptyResponse() as! D))
+            }
             
-            configuration.timeoutIntervalForRequest = 300
-            configuration.timeoutIntervalForResource = 300
-            let session = URLSession(configuration: configuration, delegate: uploadDelegate, delegateQueue: .main)
+            failureBlock = { error in
+                callback(.error(RequestError(.serverError(error))))
+            }
             
-            task = session.uploadTask(
-                with: urlRequest as URLRequest,
-                from: requestBody,
-                completionHandler: completionHandler
+            let metadata: [String: String] = request.parameters?
+                .properties()
+                .compactMap({ $0 })
+                .filter({ !($0.value is URL) })
+                .reduce(into: [String: String]()) { (metadata, parameter) in
+                    metadata[parameter.name] = String(describing: parameter.value)
+                } ?? [:]
+
+        
+            upload = NativeAPI.tusSession?.createUpload(
+                fromFile: uploadingRequest.fileUrl,
+                retry: Config.numberOfTuskitRetries,
+                headers: [:],
+                metadata: metadata
             )
+            upload?.setChunkSize(100_000)
+            upload?.progressBlock = progressBlock
+            upload?.resultBlock = resultBlock
+            upload?.failureBlock = failureBlock
+            upload?.resume()
+            upload.flatMap({ NativeAPI.uploads.append($0) })
         } else {
             let session = URLSession(configuration: configuration)
             task = session.dataTask(
                 with: urlRequest as URLRequest,
                 completionHandler: completionHandler
             )
+            task?.resume()
         }
-        task.resume()
         
         callback(.progress(0))
     }
     
-    
     // MARK: - Helpers
     private let reachability = try! Reachability()
-    
-    private func createBody(for request: FileUploading, parameters: Encodable?) -> Data? {
-        var body = Data()
-            
-        if let properties = parameters?.properties().compactMap({ $0 }).filter({ !($0.value is URL) }) {
-            for property in properties {
-                body.append(string: "--\(request.boundary)\r\n")
-                body.append(string: "Content-Disposition: form-data; name=\"\(property.name)\"\r\n\r\n")
-                body.append(string: "\(String(describing: property.value))")
-                body.append(string: "\r\n")
-            }
-        }
-    
-        guard let imageData = try? Data(contentsOf: request.fileUrl) else {
-            return nil
-        }
-        
-        let filename = request.fileUrl.lastPathComponent
-        let mimetype = "image/jpg"
-
-        body.append(string: "--\(request.boundary)\r\n")
-        body.append(string: "Content-Disposition: form-data; name=\"page\"; filename=\"\(filename)\"\r\n")
-        body.append(string: "Content-Type: \(mimetype)\r\n\r\n")
-        body.append(imageData)
-        body.append(string: "\r\n")
-        body.append(string: "--\(request.boundary)--\r\n")
-
-        return body
-    }
-}
-
-// MARK: -
-private class UploadDelegate: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
-    
-    // TODO: Debug lifecyle of UploadDelegate (when is called deinit = released from the memory)
-    // TODO: Put class to separated file
-    
-    let callback: (RequestStatus<EmptyResponse>) -> Void
-    
-    init(callback: @escaping (RequestStatus<EmptyResponse>) -> Void) {
-        self.callback = callback
-    }
-    
-    func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
-        let percentage = Double(totalBytesSent) / Double(totalBytesExpectedToSend)
-        callback(.progress(percentage))
-    }
-    
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        callback(.error(RequestError(.serverError(error!))))
-    }
-    
-    func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {}
 }

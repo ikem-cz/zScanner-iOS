@@ -70,16 +70,16 @@ class IkemNetworkManager: NetworkManager {
             self.requestBehavior.beforeSend()
             
             self.api.process(request, with: { [weak self] requestStatus in
-                observer.onNext(requestStatus)
-                
                 switch requestStatus {
                 case .progress:
-                    break
+                    observer.onNext(requestStatus)
                 case .success:
                     self?.requestBehavior.afterSuccess()
+                    observer.onNext(requestStatus)
                     observer.onCompleted()
                 case .error(let error):
                     self?.requestBehavior.afterError(error)
+                    observer.onNext(requestStatus)
                     observer.onError(error)
                 }
             })

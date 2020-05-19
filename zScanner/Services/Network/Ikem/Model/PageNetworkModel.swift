@@ -9,13 +9,15 @@
 import Foundation
 
 struct PageNetworkModel: Encodable {
+    var uploadType = "page"
+    var filetype = "image/jpg"
     var correlation: String
-    var page: Int
+    var pageIndex: Int
     var pageUrl: URL
     
     init(from domainModel: MediaDomainModel) {
         self.pageUrl = URL(documentsWith: domainModel.relativePath)
-        self.page = domainModel.index
+        self.pageIndex = domainModel.index
         self.correlation = domainModel.correlationId
     }
 }
