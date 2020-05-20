@@ -14,6 +14,7 @@ class FolderDatabaseModel: Object {
     @objc dynamic var id = ""
     @objc dynamic var name = ""
     @objc dynamic var lastUsed = Date()
+    let documents = List<DocumentDatabaseModel>()
     
     convenience init(folder: FolderDomainModel) {
         self.init()

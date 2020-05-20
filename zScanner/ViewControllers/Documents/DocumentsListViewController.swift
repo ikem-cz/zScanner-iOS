@@ -42,14 +42,9 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupBindings()
-        update()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
         viewModel.updateDocuments()
+        setupTableDataSource()
+        setupBindings()
     }
     
     override var leftBarButtonItems: [UIBarButtonItem] {
@@ -95,6 +90,20 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
                 }
             })
             .disposed(by: disposeBag)
+        
+        viewModel.activeDocuments
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.updateTableDataSource()
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.sentDocuments
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.updateTableDataSource()
+            })
+            .disposed(by: disposeBag)
     }
     
     @objc private func newDocument() {
@@ -117,18 +126,13 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.top.bottom.equalTo(safeArea)
-            make.trailing.leading.equalToSuperview().inset(20)
+            make.top.equalTo(safeArea)
+            make.bottom.trailing.leading.equalToSuperview()
         }
         
         tableView.dataSource = dataSource
         tableView.backgroundView = emptyView
         tableView.tableHeaderView = headerView
-        
-        if let header = tableView.tableHeaderView {
-            let newSize = header.systemLayoutSizeFitting(CGSize(width: tableView.bounds.width, height: 0))
-            header.frame.size.height = newSize.height + 20
-        }
         
         emptyView.addSubview(emptyViewLabel)
         emptyViewLabel.snp.makeConstraints { make in
@@ -139,12 +143,35 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         }
     }
     
-    func update() {
+    func setupTableDataSource() {
         var snapshot = dataSource.snapshot()
         
+        let count = viewModel.documents.count
+        tableView.backgroundView?.isHidden = count > 0
+        
         snapshot.appendSections(Section.allCases)
-        snapshot.appendItems(viewModel.activeDocuments, toSection: Section.active)
-        snapshot.appendItems(viewModel.sentDocuments, toSection: Section.sent)
+        snapshot.appendItems(viewModel.activeDocuments.value, toSection: Section.active)
+        snapshot.appendItems(viewModel.sentDocuments.value, toSection: Section.sent)
+        
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    func updateTableDataSource() {
+        var snapshot = dataSource.snapshot()
+        
+        let count = viewModel.documents.count
+        tableView.backgroundView?.isHidden = count > 0
+
+        if viewModel.activeDocuments.value.isEmpty {
+            snapshot.deleteSections([Section.active])
+        } else {
+            if viewModel.activeDocuments.value.count == 1 {
+                snapshot.appendSections([Section.active])
+            }
+            snapshot.appendItems(viewModel.activeDocuments.value, toSection: Section.active)
+        }
+        
+        snapshot.appendItems(viewModel.sentDocuments.value, toSection: Section.sent)
         
         dataSource.apply(snapshot, animatingDifferences: true)
     }
@@ -173,11 +200,13 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
     private lazy var headerView = HeaderView(frame: .zero)
     
     private lazy var tableView: UITableView = {
-        let tableView = UITableView()
+        let tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.registerCell(DocumentTableViewCell.self)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 80
+        tableView.sectionFooterHeight = 50
         tableView.tableFooterView = UIView()
+        tableView.backgroundColor = .clear
         return tableView
     }()
     
@@ -196,60 +225,11 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
     }()
 }
 
-//MARK: - UITableViewDataSource implementation
-//extension DocumentsListViewController: UITableViewDataSource {
-//    func numberOfSections(in tableView: UITableView) -> Int {
-//        return Section.allCases.count
-//    }
-//
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        var count = 0
-//        if section == Section.active.hashValue {
-//            count = viewModel.activeDocuments.count
-//            tableView.backgroundView?.isHidden = count > 0
-//        } else {
-//            count = viewModel.sentDocuments.count
-//            tableView.backgroundView?.isHidden = count > 0
-//        }
-//        return count
-//    }
-//
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let document = viewModel.activeDocuments[indexPath.row]
-//        let cell = tableView.dequeueCell(DocumentTableViewCell.self)
-//        cell.setup(with: document, delegate: self)
-//        cell.selectionStyle = UITableViewCell.SelectionStyle.none
-//
-//        // Set rounded top and bottom corners
-//        if tableView.numberOfRows(inSection: indexPath.section) == 1 {
-//            cell.roundedCorners(corners: [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner], radius: 16)
-//            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
-//            return cell
-//        }
-//
-//        // Set rounded top corners
-//        if indexPath.row == 0 {
-//            cell.roundedCorners(corners: [.layerMinXMinYCorner, .layerMaxXMinYCorner], radius: 16)
-//            return cell
-//        }
-//
-//        // Set rounded bottom corners
-//        if indexPath.row == (viewModel.activeDocuments.count-1) {
-//            cell.roundedCorners(corners: [.layerMaxXMaxYCorner, .layerMinXMaxYCorner], radius: 16)
-//            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
-//            return cell
-//        }
-//
-//        return cell
-//    }
-//}
-
 //MARK: - DocumentViewDelegate implementation
 extension DocumentsListViewController: DocumentViewDelegate {
-    func sent(document: DocumentViewModel) {
-        print("sent")
+    func sent(_ document: DocumentViewModel) {
         viewModel.setDocumentAsSent(document)
-        update()
+        updateTableDataSource()
     }
 }
 
@@ -257,37 +237,11 @@ private extension DocumentsListViewController {
     func makeDataSource() -> UITableViewDiffableDataSource<Section, DocumentViewModel> {
         return UITableViewDiffableDataSource<Section, DocumentViewModel>(
             tableView: self.tableView,
-            cellProvider: {  (tableView, indexPath, _) in
+            cellProvider: {  (tableView, indexPath, document) in
                 let cell = tableView.dequeueCell(DocumentTableViewCell.self)
 
-                if indexPath.section == Section.active.hashValue {
-                    let activeDocument = self.viewModel.activeDocuments[indexPath.row]
-                    cell.setup(with: activeDocument, delegate: self)
-                } else {
-                    let sentDocument = self.viewModel.activeDocuments[indexPath.row]
-                    cell.setup(with: sentDocument, delegate: self)
-                }
-                cell.selectionStyle = UITableViewCell.SelectionStyle.none
-
-                // Set rounded top and bottom corners
-                if tableView.numberOfRows(inSection: indexPath.section) == 1 {
-                    cell.roundedCorners(corners: [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner], radius: 16)
-                    cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
-                    return cell
-                }
-
-                // Set rounded top corners
-                if indexPath.row == 0 {
-                    cell.roundedCorners(corners: [.layerMinXMinYCorner, .layerMaxXMinYCorner], radius: 16)
-                    return cell
-                }
-
-                // Set rounded bottom corners
-                if indexPath.row == (self.viewModel.activeDocuments.count-1) {
-                    cell.roundedCorners(corners: [.layerMaxXMaxYCorner, .layerMinXMaxYCorner], radius: 16)
-                    cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
-                    return cell
-                }
+                print("*","\(indexPath.row)/\(indexPath.section)", document.document.name, document.document.id)
+                cell.setup(with: document, delegate: self)
                 
                 return cell
             }

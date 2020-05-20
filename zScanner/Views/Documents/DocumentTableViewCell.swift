@@ -11,6 +11,7 @@ import RxSwift
 
 protocol DocumentViewDelegate {
     func handleError(_ error: RequestError)
+    func sent(_ document: DocumentViewModel)
 }
 
 class DocumentTableViewCell: UITableViewCell {
@@ -79,6 +80,7 @@ class DocumentTableViewCell: UITableViewCell {
                 self?.loadingCircle.isHidden = true
                 self?.loadingCircle.alpha = 1
                 self?.loadingCircle.transform = CGAffineTransform(scaleX: 1, y: 1)
+                self?.animationCompleted()
             })
         }
         
@@ -94,17 +96,20 @@ class DocumentTableViewCell: UITableViewCell {
         model.documentUploadStatus
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] status in
+                guard let self = self else { return }
+                
                 switch status {
                 case .awaitingInteraction:
-                    self?.loadingCircle.isHidden = true
-                    self?.successImageView.isHidden = true
-                    self?.retryButton.isHidden = true
+                    self.loadingCircle.isHidden = true
+                    self.successImageView.isHidden = true
+                    self.retryButton.isHidden = true
                 case .progress(let percentage):
-                    self?.loadingCircle.progressValue(is: percentage)
-                    self?.loadingCircle.isHidden = false
-                    self?.successImageView.isHidden = true
-                    self?.retryButton.isHidden = true
+                    self.loadingCircle.progressValue(is: percentage)
+                    self.loadingCircle.isHidden = false
+                    self.successImageView.isHidden = true
+                    self.retryButton.isHidden = true
                 case .success:
+//                    self.removeStatusContainer()
                     onCompleted()
                 case .failed(let error):
                     onError(error)
@@ -120,6 +125,10 @@ class DocumentTableViewCell: UITableViewCell {
     
     //MARK: Helpers
     private var disposeBag = DisposeBag()
+    
+    private func animationCompleted() {
+        delegate?.sent(viewModel!)
+    }
     
     private func setupView() {
         selectionStyle = .none
@@ -166,6 +175,17 @@ class DocumentTableViewCell: UITableViewCell {
         statusContainer.addSubview(retryButton)
         retryButton.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+    }
+    
+    func removeStatusContainer() {
+        statusContainer.removeFromSuperview()
+        
+        textContainer.snp.makeConstraints { make in
+            make.top.equalTo(contentView.snp.topMargin)
+            make.bottom.equalTo(contentView.snp.bottomMargin)
+            make.right.equalTo(contentView.snp.rightMargin)
+            make.left.equalTo(contentView.snp.leftMargin)
         }
     }
     

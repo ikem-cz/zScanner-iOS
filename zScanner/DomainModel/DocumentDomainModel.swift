@@ -18,9 +18,13 @@ struct DocumentDomainModel {
     var pages: [MediaDomainModel]
 }
 
-extension DocumentDomainModel: Equatable {
+extension DocumentDomainModel: Hashable {
     static func == (lhs: DocumentDomainModel, rhs: DocumentDomainModel) -> Bool {
         return lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 

@@ -198,14 +198,12 @@ class DocumentViewModel {
     }
 }
 
-extension DocumentViewModel: Equatable {
+extension DocumentViewModel: Hashable {
     static func == (lhs: DocumentViewModel, rhs: DocumentViewModel) -> Bool {
         return lhs.document == rhs.document
     }
-}
-
-extension DocumentViewModel: Hashable {
+    
     func hash(into hasher: inout Hasher) {
-        hasher.combine(document.id)
+        hasher.combine(document)
     }
 }

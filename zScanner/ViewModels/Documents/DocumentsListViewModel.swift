@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import RxRelay
 
 class DocumentsListViewModel {
     enum DocumentModesState {
@@ -22,8 +23,9 @@ class DocumentsListViewModel {
     private let networkManager: NetworkManager
     let login: LoginDomainModel
     
-    private(set) var activeDocuments: [DocumentViewModel] = []
-    private(set) var sentDocuments: [DocumentViewModel] = []
+    private(set) var documents: [DocumentViewModel] = []
+    private(set) var activeDocuments = BehaviorRelay<[DocumentViewModel]>(value: [])
+    private(set) var sentDocuments = BehaviorRelay<[DocumentViewModel]>(value: [])
     private(set) var documentModes: [DocumentMode] = []
     
     init(database: Database, login: LoginDomainModel, ikemNetworkManager: NetworkManager) {
@@ -39,7 +41,9 @@ class DocumentsListViewModel {
     let documentModesState = BehaviorSubject<DocumentModesState>(value: .awaitingInteraction)
     
     func insertNewDocument(_ document: DocumentViewModel) {
-        activeDocuments.insert(document, at: 0)
+        var newArray = activeDocuments.value
+        newArray.insert(document, at: 0)
+        activeDocuments.accept(newArray)
     }
     
     func updateDocumentTypes() {
@@ -47,14 +51,21 @@ class DocumentsListViewModel {
     }
     
     func setDocumentAsSent(_ document: DocumentViewModel) {
-        guard let _ = activeDocuments.remove(document) else { return }
-        sentDocuments.insert(document, at: 0)
+        var newArray = activeDocuments.value
+        guard let _ = newArray.remove(document) else {
+            print("Document could not be removed.")
+            return
+        }
+        activeDocuments.accept(newArray)
+        
+        newArray = sentDocuments.value
+        newArray.insert(document, at: 0) 
+        sentDocuments.accept(newArray)
     }
     
     func updateDocuments() {
-        
         // Find all documents with active upload
-        let activeUploadDocuments = activeDocuments.filter({
+        let activeUploadDocuments = documents.filter({
             var currentStatus: DocumentViewModel.UploadStatus?
             $0.documentUploadStatus.subscribe(onNext: { status in currentStatus = status }).disposed(by: disposeBag)
             return currentStatus == .awaitingInteraction || currentStatus == .progress(0) // Any progress, parameter is not considered when comparing
@@ -65,16 +76,31 @@ class DocumentsListViewModel {
         // Replace all dummy* documents with active upload to show the process in UI.
         // *dummy document is document loaded from DB without active upload process
         for activeDocument in activeUploadDocuments {
-            let _ = activeDocuments.remove(activeDocument)
-            activeDocuments.insert(activeDocument, at: 0)
+            let _ = documents.remove(activeDocument)
+            documents.insert(activeDocument, at: 0)
         }
+        
+        // Filter documents by status
+        activeDocuments.accept(documents.filter({
+                var status: DocumentViewModel.UploadStatus?
+                $0.documentUploadStatus.subscribe(onNext: { stat in status = stat }).disposed(by: disposeBag)
+                return status! != .success
+            })
+        )
+        
+        sentDocuments.accept(documents.filter({
+                var status: DocumentViewModel.UploadStatus?
+                $0.documentUploadStatus.subscribe(onNext: { stat in status = stat }).disposed(by: disposeBag)
+                return status! == .success
+            })
+        )
     }
     
     //MARK: Helpers
     let disposeBag = DisposeBag()
     
     private func loadDocuments() {
-        activeDocuments = database
+        documents = database
             .loadObjects(DocumentDatabaseModel.self)
             .map({ DocumentViewModel(document: $0.toDomainModel(), networkManager: networkManager, database: database) })
             .reversed()
