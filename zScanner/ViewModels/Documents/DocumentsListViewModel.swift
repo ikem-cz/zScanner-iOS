@@ -22,7 +22,8 @@ class DocumentsListViewModel {
     private let networkManager: NetworkManager
     let login: LoginDomainModel
     
-    private(set) var documents: [DocumentViewModel] = []
+    private(set) var activeDocuments: [DocumentViewModel] = []
+    private(set) var sentDocuments: [DocumentViewModel] = []
     private(set) var documentModes: [DocumentMode] = []
     
     init(database: Database, login: LoginDomainModel, ikemNetworkManager: NetworkManager) {
@@ -38,17 +39,22 @@ class DocumentsListViewModel {
     let documentModesState = BehaviorSubject<DocumentModesState>(value: .awaitingInteraction)
     
     func insertNewDocument(_ document: DocumentViewModel) {
-        documents.insert(document, at: 0)
+        activeDocuments.insert(document, at: 0)
     }
     
     func updateDocumentTypes() {
         fetchDocumentTypes()
     }
     
+    func setDocumentAsSent(_ document: DocumentViewModel) {
+        guard let _ = activeDocuments.remove(document) else { return }
+        sentDocuments.insert(document, at: 0)
+    }
+    
     func updateDocuments() {
         
         // Find all documents with active upload
-        let activeUploadDocuments = documents.filter({
+        let activeUploadDocuments = activeDocuments.filter({
             var currentStatus: DocumentViewModel.UploadStatus?
             $0.documentUploadStatus.subscribe(onNext: { status in currentStatus = status }).disposed(by: disposeBag)
             return currentStatus == .awaitingInteraction || currentStatus == .progress(0) // Any progress, parameter is not considered when comparing
@@ -59,8 +65,8 @@ class DocumentsListViewModel {
         // Replace all dummy* documents with active upload to show the process in UI.
         // *dummy document is document loaded from DB without active upload process
         for activeDocument in activeUploadDocuments {
-            let _ = documents.remove(activeDocument)
-            documents.insert(activeDocument, at: 0)
+            let _ = activeDocuments.remove(activeDocument)
+            activeDocuments.insert(activeDocument, at: 0)
         }
     }
     
@@ -68,7 +74,7 @@ class DocumentsListViewModel {
     let disposeBag = DisposeBag()
     
     private func loadDocuments() {
-        documents = database
+        activeDocuments = database
             .loadObjects(DocumentDatabaseModel.self)
             .map({ DocumentViewModel(document: $0.toDomainModel(), networkManager: networkManager, database: database) })
             .reversed()

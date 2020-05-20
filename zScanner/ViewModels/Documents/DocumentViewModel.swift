@@ -203,3 +203,9 @@ extension DocumentViewModel: Equatable {
         return lhs.document == rhs.document
     }
 }
+
+extension DocumentViewModel: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(document.id)
+    }
+}
