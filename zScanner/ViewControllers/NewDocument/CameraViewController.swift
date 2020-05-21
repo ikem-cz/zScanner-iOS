@@ -90,7 +90,7 @@ class CameraViewController: BaseViewController {
     }
     
     private func setupView() {
-        view.backgroundColor = .clear
+        view.backgroundColor = .black
         title = viewModel.folderName
         
         view.addSubview(captureButton)

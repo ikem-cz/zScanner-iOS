@@ -118,6 +118,8 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         viewModel.updateDocumentTypes()
     }
     
+    var isActiveSectionPresenting = false
+    
     private func setupView() {
         // Remove bottom line of navbar
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for:.default)
@@ -133,6 +135,11 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         tableView.dataSource = dataSource
         tableView.backgroundView = emptyView
         tableView.tableHeaderView = headerView
+        
+        if let header = tableView.tableHeaderView {
+            let newSize = header.systemLayoutSizeFitting(CGSize(width: tableView.bounds.width, height: 0))
+            header.frame.size.height = newSize.height + 20
+        }
         
         emptyView.addSubview(emptyViewLabel)
         emptyViewLabel.snp.makeConstraints { make in
@@ -150,6 +157,7 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         tableView.backgroundView?.isHidden = count > 0
         
         snapshot.appendSections(Section.allCases)
+        isActiveSectionPresenting = true
         snapshot.appendItems(viewModel.activeDocuments.value, toSection: Section.active)
         snapshot.appendItems(viewModel.sentDocuments.value, toSection: Section.sent)
         
@@ -161,18 +169,22 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         
         let count = viewModel.documents.count
         tableView.backgroundView?.isHidden = count > 0
-
-        if viewModel.activeDocuments.value.isEmpty {
-            snapshot.deleteSections([Section.active])
-        } else {
-            if viewModel.activeDocuments.value.count == 1 {
-                snapshot.appendSections([Section.active])
-                snapshot.moveSection(Section.active, beforeSection: Section.sent)
-            }
-            snapshot.appendItems(viewModel.activeDocuments.value, toSection: Section.active)
+        
+        if viewModel.activeDocuments.value.count > 0 && !isActiveSectionPresenting {
+            snapshot.appendSections([Section.active])
+            snapshot.moveSection(Section.active, beforeSection: Section.sent)
+            isActiveSectionPresenting = true
         }
         
+        if !viewModel.activeDocuments.value.isEmpty {
+            snapshot.appendItems(viewModel.activeDocuments.value, toSection: Section.active)
+        }
         snapshot.appendItems(viewModel.sentDocuments.value, toSection: Section.sent)
+        
+        if viewModel.activeDocuments.value.isEmpty {
+            snapshot.deleteSections([Section.active])
+            isActiveSectionPresenting = false
+        }
         
         dataSource.apply(snapshot, animatingDifferences: true)
     }
@@ -228,15 +240,19 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
 }
 
 extension DocumentsListViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let label = UILabel()
-        if tableView.numberOfSections == 1 {
-            label.text = "Sent"
-        } else {
-            label.text = section == 0 ? "Active" : "Sent"
-        }
-        return label
-     }
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 50
+    }
+    
+//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        let label = UILabel()
+//        if tableView.numberOfSections == 1 {
+//            label.text = "Sent"
+//        } else {
+//            label.text = section == 0 ? "Active" : "Sent"
+//        }
+//        return label
+//     }
 }
 
 //MARK: - DocumentViewDelegate implementation
@@ -253,10 +269,7 @@ private extension DocumentsListViewController {
             tableView: self.tableView,
             cellProvider: {  (tableView, indexPath, document) in
                 let cell = tableView.dequeueCell(DocumentTableViewCell.self)
-
-                print("*","\(indexPath.row)/\(indexPath.section)", document.document.name, document.document.id)
                 cell.setup(with: document, delegate: self)
-                
                 return cell
             }
         )

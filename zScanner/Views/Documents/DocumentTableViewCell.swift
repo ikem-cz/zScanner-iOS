@@ -43,9 +43,6 @@ class DocumentTableViewCell: UITableViewCell {
         successImageView.isHidden = true
         retryButton.isHidden = true
         
-        // Remove rounded corners
-        layer.maskedCorners = []
-        
         disposeBag = DisposeBag()
     }
     
@@ -109,8 +106,8 @@ class DocumentTableViewCell: UITableViewCell {
                     self.successImageView.isHidden = true
                     self.retryButton.isHidden = true
                 case .success:
-//                    self.removeStatusContainer()
                     onCompleted()
+                    self.removeStatusContainer()
                 case .failed(let error):
                     onError(error)
                 }
@@ -127,7 +124,19 @@ class DocumentTableViewCell: UITableViewCell {
     private var disposeBag = DisposeBag()
     
     private func animationCompleted() {
+        
         delegate?.sent(viewModel!)
+    }
+    
+    func removeStatusContainer() {
+        statusContainer.removeFromSuperview()
+        
+        textContainer.snp.makeConstraints { make in
+            make.top.equalTo(contentView.snp.topMargin)
+            make.bottom.equalTo(contentView.snp.bottomMargin)
+            make.right.equalTo(contentView.snp.rightMargin)
+            make.left.equalTo(contentView.snp.leftMargin)
+        }
     }
     
     private func setupView() {
@@ -176,23 +185,6 @@ class DocumentTableViewCell: UITableViewCell {
         retryButton.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-    }
-    
-    func removeStatusContainer() {
-        statusContainer.removeFromSuperview()
-        
-        textContainer.snp.makeConstraints { make in
-            make.top.equalTo(contentView.snp.topMargin)
-            make.bottom.equalTo(contentView.snp.bottomMargin)
-            make.right.equalTo(contentView.snp.rightMargin)
-            make.left.equalTo(contentView.snp.leftMargin)
-        }
-    }
-    
-    func roundedCorners(corners: CACornerMask, radius : CGFloat) {
-        clipsToBounds = true
-        layer.cornerRadius = radius
-        layer.maskedCorners = corners
     }
     
     private var nameLabel: UILabel = {

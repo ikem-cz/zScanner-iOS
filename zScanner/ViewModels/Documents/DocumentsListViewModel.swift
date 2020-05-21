@@ -52,10 +52,7 @@ class DocumentsListViewModel {
     
     func setDocumentAsSent(_ document: DocumentViewModel) {
         var newArray = activeDocuments.value
-        guard let _ = newArray.remove(document) else {
-            print("Document could not be removed.")
-            return
-        }
+        guard let _ = newArray.remove(document) else { return }
         activeDocuments.accept(newArray)
         
         newArray = sentDocuments.value
@@ -144,3 +141,28 @@ class DocumentsListViewModel {
         }
     }
 }
+
+//func updateTableDataSource() {
+//    var snapshot = dataSource.snapshot()
+//    
+//    let count = viewModel.documents.count
+//    tableView.backgroundView?.isHidden = count > 0
+//    
+//    if viewModel.activeDocuments.value.count > 0 && !isActiveSectionPresenting {
+//        snapshot.appendSections([Section.active])
+//        snapshot.moveSection(Section.active, beforeSection: Section.sent)
+//        isActiveSectionPresenting = true
+//    }
+//    
+//    if !viewModel.activeDocuments.value.isEmpty {
+//        snapshot.appendItems(viewModel.activeDocuments.value, toSection: Section.active)
+//    }
+//    snapshot.appendItems(viewModel.sentDocuments.value, toSection: Section.sent)
+//    
+//    if viewModel.activeDocuments.value.isEmpty {
+//        snapshot.deleteSections([Section.active])
+//        isActiveSectionPresenting = false
+//    }
+//    
+//    dataSource.apply(snapshot, animatingDifferences: true)
+//}
