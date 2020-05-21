@@ -126,20 +126,20 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.layoutIfNeeded()
         
+        view.addSubview(headerView)
+        headerView.snp.makeConstraints { make in
+            make.top.equalTo(safeArea)
+            make.leading.trailing.equalToSuperview().inset(20)
+        }
+        
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(safeArea)
+            make.top.equalTo(headerView.snp.bottom)
             make.bottom.trailing.leading.equalToSuperview()
         }
         
         tableView.dataSource = dataSource
         tableView.backgroundView = emptyView
-        tableView.tableHeaderView = headerView
-        
-        if let header = tableView.tableHeaderView {
-            let newSize = header.systemLayoutSizeFitting(CGSize(width: tableView.bounds.width, height: 0))
-            header.frame.size.height = newSize.height + 20
-        }
         
         emptyView.addSubview(emptyViewLabel)
         emptyViewLabel.snp.makeConstraints { make in
@@ -217,7 +217,6 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         tableView.registerCell(DocumentTableViewCell.self)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 80
-        tableView.sectionFooterHeight = 50
         tableView.tableFooterView = UIView()
         tableView.backgroundColor = .clear
         tableView.delegate = self
@@ -243,16 +242,6 @@ extension DocumentsListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 50
     }
-    
-//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        let label = UILabel()
-//        if tableView.numberOfSections == 1 {
-//            label.text = "Sent"
-//        } else {
-//            label.text = section == 0 ? "Active" : "Sent"
-//        }
-//        return label
-//     }
 }
 
 //MARK: - DocumentViewDelegate implementation
