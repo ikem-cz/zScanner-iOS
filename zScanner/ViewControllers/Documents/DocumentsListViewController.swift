@@ -167,6 +167,7 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         } else {
             if viewModel.activeDocuments.value.count == 1 {
                 snapshot.appendSections([Section.active])
+                snapshot.moveSection(Section.active, beforeSection: Section.sent)
             }
             snapshot.appendItems(viewModel.activeDocuments.value, toSection: Section.active)
         }
@@ -207,6 +208,7 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         tableView.sectionFooterHeight = 50
         tableView.tableFooterView = UIView()
         tableView.backgroundColor = .clear
+        tableView.delegate = self
         return tableView
     }()
     
@@ -223,6 +225,18 @@ class DocumentsListViewController: BaseViewController, ErrorHandling {
         label.textAlignment = .center
         return label
     }()
+}
+
+extension DocumentsListViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let label = UILabel()
+        if tableView.numberOfSections == 1 {
+            label.text = "Sent"
+        } else {
+            label.text = section == 0 ? "Active" : "Sent"
+        }
+        return label
+     }
 }
 
 //MARK: - DocumentViewDelegate implementation
