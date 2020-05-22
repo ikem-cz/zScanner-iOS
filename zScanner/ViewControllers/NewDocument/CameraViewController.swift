@@ -299,7 +299,7 @@ class CameraViewController: BaseViewController {
         picker.mediaTypes = viewModel.currentMode.value == .photo ? [kUTTypeImage as String] : [kUTTypeMovie as String]
         picker.sourceType = .photoLibrary
         picker.videoMaximumDuration = Config.maximumSecondsOfVideoRecording
-        picker.allowsEditing = true
+        picker.allowsEditing = viewModel.currentMode.value == .video ? true : false
         present(picker, animated: true, completion: nil)
     }
     
