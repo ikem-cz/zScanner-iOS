@@ -35,7 +35,8 @@ extension DocumentDomainModel {
             folder: FolderDomainModel(
                 externalId: "",
                 id: "",
-                name: ""
+                name: "",
+                documents: []
             ),
             type: DocumentTypeDomainModel(
                 id: "",

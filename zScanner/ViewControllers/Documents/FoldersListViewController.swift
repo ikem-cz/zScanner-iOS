@@ -9,7 +9,7 @@
 import UIKit
 import RxSwift
 
-protocol DocumentsListCoordinator: BaseCoordinator {
+protocol FoldersListCoordinator: BaseCoordinator {
     func createNewDocument()
     func openMenu()
 }
@@ -22,10 +22,10 @@ class FoldersListViewController: BaseViewController, ErrorHandling {
     }
     
     // MARK: Instance part
-    private unowned let coordinator: DocumentsListCoordinator
+    private unowned let coordinator: FoldersListCoordinator
     private let viewModel: FoldersListViewModel
-        
-    init(viewModel: FoldersListViewModel, coordinator: DocumentsListCoordinator) {
+
+    init(viewModel: FoldersListViewModel, coordinator: FoldersListCoordinator) {
         self.coordinator = coordinator
         self.viewModel = viewModel
         
@@ -42,7 +42,7 @@ class FoldersListViewController: BaseViewController, ErrorHandling {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        viewModel.updateDocuments()
+        viewModel.updateFolders()
         setupTableDataSource()
         setupBindings()
     }
@@ -91,14 +91,14 @@ class FoldersListViewController: BaseViewController, ErrorHandling {
             })
             .disposed(by: disposeBag)
         
-        viewModel.activeDocuments
+        viewModel.activeFolders
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 self?.updateTableDataSource()
             })
             .disposed(by: disposeBag)
         
-        viewModel.sentDocuments
+        viewModel.sentFolders
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 self?.updateTableDataSource()
@@ -153,13 +153,13 @@ class FoldersListViewController: BaseViewController, ErrorHandling {
     func setupTableDataSource() {
         var snapshot = dataSource.snapshot()
         
-        let count = viewModel.documents.count
+        let count = viewModel.folders.count
         tableView.backgroundView?.isHidden = count > 0
         
         snapshot.appendSections(Section.allCases)
         isActiveSectionPresenting = true
-        snapshot.appendItems(viewModel.activeDocuments.value, toSection: Section.active)
-        snapshot.appendItems(viewModel.sentDocuments.value, toSection: Section.sent)
+        snapshot.appendItems(viewModel.activeFolders.value, toSection: Section.active)
+        snapshot.appendItems(viewModel.sentFolders.value, toSection: Section.sent)
         
         dataSource.apply(snapshot, animatingDifferences: true)
     }
@@ -167,21 +167,21 @@ class FoldersListViewController: BaseViewController, ErrorHandling {
     func updateTableDataSource() {
         var snapshot = dataSource.snapshot()
         
-        let count = viewModel.documents.count
+        let count = viewModel.folders.count
         tableView.backgroundView?.isHidden = count > 0
         
-        if viewModel.activeDocuments.value.count > 0 && !isActiveSectionPresenting {
+        if viewModel.activeFolders.value.count > 0 && !isActiveSectionPresenting {
             snapshot.appendSections([Section.active])
             snapshot.moveSection(Section.active, beforeSection: Section.sent)
             isActiveSectionPresenting = true
         }
         
-        if !viewModel.activeDocuments.value.isEmpty {
-            snapshot.appendItems(viewModel.activeDocuments.value, toSection: Section.active)
+        if !viewModel.activeFolders.value.isEmpty {
+            snapshot.appendItems(viewModel.activeFolders.value, toSection: Section.active)
         }
-        snapshot.appendItems(viewModel.sentDocuments.value, toSection: Section.sent)
+        snapshot.appendItems(viewModel.sentFolders.value, toSection: Section.sent)
         
-        if viewModel.activeDocuments.value.isEmpty {
+        if viewModel.activeFolders.value.isEmpty {
             snapshot.deleteSections([Section.active])
             isActiveSectionPresenting = false
         }
@@ -214,7 +214,7 @@ class FoldersListViewController: BaseViewController, ErrorHandling {
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
-        tableView.registerCell(PatientTableViewCell.self)
+        tableView.registerCell(FolderTableViewCell.self)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 80
         tableView.tableFooterView = UIView()
@@ -246,19 +246,19 @@ extension FoldersListViewController: UITableViewDelegate {
 
 //MARK: - DocumentViewDelegate implementation
 extension FoldersListViewController: FolderViewDelegate {
-    func sent(_ document: DocumentViewModel) {
-        viewModel.setDocumentAsSent(document)
+    func sent(_ folder: FolderViewModel) {
+        viewModel.setDocumentAsSent(folder)
         updateTableDataSource()
     }
 }
 
 private extension FoldersListViewController {
-    func makeDataSource() -> UITableViewDiffableDataSource<Section, DocumentViewModel> {
-        return UITableViewDiffableDataSource<Section, DocumentViewModel>(
+    func makeDataSource() -> UITableViewDiffableDataSource<Section, FolderViewModel> {
+        return UITableViewDiffableDataSource<Section, FolderViewModel>(
             tableView: self.tableView,
-            cellProvider: {  (tableView, indexPath, document) in
+            cellProvider: {  (tableView, indexPath, folder) in
                 let cell = tableView.dequeueCell(PatientTableViewCell.self)
-                cell.setup(with: document, delegate: self)
+                cell.setup(with: folder, delegate: self)
                 return cell
             }
         )

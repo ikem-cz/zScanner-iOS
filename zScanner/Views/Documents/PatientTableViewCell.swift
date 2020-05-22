@@ -1,5 +1,5 @@
 //
-//  DocumentTableViewCell.swift
+//  PatientTableViewCell.swift
 //  zScanner
 //
 //  Created by Jakub Skořepa on 21/07/2019.
@@ -9,16 +9,16 @@
 import UIKit
 import RxSwift
 
-protocol DocumentViewDelegate {
+protocol FolderViewDelegate {
     func handleError(_ error: RequestError)
-    func sent(_ document: DocumentViewModel)
+    func sent(_ folder: FolderViewModel)
 }
 
-class DocumentTableViewCell: UITableViewCell {
+class PatientTableViewCell: UITableViewCell {
     
     //MARK: Instance part
-    private var viewModel: DocumentViewModel?
-    private var delegate: DocumentViewDelegate?
+    private var viewModel: FolderViewModel?
+    private var delegate: FolderViewDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -47,12 +47,12 @@ class DocumentTableViewCell: UITableViewCell {
     }
     
     //MARK: Interface
-    func setup(with model: DocumentViewModel, delegate: DocumentViewDelegate) {
+    func setup(with model: FolderViewModel, delegate: FolderViewDelegate) {
         self.viewModel = model
         self.delegate = delegate
 
-        nameLabel.text = model.document.folder.name
-        pinLabel.text = model.document.folder.externalId
+        nameLabel.text = model.folder.name
+        pinLabel.text = model.folder.externalId
         
         let onCompleted: () -> Void = { [weak self] in
             self?.retryButton.isHidden = true
@@ -90,7 +90,7 @@ class DocumentTableViewCell: UITableViewCell {
             }
         }
         
-        model.documentUploadStatus
+        model.folderStatus
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] status in
                 guard let self = self else { return }
@@ -115,7 +115,7 @@ class DocumentTableViewCell: UITableViewCell {
             .disposed(by: disposeBag)
         
         retryButton.rx.tap.subscribe(onNext: { [weak self] in
-            self?.viewModel?.reupload()
+//            self?.viewModel?.reupload()
         })
         .disposed(by: disposeBag)
     }

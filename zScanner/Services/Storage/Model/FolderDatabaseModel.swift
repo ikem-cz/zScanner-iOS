@@ -48,7 +48,8 @@ extension FolderDatabaseModel {
         return FolderDomainModel(
             externalId: externalId,
             id: id,
-            name: name
+            name: name,
+            documents: documents.map { $0.toDomainModel() }
         )
     }
 }

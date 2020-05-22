@@ -23,72 +23,74 @@ class FoldersListViewModel {
     private let networkManager: NetworkManager
     let login: LoginDomainModel
     
-    private(set) var documents: [DocumentViewModel] = []
-    private(set) var activeDocuments = BehaviorRelay<[DocumentViewModel]>(value: [])
-    private(set) var sentDocuments = BehaviorRelay<[DocumentViewModel]>(value: [])
+    private(set) var folders: [FolderViewModel] = []
+    private(set) var activeFolders = BehaviorRelay<[FolderViewModel]>(value: [])
+    private(set) var sentFolders = BehaviorRelay<[FolderViewModel]>(value: [])
     private(set) var documentModes: [DocumentMode] = []
-    private(set) var folders = BehaviorRelay<FolderViewModel>(value: [])
     
     init(database: Database, login: LoginDomainModel, ikemNetworkManager: NetworkManager) {
         self.database = database
         self.login = login
         self.networkManager = ikemNetworkManager
         
-        loadDocuments()
+        loadFolders()
         fetchDocumentTypes()
     }
     
     //MARK: Interface
     let documentModesState = BehaviorSubject<DocumentModesState>(value: .awaitingInteraction)
     
-    func insertNewDocument(_ document: DocumentViewModel) {
-        var newArray = activeDocuments.value
-        newArray.insert(document, at: 0)
-        activeDocuments.accept(newArray)
+    func insertNewDocument(_ documentViewModel: DocumentViewModel) {
+        if let folder = activeFolders.value.first(where: { return $0.folder.id == documentViewModel.document.id }) {
+            folder.insertNewDocument(documentViewModel)
+            return
+        }
+        
+        guard let folder = sentFolders.value.first(where: { return $0.folder.id == documentViewModel.document.id }) else {
+            print("Couldn't insert document because can't find relevant folder")
+            return
+        }
+        folder.insertNewDocument(documentViewModel)
     }
     
     func updateDocumentTypes() {
         fetchDocumentTypes()
     }
     
-    func setDocumentAsSent(_ document: DocumentViewModel) {
-        var newArray = activeDocuments.value
-        guard let _ = newArray.remove(document) else { return }
-        activeDocuments.accept(newArray)
-        
-        newArray = sentDocuments.value
-        newArray.insert(document, at: 0) 
-        sentDocuments.accept(newArray)
+    func setDocumentAsSent(_ folder: FolderViewModel) {
+//        newArray = sentDocuments.value
+//        newArray.insert(document, at: 0)
+//        sentDocuments.accept(newArray)
     }
     
-    func updateDocuments() {
-        // Find all documents with active upload
-        let activeUploadDocuments = documents.filter({
+    func updateFolders() {
+        // Find all folders with active upload documents
+         let activeUploadFolderDocuments = folders.filter({
             var currentStatus: DocumentViewModel.UploadStatus?
-            $0.documentUploadStatus.subscribe(onNext: { status in currentStatus = status }).disposed(by: disposeBag)
+            $0.folderStatus.subscribe(onNext: { status in currentStatus = status }).disposed(by: disposeBag)
             return currentStatus == .awaitingInteraction || currentStatus == .progress(0) // Any progress, parameter is not considered when comparing
         })
         
-        loadDocuments()
+        loadFolders()
         
         // Replace all dummy* documents with active upload to show the process in UI.
         // *dummy document is document loaded from DB without active upload process
-        for activeDocument in activeUploadDocuments {
-            let _ = documents.remove(activeDocument)
-            documents.insert(activeDocument, at: 0)
+        for activeFolder in activeUploadFolderDocuments {
+            let _ = folders.remove(activeFolder)
+            folders.insert(activeFolder, at: 0)
         }
         
-        // Filter documents by status
-        activeDocuments.accept(documents.filter({
+        // Filter folders by status
+        activeFolders.accept(folders.filter({
                 var status: DocumentViewModel.UploadStatus?
-                $0.documentUploadStatus.subscribe(onNext: { stat in status = stat }).disposed(by: disposeBag)
+                $0.folderStatus.subscribe(onNext: { stat in status = stat }).disposed(by: disposeBag)
                 return status! != .success
             })
         )
-        
-        sentDocuments.accept(documents.filter({
+
+        sentFolders.accept(folders.filter({
                 var status: DocumentViewModel.UploadStatus?
-                $0.documentUploadStatus.subscribe(onNext: { stat in status = stat }).disposed(by: disposeBag)
+                $0.folderStatus.subscribe(onNext: { stat in status = stat }).disposed(by: disposeBag)
                 return status! == .success
             })
         )
@@ -97,11 +99,11 @@ class FoldersListViewModel {
     //MARK: Helpers
     let disposeBag = DisposeBag()
     
-    private func loadDocuments() {
-        documents = database
-            .loadObjects(DocumentDatabaseModel.self)
-            .map({ DocumentViewModel(document: $0.toDomainModel(), networkManager: networkManager, database: database) })
-            .reversed()
+    private func loadFolders() {
+        folders = database
+                 .loadObjects(FolderDatabaseModel.self)
+                 .map({ FolderViewModel(folder: $0.toDomainModel(), networkManager: networkManager, database: database) })
+                 .reversed()
     }
     
     func fetchDocumentTypes() {

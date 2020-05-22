@@ -38,8 +38,8 @@ class DocumentsCoordinator: Coordinator {
     
     // MARK: Navigation methods
     private func showDocumentsListScreen() {
-        let viewModel = DocumentsListViewModel(database: database, login: userSession.login, ikemNetworkManager: networkManager)
-        let viewController = DocumentsListViewController(viewModel: viewModel, coordinator: self)
+        let viewModel = FoldersListViewModel(database: database, login: userSession.login, ikemNetworkManager: networkManager)
+        let viewController = FoldersListViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
     
@@ -88,7 +88,7 @@ class DocumentsCoordinator: Coordinator {
 }
 
 // MARK: - DocumentsListCoordinator implementation
-extension DocumentsCoordinator: DocumentsListCoordinator {
+extension DocumentsCoordinator: FoldersListCoordinator {
     func createNewDocument() {
         runNewDocumentFlow()
     }
@@ -100,7 +100,7 @@ extension DocumentsCoordinator: DocumentsListCoordinator {
 // MARK: - NewDocumentFlowDelegate implementation
 extension DocumentsCoordinator: NewDocumentFlowDelegate {
     func newDocumentCreated(_ documentViewModel: DocumentViewModel) {
-        guard let list = viewControllers.last as? DocumentsListViewController else {
+        guard let list = viewControllers.last as? FoldersListViewController else {
             assertionFailure()
             return
         }
