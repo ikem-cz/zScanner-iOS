@@ -57,7 +57,7 @@ class DocumentTableViewCell: UITableViewCell {
         let onCompleted: () -> Void = { [weak self] in
             self?.retryButton.isHidden = true
             
-            // If not animating, skip trnasition animation
+            // If not animating, skip transition animation
             if self?.loadingCircle.isHidden == true {
                 self?.loadingCircle.isHidden = true
                 self?.successImageView.isHidden = false
@@ -124,12 +124,11 @@ class DocumentTableViewCell: UITableViewCell {
     private var disposeBag = DisposeBag()
     
     private func animationCompleted() {
-        
         delegate?.sent(viewModel!)
     }
     
     func removeStatusContainer() {
-        statusContainer.removeFromSuperview()
+        statusContainer.isHidden = true
         
         textContainer.snp.makeConstraints { make in
             make.top.equalTo(contentView.snp.topMargin)
