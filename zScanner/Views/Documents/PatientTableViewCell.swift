@@ -8,6 +8,7 @@
 
 import UIKit
 import RxSwift
+import SnapKit
 
 protocol FolderViewDelegate {
     func handleError(_ error: RequestError)
@@ -54,6 +55,8 @@ class PatientTableViewCell: UITableViewCell {
         nameLabel.text = model.folder.name
         pinLabel.text = model.folder.externalId
         
+        isStatusContainerVisible = false
+        
         let onCompleted: () -> Void = { [weak self] in
             self?.retryButton.isHidden = true
             
@@ -78,6 +81,7 @@ class PatientTableViewCell: UITableViewCell {
                 self?.loadingCircle.alpha = 1
                 self?.loadingCircle.transform = CGAffineTransform(scaleX: 1, y: 1)
                 self?.animationCompleted()
+                self?.isStatusContainerVisible = false
             })
         }
         
@@ -97,17 +101,18 @@ class PatientTableViewCell: UITableViewCell {
                 
                 switch status {
                 case .awaitingInteraction:
+                    self.isStatusContainerVisible = true
                     self.loadingCircle.isHidden = true
                     self.successImageView.isHidden = true
                     self.retryButton.isHidden = true
                 case .progress(let percentage):
+                    self.isStatusContainerVisible = true
                     self.loadingCircle.progressValue(is: percentage)
                     self.loadingCircle.isHidden = false
                     self.successImageView.isHidden = true
                     self.retryButton.isHidden = true
                 case .success:
                     onCompleted()
-                    self.removeStatusContainer()
                 case .failed(let error):
                     onError(error)
                 }
@@ -127,14 +132,20 @@ class PatientTableViewCell: UITableViewCell {
         delegate?.sent(viewModel!)
     }
     
-    func removeStatusContainer() {
-        statusContainer.isHidden = true
-        
-        textContainer.snp.makeConstraints { make in
-            make.top.equalTo(contentView.snp.topMargin)
-            make.bottom.equalTo(contentView.snp.bottomMargin)
-            make.right.equalTo(contentView.snp.rightMargin)
-            make.left.equalTo(contentView.snp.leftMargin)
+    private var textToStatus: Constraint?
+    private var textToSuperview: Constraint?
+    
+    private var isStatusContainerVisible: Bool = false {
+        didSet {
+            if isStatusContainerVisible {
+                statusContainer.isHidden = false
+                textToSuperview?.deactivate()
+                textToStatus?.activate()
+            } else {
+                statusContainer.isHidden = true
+                textToStatus?.deactivate()
+                textToSuperview?.activate()
+            }
         }
     }
     
@@ -145,27 +156,9 @@ class PatientTableViewCell: UITableViewCell {
         preservesSuperviewLayoutMargins = true
         contentView.preservesSuperviewLayoutMargins = true
         
-        contentView.addSubview(textContainer)
-        textContainer.snp.makeConstraints { make in
-            make.top.equalTo(contentView.snp.topMargin)
-            make.bottom.equalTo(contentView.snp.bottomMargin)
-            make.right.equalTo(contentView.snp.rightMargin)
-        }
-        
-        textContainer.addSubview(nameLabel)
-        nameLabel.snp.makeConstraints { make in
-            make.top.left.bottom.equalToSuperview()
-        }
-        
-        textContainer.addSubview(pinLabel)
-        pinLabel.snp.makeConstraints { make in
-            make.top.right.bottom.equalToSuperview()
-        }
-        
         contentView.addSubview(statusContainer)
         statusContainer.snp.makeConstraints { make in
-            make.left.equalTo(contentView.snp.leftMargin)
-            make.right.equalTo(textContainer.snp.left).offset(-8)
+            make.leading.equalTo(contentView.snp.leadingMargin)
             make.width.height.equalTo(30)
             make.centerY.equalToSuperview()
         }
@@ -183,6 +176,28 @@ class PatientTableViewCell: UITableViewCell {
         statusContainer.addSubview(retryButton)
         retryButton.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+        
+        contentView.addSubview(textContainer)
+        textContainer.snp.makeConstraints { make in
+            make.top.equalTo(contentView.snp.topMargin)
+            make.bottom.equalTo(contentView.snp.bottomMargin)
+            make.trailing.equalTo(contentView.snp.trailingMargin)
+            // Set priority to 999 to silence console error for UIViewAlertForUnsatisfiableConstraints
+            textToStatus = make.leading.equalTo(statusContainer.snp.trailing).offset(8).priority(999).constraint
+            textToSuperview = make.leading.equalTo(contentView.snp.leadingMargin).constraint
+        }
+        textToStatus?.deactivate()
+        
+        
+        textContainer.addSubview(nameLabel)
+        nameLabel.snp.makeConstraints { make in
+            make.top.leading.bottom.equalToSuperview()
+        }
+        
+        textContainer.addSubview(pinLabel)
+        pinLabel.snp.makeConstraints { make in
+            make.top.trailing.bottom.equalToSuperview()
         }
     }
     

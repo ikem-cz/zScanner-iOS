@@ -129,7 +129,8 @@ class FoldersListViewController: BaseViewController, ErrorHandling {
         view.addSubview(headerView)
         headerView.snp.makeConstraints { make in
             make.top.equalTo(safeArea)
-            make.leading.trailing.equalToSuperview().inset(20)
+            // Set priority to 999 to silence console error for UIViewAlertForUnsatisfiableConstraints
+            make.leading.trailing.equalToSuperview().inset(20).priority(999)
         }
         
         view.addSubview(tableView)
