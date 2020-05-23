@@ -24,28 +24,26 @@ class NewDocumentCoordinator: Coordinator {
          MediaType.video
      ]
     
-    init?(flowDelegate: NewDocumentFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
+    init?(folderSelection: FolderSelection, flowDelegate: NewDocumentFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
         self.flowDelegate = flowDelegate
         
         super.init(window: window, navigationController: navigationController)
+        
+        newDocument.folder = folderSelection.folder
+        let databaseFolder = FolderDatabaseModel(folder: folderSelection.folder)
+        FolderDatabaseModel.updateLastUsage(of: databaseFolder)
+        tracker.track(.userFoundBy(folderSelection.searchMode))
     }
     
     // MARK: Interface
     func begin() {
-        showFolderSelectionScreen()
+        showNewMediaScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
     }
     
     // MARK: Helepers
     private let database: Database = try! RealmDatabase()
     private let networkManager: NetworkManager = IkemNetworkManager(api: NativeAPI())
     private let tracker: Tracker = FirebaseAnalytics()
-    
-    // TODO: Remove this function later
-    private func showFolderSelectionScreen() {
-        let viewModel = NewDocumentFolderViewModel(database: database, networkManager: networkManager, tracker: tracker)
-        let viewController = NewDocumentFolderViewController(viewModel: viewModel, coordinator: self)
-        push(viewController)
-    }
     
     // TODO: Remove this function later
     private func showDocumentTypeSelectionScreen() {
@@ -148,20 +146,6 @@ class NewDocumentCoordinator: Coordinator {
         alert.addAction(UIAlertAction(title: "newDocument.popAlert.cancel".localized, style: .cancel, handler: nil))
         
         viewController.present(alert, animated: true)
-    }
-}
-
-// MARK: - NewDocumentTypeCoordinator implementation
-extension NewDocumentCoordinator: NewDocumentFolderCoordinator {
-    func folderDidSelect() {
-        showNewMediaScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
-    }
-    
-    func saveFolder(_ folder: FolderDomainModel, searchMode: SearchMode) {
-        newDocument.folder = folder
-        let databaseFolder = FolderDatabaseModel(folder: folder)
-        FolderDatabaseModel.updateLastUsage(of: databaseFolder)
-        tracker.track(.userFoundBy(searchMode))
     }
 }
 

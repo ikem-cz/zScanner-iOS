@@ -10,11 +10,11 @@ import UIKit
 import RxSwift
 
 protocol FoldersListCoordinator: BaseCoordinator {
-    func createNewDocument()
+    func createNewDocument(with folderSelection: FolderSelection)
     func openMenu()
 }
 
-class FoldersListViewController: BaseViewController, ErrorHandling {
+class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     
     enum Section: CaseIterable {
         case active
@@ -71,26 +71,6 @@ class FoldersListViewController: BaseViewController, ErrorHandling {
     }
     
     private func setupBindings() {
-        viewModel.documentModesState
-            .asObserver()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] status in
-                switch status {
-                case .awaitingInteraction:
-                    self.rightBarButtons = []
-                case .loading:
-                    self.rightBarButtons = [self.loadingItem]
-                case .success:
-                    self.rightBarButtons = [self.addButton]
-                case .error(let error):
-                    self.rightBarButtons = [self.reloadButton]
-                    self.handleError(error, okCallback: nil) {
-                        self.reloadDocumentTypes()
-                    }
-                }
-            })
-            .disposed(by: disposeBag)
-        
         viewModel.activeFolders
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
@@ -106,16 +86,8 @@ class FoldersListViewController: BaseViewController, ErrorHandling {
             .disposed(by: disposeBag)
     }
     
-    @objc private func newDocument() {
-        coordinator.createNewDocument()
-    }
-    
     @objc private func openMenu() {
         coordinator.openMenu()
-    }
-    
-    @objc private func reloadDocumentTypes() {
-        viewModel.updateDocumentTypes()
     }
     
     var isActiveSectionPresenting = false
@@ -190,10 +162,6 @@ class FoldersListViewController: BaseViewController, ErrorHandling {
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
-    private lazy var addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newDocument))
-    
-    private lazy var reloadButton = UIBarButtonItem(image: #imageLiteral(resourceName: "refresh"), style: .plain, target: self, action: #selector(reloadDocumentTypes))
-    
     private lazy var hambugerButton: UIBarButtonItem = {
         let hambugerButton = HambugerButton()
         let tap = UITapGestureRecognizer(target: self, action: #selector(openMenu))
@@ -201,14 +169,6 @@ class FoldersListViewController: BaseViewController, ErrorHandling {
         hambugerButton.isUserInteractionEnabled = true
         hambugerButton.setup(username: viewModel.login.username)
         return UIBarButtonItem(customView: hambugerButton)
-    }()
-    
-    private lazy var loadingItem: UIBarButtonItem = {
-        let loading = UIActivityIndicatorView(style: .medium)
-        loading.startAnimating()
-        let button = UIBarButtonItem(customView: loading)
-        button.isEnabled = false
-        return button
     }()
     
     private lazy var headerView = HeaderView(frame: .zero)

@@ -26,7 +26,7 @@ class FoldersListViewModel {
     private(set) var folders: [FolderViewModel] = []
     private(set) var activeFolders = BehaviorRelay<[FolderViewModel]>(value: [])
     private(set) var sentFolders = BehaviorRelay<[FolderViewModel]>(value: [])
-    private(set) var documentModes: [DocumentMode] = []
+//    private(set) var documentModes: [DocumentMode] = []
     
     init(database: Database, login: LoginDomainModel, ikemNetworkManager: NetworkManager) {
         self.database = database
@@ -34,7 +34,7 @@ class FoldersListViewModel {
         self.networkManager = ikemNetworkManager
         
         loadFolders()
-        fetchDocumentTypes()
+//        fetchDocumentTypes()
     }
     
     //MARK: Interface
@@ -53,9 +53,9 @@ class FoldersListViewModel {
         folder.insertNewDocument(documentViewModel)
     }
     
-    func updateDocumentTypes() {
-        fetchDocumentTypes()
-    }
+//    func updateDocumentTypes() {
+//        fetchDocumentTypes()
+//    }
     
     func setDocumentAsSent(_ folder: FolderViewModel) {
 //        newArray = sentDocuments.value
@@ -106,41 +106,41 @@ class FoldersListViewModel {
                  .reversed()
     }
     
-    func fetchDocumentTypes() {
-        networkManager
-            .getDocumentTypes()
-            .subscribe(onNext: { [weak self] requestStatus in
-                switch requestStatus {
-                case .progress:
-                    self?.documentModesState.onNext(.loading)
-                    
-                case .success(data: let networkModel):
-                    let documents = networkModel.map({ $0.toDomainModel() })
-                    
-                    self?.storeDocumentTypes(documents)
-                    self?.storeDocumentModes(from: documents)
-                    
-                    self?.documentModesState.onNext(.success)
-
-                case .error(let error):
-                    self?.documentModesState.onNext(.error(error))
-                }
-            })
-            .disposed(by: disposeBag)
-    }
+//    func fetchDocumentTypes() {
+//        networkManager
+//            .getDocumentTypes()
+//            .subscribe(onNext: { [weak self] requestStatus in
+//                switch requestStatus {
+//                case .progress:
+//                    self?.documentModesState.onNext(.loading)
+//
+//                case .success(data: let networkModel):
+//                    let documents = networkModel.map({ $0.toDomainModel() })
+//
+//                    self?.storeDocumentTypes(documents)
+//                    self?.storeDocumentModes(from: documents)
+//
+//                    self?.documentModesState.onNext(.success)
+//
+//                case .error(let error):
+//                    self?.documentModesState.onNext(.error(error))
+//                }
+//            })
+//            .disposed(by: disposeBag)
+//    }
     
-    private func storeDocumentModes(from documentTypes: [DocumentTypeDomainModel]) {
-        documentModes = Array(Set(documentTypes.map({ $0.mode })))
-        documentModes.append(.photo)
-        documentModes.append(.video)
-    }
+//    private func storeDocumentModes(from documentTypes: [DocumentTypeDomainModel]) {
+//        documentModes = Array(Set(documentTypes.map({ $0.mode })))
+//        documentModes.append(.photo)
+//        documentModes.append(.video)
+//    }
     
-    private func storeDocumentTypes(_ types: [DocumentTypeDomainModel]) {
-        DispatchQueue.main.async {
-            self.database.deleteAll(of: DocumentTypeDatabaseModel.self)
-            types
-                .map({ DocumentTypeDatabaseModel(documentType: $0) })
-                .forEach({ self.database.saveObject($0) })
-        }
-    }
+//    private func storeDocumentTypes(_ types: [DocumentTypeDomainModel]) {
+//        DispatchQueue.main.async {
+//            self.database.deleteAll(of: DocumentTypeDatabaseModel.self)
+//            types
+//                .map({ DocumentTypeDatabaseModel(documentType: $0) })
+//                .forEach({ self.database.saveObject($0) })
+//        }
+//    }
 }
