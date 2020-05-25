@@ -71,14 +71,10 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     }
     
     private func setupBindings() {
-        viewModel.activeFolders
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                self?.updateTableDataSource()
-            })
-            .disposed(by: disposeBag)
-        
-        viewModel.sentFolders
+        Observable.combineLatest([
+                viewModel.activeFolders,
+                viewModel.sentFolders
+            ])
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 self?.updateTableDataSource()
@@ -175,7 +171,7 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
-        tableView.registerCell(FolderTableViewCell.self)
+        tableView.registerCell(PatientTableViewCell.self)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 80
         tableView.tableFooterView = UIView()
@@ -206,12 +202,7 @@ extension FoldersListViewController: UITableViewDelegate {
 }
 
 //MARK: - DocumentViewDelegate implementation
-extension FoldersListViewController: FolderViewDelegate {
-    func sent(_ folder: FolderViewModel) {
-        viewModel.setDocumentAsSent(folder)
-        updateTableDataSource()
-    }
-}
+extension FoldersListViewController: FolderViewDelegate { }
 
 private extension FoldersListViewController {
     func makeDataSource() -> UITableViewDiffableDataSource<Section, FolderViewModel> {

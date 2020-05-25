@@ -23,6 +23,7 @@ class FolderDatabaseModel: Object {
         self.externalId = folder.externalId
         self.name = folder.name
         self.lastUsed = Date()
+        self.documents.append(objectsIn: folder.documents.map { DocumentDatabaseModel(document: $0) })
     }
     
     override class func primaryKey() -> String {

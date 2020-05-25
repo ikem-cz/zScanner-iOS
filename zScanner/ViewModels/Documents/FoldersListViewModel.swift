@@ -35,62 +35,52 @@ class FoldersListViewModel {
         
         loadFolders()
 //        fetchDocumentTypes()
+        setupBindings()
     }
     
     //MARK: Interface
     let documentModesState = BehaviorSubject<DocumentModesState>(value: .awaitingInteraction)
     
     func insertNewDocument(_ documentViewModel: DocumentViewModel) {
-        if let folder = activeFolders.value.first(where: { return $0.folder.id == documentViewModel.document.id }) {
+        updateFolders()
+        
+        if let folder = activeFolders.value.first(where: { return $0.folder.id == documentViewModel.document.folderId }) {
             folder.insertNewDocument(documentViewModel)
-            return
         }
         
-        guard let folder = sentFolders.value.first(where: { return $0.folder.id == documentViewModel.document.id }) else {
-            print("Couldn't insert document because can't find relevant folder")
-            return
+        if let folder = sentFolders.value.first(where: { return $0.folder.id == documentViewModel.document.folderId }) {
+            folder.insertNewDocument(documentViewModel)
         }
-        folder.insertNewDocument(documentViewModel)
     }
     
-//    func updateDocumentTypes() {
-//        fetchDocumentTypes()
-//    }
+    private func setupBindings() {
+        activeFolders
+            .subscribe(onNext: { foldersViewModel in
+                foldersViewModel.forEach { folderViewModel in
+                    self.createFolderStatusSubscription(folderViewModel: folderViewModel)
+                }
+            })
+            .disposed(by: disposeBag)
+    }
     
-    func setDocumentAsSent(_ folder: FolderViewModel) {
-//        newArray = sentDocuments.value
-//        newArray.insert(document, at: 0)
-//        sentDocuments.accept(newArray)
+    func updateDocumentTypes() {
+//        fetchDocumentTypes()
     }
     
     func updateFolders() {
-        // Find all folders with active upload documents
-         let activeUploadFolderDocuments = folders.filter({
-            var currentStatus: DocumentViewModel.UploadStatus?
-            $0.folderStatus.subscribe(onNext: { status in currentStatus = status }).disposed(by: disposeBag)
-            return currentStatus == .awaitingInteraction || currentStatus == .progress(0) // Any progress, parameter is not considered when comparing
-        })
-        
         loadFolders()
-        
-        // Replace all dummy* documents with active upload to show the process in UI.
-        // *dummy document is document loaded from DB without active upload process
-        for activeFolder in activeUploadFolderDocuments {
-            let _ = folders.remove(activeFolder)
-            folders.insert(activeFolder, at: 0)
-        }
         
         // Filter folders by status
         activeFolders.accept(folders.filter({
                 var status: DocumentViewModel.UploadStatus?
-                $0.folderStatus.subscribe(onNext: { stat in status = stat }).disposed(by: disposeBag)
+                $0.folderStatus?.subscribe(onNext: { stat in status = stat }).disposed(by: disposeBag)
                 return status! != .success
             })
         )
 
         sentFolders.accept(folders.filter({
                 var status: DocumentViewModel.UploadStatus?
-                $0.folderStatus.subscribe(onNext: { stat in status = stat }).disposed(by: disposeBag)
+                $0.folderStatus?.subscribe(onNext: { stat in status = stat }).disposed(by: disposeBag)
                 return status! == .success
             })
         )
@@ -104,6 +94,30 @@ class FoldersListViewModel {
                  .loadObjects(FolderDatabaseModel.self)
                  .map({ FolderViewModel(folder: $0.toDomainModel(), networkManager: networkManager, database: database) })
                  .reversed()
+    }
+    
+    private func createFolderStatusSubscription(folderViewModel: FolderViewModel) {
+        folderViewModel.folderStatus?
+            .subscribe(onNext: { status in
+                if status == .success {
+                    var newActiveFolders = self.activeFolders.value
+                    _ = newActiveFolders.remove(folderViewModel)
+                    self.activeFolders.accept(newActiveFolders)
+                    
+                    var newSentFolders = self.sentFolders.value
+                    newSentFolders.append(folderViewModel)
+                    self.sentFolders.accept(newSentFolders)
+                } else {
+                    var newSentFolders = self.sentFolders.value
+                    _ = newSentFolders.remove(folderViewModel)
+                    self.sentFolders.accept(newSentFolders)
+                    
+                    var newActiveFolders = self.activeFolders.value
+                    newActiveFolders.append(folderViewModel)
+                    self.activeFolders.accept(newActiveFolders)
+                }
+            })
+            .disposed(by: self.disposeBag)
     }
     
 //    func fetchDocumentTypes() {

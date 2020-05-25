@@ -12,7 +12,6 @@ import SnapKit
 
 protocol FolderViewDelegate {
     func handleError(_ error: RequestError)
-    func sent(_ folder: FolderViewModel)
 }
 
 class PatientTableViewCell: UITableViewCell {
@@ -52,7 +51,7 @@ class PatientTableViewCell: UITableViewCell {
         self.viewModel = model
         self.delegate = delegate
 
-        nameLabel.text = model.folder.name
+        nameLabel.text = model.folder.name + String(model.documents.value.count)
         pinLabel.text = model.folder.externalId
         
         isStatusContainerVisible = false
@@ -80,7 +79,6 @@ class PatientTableViewCell: UITableViewCell {
                 self?.loadingCircle.isHidden = true
                 self?.loadingCircle.alpha = 1
                 self?.loadingCircle.transform = CGAffineTransform(scaleX: 1, y: 1)
-                self?.animationCompleted()
                 self?.isStatusContainerVisible = false
             })
         }
@@ -94,7 +92,7 @@ class PatientTableViewCell: UITableViewCell {
             }
         }
         
-        model.folderStatus
+        model.folderStatus?
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] status in
                 guard let self = self else { return }
@@ -120,6 +118,7 @@ class PatientTableViewCell: UITableViewCell {
             .disposed(by: disposeBag)
         
         retryButton.rx.tap.subscribe(onNext: { [weak self] in
+            #warning("Implemented")
 //            self?.viewModel?.reupload()
         })
         .disposed(by: disposeBag)
@@ -127,10 +126,6 @@ class PatientTableViewCell: UITableViewCell {
     
     //MARK: Helpers
     private var disposeBag = DisposeBag()
-    
-    private func animationCompleted() {
-        delegate?.sent(viewModel!)
-    }
     
     private var textToStatus: Constraint?
     private var textToSuperview: Constraint?

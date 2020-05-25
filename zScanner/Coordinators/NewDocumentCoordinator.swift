@@ -17,6 +17,7 @@ class NewDocumentCoordinator: Coordinator {
     // MARK: Instance part
     unowned private let flowDelegate: NewDocumentFlowDelegate
     private var newDocument = DocumentDomainModel.emptyDocument
+    private var folder: FolderDomainModel
     private var mediaViewModel: NewDocumentMediaViewModel?
     private let defaultMediaType = MediaType.photo
     private let mediaSourceTypes = [
@@ -26,10 +27,12 @@ class NewDocumentCoordinator: Coordinator {
     
     init?(folderSelection: FolderSelection, flowDelegate: NewDocumentFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
         self.flowDelegate = flowDelegate
+        self.folder = folderSelection.folder
+        newDocument.folderId = folderSelection.folder.id
         
         super.init(window: window, navigationController: navigationController)
         
-        newDocument.folder = folderSelection.folder
+        // TODO: Add to database
         let databaseFolder = FolderDatabaseModel(folder: folderSelection.folder)
         FolderDatabaseModel.updateLastUsage(of: databaseFolder)
         tracker.track(.userFoundBy(folderSelection.searchMode))
@@ -57,7 +60,7 @@ class NewDocumentCoordinator: Coordinator {
             popAll(animated: false)
         }
         
-        let viewModel = CameraViewModel(initialMode: mediaType, folderName: newDocument.folder.name, correlationId: newDocument.id, mediaSourceTypes: mediaSourceTypes)
+        let viewModel = CameraViewModel(initialMode: mediaType, folderName: folder.name, correlationId: newDocument.id, mediaSourceTypes: mediaSourceTypes)
         let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
         
         if let index = navigationController?.viewControllers.firstIndex(where: { $0 is CameraViewController }) {
@@ -153,7 +156,7 @@ class NewDocumentCoordinator: Coordinator {
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ media: Media) {
         if mediaViewModel == nil {
-            mediaViewModel = NewDocumentMediaViewModel(folderName: newDocument.folder.name, mediaType: media.type, tracker: tracker)
+            mediaViewModel = NewDocumentMediaViewModel(folderName: folder.name, mediaType: media.type, tracker: tracker)
         }
         
         if media.type == .photo {
