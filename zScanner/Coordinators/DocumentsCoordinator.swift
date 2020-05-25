@@ -40,7 +40,14 @@ class DocumentsCoordinator: Coordinator {
     private func showDocumentsListScreen() {
         let viewModel = FoldersListViewModel(database: database, login: userSession.login, ikemNetworkManager: networkManager)
         let viewController = FoldersListViewController(viewModel: viewModel, coordinator: self)
+        viewController.sheetViewController = folderSearchScreen
         push(viewController)
+    }
+    
+    private var folderSearchScreen: NewDocumentFolderViewController {
+        let viewModel = NewDocumentFolderViewModel(database: database, networkManager: networkManager, tracker: tracker)
+        let viewController = NewDocumentFolderViewController(viewModel: viewModel, coordinator: self)
+        return viewController
     }
     
     private lazy var menuCoordinator: MenuCoordinator = {
@@ -52,7 +59,7 @@ class DocumentsCoordinator: Coordinator {
         menuCoordinator.begin()
     }
     
-    private func runNewDocumentFlow() {
+    private func runNewDocumentFlow(with folderSelection: FolderSelection) {
         // Tracking
         if documentCreatedInThisSession {
             tracker.track(.createDocumentAgain)
@@ -61,7 +68,13 @@ class DocumentsCoordinator: Coordinator {
         }
         
         // Start new-document flow
-        guard let coordinator = NewDocumentCoordinator(flowDelegate: self, window: window, navigationController: navigationController) else { return }
+        guard let coordinator = NewDocumentCoordinator(
+            folderSelection: folderSelection,
+            flowDelegate: self,
+            window: window,
+            navigationController: navigationController
+        ) else { return }
+        
         addChildCoordinator(coordinator)
         coordinator.begin()
     }
@@ -89,9 +102,10 @@ class DocumentsCoordinator: Coordinator {
 
 // MARK: - DocumentsListCoordinator implementation
 extension DocumentsCoordinator: FoldersListCoordinator {
-    func createNewDocument() {
-        runNewDocumentFlow()
+    func createNewDocument(with folderSelection: FolderSelection) {
+        runNewDocumentFlow(with: folderSelection)
     }
+    
     func openMenu() {
         menuCoordinator.openMenu()
     }
@@ -129,5 +143,12 @@ extension DocumentsCoordinator: MenuFlowDelegate {
         deleteHistory()
         flowDelegate.logout()
         flowDelegate.coordinatorDidFinish(self)
+    }
+}
+
+// MARK: - NewDocumentTypeCoordinator implementation
+extension DocumentsCoordinator: NewDocumentFolderCoordinator {
+    func folderSelected(_ folderSelection: FolderSelection) {
+        runNewDocumentFlow(with: folderSelection)
     }
 }
