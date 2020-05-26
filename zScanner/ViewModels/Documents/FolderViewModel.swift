@@ -17,11 +17,19 @@ class FolderViewModel {
     // MARK: Instance part
     private var networkManager: NetworkManager
     private var database: Database
+
+    let folder: FolderDomainModel
     var documents = BehaviorRelay<[DocumentViewModel]>(value: [])
-    private var folderStatusHolder: Disposable?
     var folderStatus = BehaviorRelay<UploadStatus>(value: .awaitingInteraction)
     
-    let folder: FolderDomainModel
+    init(folder: FolderDomainModel, networkManager: NetworkManager, database: Database) {
+        self.folder = folder
+        self.networkManager = networkManager
+        self.database = database
+        
+        loadDocuments()
+        setupBindings()
+    }
     
     func reupload() {
         documents.value.forEach({ $0.reupload() })
@@ -41,7 +49,7 @@ class FolderViewModel {
                 progresses.append(0)
             case .progress(let percentage):
                 inProgressCount += 1
-                progresses.append(percentage * 0.9)
+                progresses.append(percentage)
             case .success:
                 break
 //                progresses.append(1)
@@ -64,38 +72,29 @@ class FolderViewModel {
         return .progress(overallProgress)
     }
     
-    private var documentTasks: [Observable<UploadStatus>] {
-        documents.value.map({ $0.documentUploadStatus.asObservable() })
-    }
-    
-    init(folder: FolderDomainModel, networkManager: NetworkManager, database: Database) {
-        self.folder = folder
-        self.networkManager = networkManager
-        self.database = database
-        
-        loadDocuments()
-        setupBindings()
-    }
-    
-    deinit {
-        documentsSubscription?.dispose()
-    }
-    
     // MARK: Helpers
-    private var documentsSubscription: Disposable?
+    private let disposeBag = DisposeBag()
+    private var folderStatusSubscription: Disposable?
     
     private func setupBindings() {
-        documentsSubscription = documents.subscribe(onNext: { [weak self] _ in
+        documents.subscribe(onNext: { [weak self] documents in
             guard let self = self else { return }
             
-            self.folderStatusHolder?.dispose()
-            self.folderStatusHolder = Observable
-                .combineLatest(self.documentTasks.map({ $0.distinctUntilChanged() }))
+            let tasks = documents.map({
+                $0.documentUploadStatus
+                    .distinctUntilChanged()
+                    .asObservable()
+            })
+            
+            self.folderStatusSubscription?.dispose()
+            self.folderStatusSubscription = Observable
+                .combineLatest(tasks)
                 .map(self.statusToProgress)
                 .subscribe(onNext: { [weak self] status in
                     self?.folderStatus.accept(status)
                 })
         })
+        .disposed(by: disposeBag)
     }
     
     func insertNewDocument(_ document: DocumentViewModel) {
@@ -112,10 +111,12 @@ class FolderViewModel {
 
 extension FolderViewModel: Hashable {
     static func == (lhs: FolderViewModel, rhs: FolderViewModel) -> Bool {
-        return lhs.folder == rhs.folder
+        return lhs.hashValue == rhs.hashValue
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(folder)
+        hasher.combine(folder.id)
+        hasher.combine(folder.externalId)
+        hasher.combine(folder.name)
     }
 }

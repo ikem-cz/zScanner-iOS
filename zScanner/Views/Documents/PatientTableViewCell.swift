@@ -24,6 +24,7 @@ class PatientTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         setupView()
+        isStatusContainerVisible = true
     }
     
     required init?(coder: NSCoder) {
@@ -42,6 +43,7 @@ class PatientTableViewCell: UITableViewCell {
         loadingCircle.progressValue(is: 0, animated: false)
         successImageView.isHidden = true
         retryButton.isHidden = true
+        isStatusContainerVisible = true
         
         disposeBag = DisposeBag()
     }
@@ -118,7 +120,7 @@ class PatientTableViewCell: UITableViewCell {
             .disposed(by: disposeBag)
         
         retryButton.rx.tap.subscribe(onNext: { [weak self] in
-            #warning("Implemented")
+  
             self?.viewModel?.reupload()
         })
         .disposed(by: disposeBag)
@@ -132,15 +134,24 @@ class PatientTableViewCell: UITableViewCell {
     
     private var isStatusContainerVisible: Bool = false {
         didSet {
+            // TODO: Temporary show upload status for every case. Uncomment when done.
+//            if isStatusContainerVisible {
+//                statusContainer.isHidden = false
+//                textToSuperview?.deactivate()
+//                textToStatus?.activate()
+//            } else {
+//                statusContainer.isHidden = true
+//                textToStatus?.deactivate()
+//                textToSuperview?.activate()
+//            }
+            
             if isStatusContainerVisible {
-                statusContainer.isHidden = false
-                textToSuperview?.deactivate()
-                textToStatus?.activate()
+                statusContainer.alpha = 1
             } else {
-                statusContainer.isHidden = true
-                textToStatus?.deactivate()
-                textToSuperview?.activate()
+                statusContainer.alpha = 0.3
             }
+            textToSuperview?.deactivate()
+            textToStatus?.activate()
         }
     }
     

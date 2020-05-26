@@ -26,7 +26,6 @@ class FoldersListViewModel {
     private(set) var folders: [FolderViewModel] = []
     private(set) var activeFolders = BehaviorRelay<[FolderViewModel]>(value: [])
     private(set) var sentFolders = BehaviorRelay<[FolderViewModel]>(value: [])
-//    private(set) var documentModes: [DocumentMode] = []
     
     init(database: Database, login: LoginDomainModel, ikemNetworkManager: NetworkManager) {
         self.database = database
@@ -34,7 +33,6 @@ class FoldersListViewModel {
         self.networkManager = ikemNetworkManager
         
         loadFolders()
-//        fetchDocumentTypes()
         setupBindings()
     }
     
@@ -71,10 +69,6 @@ class FoldersListViewModel {
                 }
             })
             .disposed(by: disposeBag)
-    }
-    
-    func updateDocumentTypes() {
-//        fetchDocumentTypes()
     }
     
     func updateFolders() {

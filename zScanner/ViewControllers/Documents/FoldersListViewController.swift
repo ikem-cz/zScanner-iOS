@@ -43,7 +43,7 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
         super.viewDidLoad()
         
         viewModel.updateFolders()
-        setupTableDataSource()
+        updateTableView()
         setupBindings()
     }
     
@@ -73,12 +73,12 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     
     private func setupBindings() {
         Observable.combineLatest([
-                viewModel.activeFolders.distinctUntilChanged(),
-                viewModel.sentFolders.distinctUntilChanged()
+                viewModel.activeFolders,
+                viewModel.sentFolders
             ])
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
-                self?.updateTableDataSource()
+                self?.updateTableView()
             })
             .disposed(by: disposeBag)
     }
@@ -120,41 +120,26 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
         }
     }
     
-    func setupTableDataSource() {
-        var snapshot = dataSource.snapshot()
+    func updateTableView() {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, FolderViewModel>()
         
         let count = viewModel.folders.count
         tableView.backgroundView?.isHidden = count > 0
         
-        snapshot.appendSections(Section.allCases)
-        isActiveSectionPresenting = true
-        snapshot.appendItems(viewModel.activeFolders.value, toSection: Section.active)
-        snapshot.appendItems(viewModel.sentFolders.value, toSection: Section.sent)
-        
-        dataSource.apply(snapshot, animatingDifferences: true)
-    }
-    
-    func updateTableDataSource() {
-        var snapshot = dataSource.snapshot()
-        
-        let count = viewModel.folders.count
-        tableView.backgroundView?.isHidden = count > 0
-        
-        if viewModel.activeFolders.value.count > 0 && !isActiveSectionPresenting {
-            snapshot.appendSections([Section.active])
-            snapshot.moveSection(Section.active, beforeSection: Section.sent)
-            isActiveSectionPresenting = true
+        let active = viewModel.activeFolders.value
+        if !active.isEmpty {
+            snapshot.appendSections([.active])
+            snapshot.appendItems(active, toSection: .active)
         }
         
-        if !viewModel.activeFolders.value.isEmpty {
-            snapshot.appendItems(viewModel.activeFolders.value, toSection: Section.active)
+        let sent = viewModel.sentFolders.value
+        if !sent.isEmpty {
+            snapshot.appendSections([.sent])
+            snapshot.appendItems(sent, toSection: .sent)
         }
-        snapshot.appendItems(viewModel.sentFolders.value, toSection: Section.sent)
         
-        if viewModel.activeFolders.value.isEmpty {
-            snapshot.deleteSections([Section.active])
-            isActiveSectionPresenting = false
-        }
+        // Not sure if it helps, I just tried it. 
+        snapshot.reloadSections(Section.allCases)
         
         dataSource.apply(snapshot, animatingDifferences: true)
     }
@@ -181,7 +166,16 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
         return tableView
     }()
     
-    lazy var dataSource = makeDataSource()
+    lazy var dataSource: UITableViewDiffableDataSource<Section, FolderViewModel> = {
+        UITableViewDiffableDataSource<Section, FolderViewModel>(
+            tableView: self.tableView,
+            cellProvider: {  (tableView, indexPath, folder) in
+                let cell = tableView.dequeueCell(PatientTableViewCell.self)
+                cell.setup(with: folder, delegate: self)
+                return cell
+            }
+        )
+    }()
     
     private lazy var emptyView = UIView()
     
@@ -204,16 +198,3 @@ extension FoldersListViewController: UITableViewDelegate {
 
 //MARK: - DocumentViewDelegate implementation
 extension FoldersListViewController: FolderViewDelegate { }
-
-private extension FoldersListViewController {
-    func makeDataSource() -> UITableViewDiffableDataSource<Section, FolderViewModel> {
-        return UITableViewDiffableDataSource<Section, FolderViewModel>(
-            tableView: self.tableView,
-            cellProvider: {  (tableView, indexPath, folder) in
-                let cell = tableView.dequeueCell(PatientTableViewCell.self)
-                cell.setup(with: folder, delegate: self)
-                return cell
-            }
-        )
-    }
-}
