@@ -30,15 +30,16 @@ class FolderDatabaseModel: Object {
         return "id"
     }
     
-    static func updateLastUsage(of folder: FolderDatabaseModel) {
+    static func updateLastUsage(of folder: FolderDomainModel) {
         let realm = try! Realm()
         if let stored = realm.object(ofType: FolderDatabaseModel.self, forPrimaryKey: folder.id) {
             try! realm.write {
                 stored.lastUsed = Date()
             }
         } else {
+            let databaseFolder = FolderDatabaseModel(folder: folder)
             try! realm.write {
-                realm.add(folder)
+                realm.add(databaseFolder)
             }
         }
     }

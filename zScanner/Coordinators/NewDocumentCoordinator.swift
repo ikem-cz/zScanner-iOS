@@ -32,9 +32,7 @@ class NewDocumentCoordinator: Coordinator {
         
         super.init(window: window, navigationController: navigationController)
         
-        // TODO: Add to database
-        let databaseFolder = FolderDatabaseModel(folder: folderSelection.folder)
-        FolderDatabaseModel.updateLastUsage(of: databaseFolder)
+        FolderDatabaseModel.updateLastUsage(of: folderSelection.folder)
         tracker.track(.userFoundBy(folderSelection.searchMode))
     }
     

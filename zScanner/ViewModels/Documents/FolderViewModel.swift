@@ -18,7 +18,14 @@ class FolderViewModel {
     private var networkManager: NetworkManager
     private var database: Database
     var documents = BehaviorRelay<[DocumentViewModel]>(value: [])
+    private var folderStatusHolder: Disposable?
+    var folderStatus = BehaviorRelay<UploadStatus>(value: .awaitingInteraction)
+    
     let folder: FolderDomainModel
+    
+    func reupload() {
+        documents.value.forEach({ $0.reupload() })
+    }
     
     private lazy var statusToProgress: ([UploadStatus]) -> UploadStatus = { [weak self] tasks in
         var progresses = [Double]()
@@ -36,7 +43,8 @@ class FolderViewModel {
                 inProgressCount += 1
                 progresses.append(percentage * 0.9)
             case .success:
-                progresses.append(1)
+                break
+//                progresses.append(1)
             case .failed(let e):
                 failed = true
                 error = e
@@ -56,9 +64,7 @@ class FolderViewModel {
         return .progress(overallProgress)
     }
     
-    var folderStatus: Observable<UploadStatus>?
-    
-    private var tasks: [Observable<UploadStatus>] {
+    private var documentTasks: [Observable<UploadStatus>] {
         documents.value.map({ $0.documentUploadStatus.asObservable() })
     }
     
@@ -82,10 +88,13 @@ class FolderViewModel {
         documentsSubscription = documents.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
             
-            self.folderStatus = Observable
-                .combineLatest(self.tasks)
+            self.folderStatusHolder?.dispose()
+            self.folderStatusHolder = Observable
+                .combineLatest(self.documentTasks.map({ $0.distinctUntilChanged() }))
                 .map(self.statusToProgress)
-                .asObservable()
+                .subscribe(onNext: { [weak self] status in
+                    self?.folderStatus.accept(status)
+                })
         })
     }
     

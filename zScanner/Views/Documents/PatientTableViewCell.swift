@@ -92,7 +92,7 @@ class PatientTableViewCell: UITableViewCell {
             }
         }
         
-        model.folderStatus?
+        model.folderStatus
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] status in
                 guard let self = self else { return }
@@ -119,7 +119,7 @@ class PatientTableViewCell: UITableViewCell {
         
         retryButton.rx.tap.subscribe(onNext: { [weak self] in
             #warning("Implemented")
-//            self?.viewModel?.reupload()
+            self?.viewModel?.reupload()
         })
         .disposed(by: disposeBag)
     }

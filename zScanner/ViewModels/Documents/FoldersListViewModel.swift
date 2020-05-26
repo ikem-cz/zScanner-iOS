@@ -55,6 +55,16 @@ class FoldersListViewModel {
     
     private func setupBindings() {
         activeFolders
+            .distinctUntilChanged()
+            .subscribe(onNext: { foldersViewModel in
+                foldersViewModel.forEach { folderViewModel in
+                    self.createFolderStatusSubscription(folderViewModel: folderViewModel)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        sentFolders
+            .distinctUntilChanged()
             .subscribe(onNext: { foldersViewModel in
                 foldersViewModel.forEach { folderViewModel in
                     self.createFolderStatusSubscription(folderViewModel: folderViewModel)
@@ -71,19 +81,8 @@ class FoldersListViewModel {
         loadFolders()
         
         // Filter folders by status
-        activeFolders.accept(folders.filter({
-                var status: DocumentViewModel.UploadStatus?
-                $0.folderStatus?.subscribe(onNext: { stat in status = stat }).disposed(by: disposeBag)
-                return status! != .success
-            })
-        )
-
-        sentFolders.accept(folders.filter({
-                var status: DocumentViewModel.UploadStatus?
-                $0.folderStatus?.subscribe(onNext: { stat in status = stat }).disposed(by: disposeBag)
-                return status! == .success
-            })
-        )
+        activeFolders.accept(folders.filter({ $0.folderStatus.value != .success }))
+        sentFolders.accept(folders.filter({ $0.folderStatus.value == .success }))
     }
     
     //MARK: Helpers
@@ -97,64 +96,11 @@ class FoldersListViewModel {
     }
     
     private func createFolderStatusSubscription(folderViewModel: FolderViewModel) {
-        folderViewModel.folderStatus?
-            .subscribe(onNext: { status in
-                if status == .success {
-                    var newActiveFolders = self.activeFolders.value
-                    _ = newActiveFolders.remove(folderViewModel)
-                    self.activeFolders.accept(newActiveFolders)
-                    
-                    var newSentFolders = self.sentFolders.value
-                    newSentFolders.append(folderViewModel)
-                    self.sentFolders.accept(newSentFolders)
-                } else {
-                    var newSentFolders = self.sentFolders.value
-                    _ = newSentFolders.remove(folderViewModel)
-                    self.sentFolders.accept(newSentFolders)
-                    
-                    var newActiveFolders = self.activeFolders.value
-                    newActiveFolders.append(folderViewModel)
-                    self.activeFolders.accept(newActiveFolders)
-                }
+        folderViewModel.folderStatus
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] _ in
+                self?.updateFolders()
             })
             .disposed(by: self.disposeBag)
     }
-    
-//    func fetchDocumentTypes() {
-//        networkManager
-//            .getDocumentTypes()
-//            .subscribe(onNext: { [weak self] requestStatus in
-//                switch requestStatus {
-//                case .progress:
-//                    self?.documentModesState.onNext(.loading)
-//
-//                case .success(data: let networkModel):
-//                    let documents = networkModel.map({ $0.toDomainModel() })
-//
-//                    self?.storeDocumentTypes(documents)
-//                    self?.storeDocumentModes(from: documents)
-//
-//                    self?.documentModesState.onNext(.success)
-//
-//                case .error(let error):
-//                    self?.documentModesState.onNext(.error(error))
-//                }
-//            })
-//            .disposed(by: disposeBag)
-//    }
-    
-//    private func storeDocumentModes(from documentTypes: [DocumentTypeDomainModel]) {
-//        documentModes = Array(Set(documentTypes.map({ $0.mode })))
-//        documentModes.append(.photo)
-//        documentModes.append(.video)
-//    }
-    
-//    private func storeDocumentTypes(_ types: [DocumentTypeDomainModel]) {
-//        DispatchQueue.main.async {
-//            self.database.deleteAll(of: DocumentTypeDatabaseModel.self)
-//            types
-//                .map({ DocumentTypeDatabaseModel(documentType: $0) })
-//                .forEach({ self.database.saveObject($0) })
-//        }
-//    }
 }

@@ -42,11 +42,11 @@ struct NativeAPI: API {
             urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
         }
         
-        let configuration = URLSessionConfiguration.default
-//        guard let configuration = SeaCatClient.getNSURLSessionConfiguration() else {
-//            callback(.error(RequestError(.seacatError)))
-//            return
-//        }
+//        let configuration = URLSessionConfiguration.default
+        guard let configuration = SeaCatClient.getNSURLSessionConfiguration() else {
+            callback(.error(RequestError(.seacatError)))
+            return
+        }
         
         let completionHandler: (Data?, URLResponse?, Error?) -> Void = { (data, response, error) in
             if let error = error {

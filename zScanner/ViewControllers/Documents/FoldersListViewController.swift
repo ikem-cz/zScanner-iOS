@@ -59,6 +59,7 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     
     // MARK: Interface
     func insertNewDocument(document: DocumentViewModel) {
+        dismissBottomSheet()
         viewModel.insertNewDocument(document)
     }
     
@@ -72,8 +73,8 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     
     private func setupBindings() {
         Observable.combineLatest([
-                viewModel.activeFolders,
-                viewModel.sentFolders
+                viewModel.activeFolders.distinctUntilChanged(),
+                viewModel.sentFolders.distinctUntilChanged()
             ])
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in

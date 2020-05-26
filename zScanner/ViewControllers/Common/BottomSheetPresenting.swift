@@ -47,7 +47,7 @@ class BottomSheetPresenting: BaseViewController {
         presentedView.frame = expanded ? frameOfExpandedView : frameOfDismissedView
     }
     
-    func dismiss() {
+    func dismissBottomSheet() {
         (sheetViewController as? Presentable)?.willDismiss()
         
         UIView.animate(withDuration: 0.25) {
@@ -56,7 +56,7 @@ class BottomSheetPresenting: BaseViewController {
         }
     }
     
-    func expand() {
+    func expandBottomSheet() {
         (sheetViewController as? Presentable)?.willExpand()
         
         UIView.animate(withDuration: 0.25) {
@@ -82,9 +82,9 @@ class BottomSheetPresenting: BaseViewController {
 
             let treshold: CGFloat = 100
             if expanded {
-                relativePosition < treshold ? expand() : dismiss()
+                relativePosition < treshold ? expandBottomSheet() : dismissBottomSheet()
             } else {
-                position < frameOfDismissedView.origin.y - treshold ? expand() : dismiss()
+                position < frameOfDismissedView.origin.y - treshold ? expandBottomSheet() : dismissBottomSheet()
             }
 
             gesture.setTranslation(.zero, in: view)
