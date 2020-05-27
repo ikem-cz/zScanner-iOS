@@ -1,5 +1,5 @@
 //
-//  PatientTableViewCell.swift
+//  FolderStatusTableViewCell.swift
 //  zScanner
 //
 //  Created by Jakub Skořepa on 21/07/2019.
@@ -15,7 +15,7 @@ protocol FolderViewDelegate {
     func createNewDocumentToFolder(folderViewModel: FolderViewModel)
 }
 
-class PatientTableViewCell: UITableViewCell {
+class FolderStatusTableViewCell: UITableViewCell {
     
     //MARK: Instance part
     private var viewModel: FolderViewModel?

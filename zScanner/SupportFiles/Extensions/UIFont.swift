@@ -14,7 +14,7 @@ extension UIFont {
     
     static var header: UIFont {
         let font = UIFont.systemFont(ofSize: 26, weight: .bold)
-        return UIFontMetrics(forTextStyle: .headline).scaledFont(for: font)
+        return UIFontMetrics(forTextStyle: .title1).scaledFont(for: font)
     }
     
     static var headline: UIFont {

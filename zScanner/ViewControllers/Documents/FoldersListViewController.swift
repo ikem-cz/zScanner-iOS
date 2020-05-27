@@ -58,10 +58,6 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
         ]
     }
     
-    override var rightBarButtonItems: [UIBarButtonItem] {
-        return rightBarButtons
-    }
-    
     // MARK: Interface
     func insertNewDocument(document: DocumentViewModel) {
         dismissBottomSheet()
@@ -70,11 +66,6 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     
     // MARK: Helpers
     private let disposeBag = DisposeBag()
-    private var rightBarButtons: [UIBarButtonItem] = [] {
-        didSet {
-            navigationItem.rightBarButtonItems = rightBarButtons
-        }
-    }
     
     func updateViewModel() {
         viewModel.updateFolders()
@@ -95,8 +86,6 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     @objc private func openMenu() {
         coordinator.openMenu()
     }
-    
-    var isActiveSectionPresenting = false
     
     private func setupView() {
         // Remove bottom line of navbar
@@ -166,7 +155,7 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
-        tableView.registerCell(PatientTableViewCell.self)
+        tableView.registerCell(FolderStatusTableViewCell.self)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 80
         tableView.tableFooterView = UIView()
@@ -179,7 +168,7 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
         UITableViewDiffableDataSource<Section, FolderViewModel>(
             tableView: self.tableView,
             cellProvider: {  (tableView, indexPath, folder) in
-                let cell = tableView.dequeueCell(PatientTableViewCell.self)
+                let cell = tableView.dequeueCell(FolderStatusTableViewCell.self)
                 cell.setup(with: folder, delegate: self)
                 return cell
             }
