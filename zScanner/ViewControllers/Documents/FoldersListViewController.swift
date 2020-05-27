@@ -46,6 +46,12 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
         setupBindings()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        dismissBottomSheet()
+    }
+    
     override var leftBarButtonItems: [UIBarButtonItem] {
         return [
             hambugerButton
@@ -68,6 +74,10 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
         didSet {
             navigationItem.rightBarButtonItems = rightBarButtons
         }
+    }
+    
+    func updateViewModel() {
+        viewModel.updateFolders()
     }
     
     private func setupBindings() {
@@ -119,7 +129,7 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
         }
     }
     
-    func updateTableView() {
+    private func updateTableView() {
         var snapshot = NSDiffableDataSourceSnapshot<Section, FolderViewModel>()
         
         let count = viewModel.folders.count

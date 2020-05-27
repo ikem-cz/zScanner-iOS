@@ -1,5 +1,5 @@
 //
-//  DocumentsCoordinator.swift
+//  FoldersCoordinator.swift
 //  zScanner
 //
 //  Created by Jakub Skořepa on 26/07/2019.
@@ -9,18 +9,18 @@
 import UIKit
 import RxSwift
 
-protocol DocumentsFlowDelegate: FlowDelegate {
+protocol FoldersFlowDelegate: FlowDelegate {
     func logout()
 }
 
 // MARK: -
-class DocumentsCoordinator: Coordinator {
+class FoldersCoordinator: Coordinator {
     
     // MARK: Instance part
-    unowned private let flowDelegate: DocumentsFlowDelegate
+    unowned private let flowDelegate: FoldersFlowDelegate
     private let userSession: UserSession
     
-    init(userSession: UserSession, flowDelegate: DocumentsFlowDelegate, window: UIWindow) {
+    init(userSession: UserSession, flowDelegate: FoldersFlowDelegate, window: UIWindow) {
         self.userSession = userSession
         self.flowDelegate = flowDelegate
         self.networkManager = IkemNetworkManager(api: api)
@@ -32,16 +32,20 @@ class DocumentsCoordinator: Coordinator {
     
     // MARK: Interface
     func begin() {
-        showDocumentsListScreen()
+        showFoldersListScreen()
         setupMenu()
     }
     
     // MARK: Navigation methods
-    private func showDocumentsListScreen() {
+    private var foldersListViewController: FoldersListViewController {
         let viewModel = FoldersListViewModel(database: database, login: userSession.login, ikemNetworkManager: networkManager)
         let viewController = FoldersListViewController(viewModel: viewModel, coordinator: self)
-        viewController.sheetViewController = folderSearchScreen
-        push(viewController)
+        return viewController
+    }
+    
+    private func showFoldersListScreen() {
+        foldersListViewController.sheetViewController = folderSearchScreen
+        push(foldersListViewController)
     }
     
     private var folderSearchScreen: NewDocumentFolderViewController {
@@ -101,7 +105,7 @@ class DocumentsCoordinator: Coordinator {
 }
 
 // MARK: - DocumentsListCoordinator implementation
-extension DocumentsCoordinator: FoldersListCoordinator {
+extension FoldersCoordinator: FoldersListCoordinator {
     func createNewDocument(with folderSelection: FolderSelection) {
         runNewDocumentFlow(with: folderSelection)
     }
@@ -112,7 +116,7 @@ extension DocumentsCoordinator: FoldersListCoordinator {
 }
 
 // MARK: - NewDocumentFlowDelegate implementation
-extension DocumentsCoordinator: NewDocumentFlowDelegate {
+extension FoldersCoordinator: NewDocumentFlowDelegate {
     func newDocumentCreated(_ documentViewModel: DocumentViewModel) {
         guard let list = viewControllers.last as? FoldersListViewController else {
             assertionFailure()
@@ -124,7 +128,7 @@ extension DocumentsCoordinator: NewDocumentFlowDelegate {
 }
 
 // MARK: - MenuFlowDelegate implementation
-extension DocumentsCoordinator: MenuFlowDelegate {
+extension FoldersCoordinator: MenuFlowDelegate {
     func deleteHistory() {
         
         //Tracking
@@ -137,6 +141,8 @@ extension DocumentsCoordinator: MenuFlowDelegate {
         database.deleteAll(of: PageUploadStatusDatabaseModel.self)
         database.deleteAll(of: DocumentUploadStatusDatabaseModel.self)
         database.deleteAll(of: FolderDatabaseModel.self)
+        
+        foldersListViewController.updateViewModel()
     }
     
     func logout() {
@@ -147,7 +153,7 @@ extension DocumentsCoordinator: MenuFlowDelegate {
 }
 
 // MARK: - NewDocumentTypeCoordinator implementation
-extension DocumentsCoordinator: NewDocumentFolderCoordinator {
+extension FoldersCoordinator: NewDocumentFolderCoordinator {
     func folderSelected(_ folderSelection: FolderSelection) {
         runNewDocumentFlow(with: folderSelection)
     }

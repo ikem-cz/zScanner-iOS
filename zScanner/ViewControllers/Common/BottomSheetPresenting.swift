@@ -54,6 +54,8 @@ class BottomSheetPresenting: BaseViewController {
             self.presentedView.frame = self.frameOfDismissedView
             self.expanded = false
         }
+        
+        view.endEditing(true)
     }
     
     func expandBottomSheet() {
