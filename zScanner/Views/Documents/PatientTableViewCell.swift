@@ -12,6 +12,7 @@ import SnapKit
 
 protocol FolderViewDelegate {
     func handleError(_ error: RequestError)
+    func createNewDocumentToFolder(folderViewModel: FolderViewModel)
 }
 
 class PatientTableViewCell: UITableViewCell {
@@ -55,6 +56,10 @@ class PatientTableViewCell: UITableViewCell {
 
         nameLabel.text = model.folder.name + String(model.documents.value.count)
         pinLabel.text = model.folder.externalId
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(createDocumentToThisFolder))
+        addGestureRecognizer(tap)
+        isUserInteractionEnabled = true
         
         isStatusContainerVisible = false
         
@@ -153,6 +158,11 @@ class PatientTableViewCell: UITableViewCell {
             textToSuperview?.deactivate()
             textToStatus?.activate()
         }
+    }
+    
+    @objc func createDocumentToThisFolder() {
+        guard let folder = viewModel else { return }
+        delegate?.createNewDocumentToFolder(folderViewModel: folder)
     }
     
     private func setupView() {

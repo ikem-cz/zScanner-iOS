@@ -32,7 +32,7 @@ class FoldersListViewModel {
         self.login = login
         self.networkManager = ikemNetworkManager
         
-        loadFolders()
+        updateFolders()
         setupBindings()
     }
     

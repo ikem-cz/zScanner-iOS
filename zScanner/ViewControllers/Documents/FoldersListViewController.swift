@@ -42,7 +42,6 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        viewModel.updateFolders()
         updateTableView()
         setupBindings()
     }
@@ -197,4 +196,9 @@ extension FoldersListViewController: UITableViewDelegate {
 }
 
 //MARK: - DocumentViewDelegate implementation
-extension FoldersListViewController: FolderViewDelegate { }
+extension FoldersListViewController: FolderViewDelegate {
+    func createNewDocumentToFolder(folderViewModel: FolderViewModel) {
+        let folderSelection = FolderSelection(folder: folderViewModel.folder, searchMode: .history)
+        coordinator.createNewDocument(with: folderSelection)
+    }
+}
