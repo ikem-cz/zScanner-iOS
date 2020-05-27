@@ -35,9 +35,6 @@ class NewDocumentMediaViewModel {
         
         // Add media
         var newArray = mediaArray.value
-        if media.type == .video {
-            media.makeVideoThumbnail()
-        }
         newArray.append(media)
         mediaArray.accept(newArray)
     }

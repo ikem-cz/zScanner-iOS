@@ -10,6 +10,7 @@ import Foundation
 import AVFoundation
 import RxSwift
 import RxRelay
+import Vision
 
 class CameraViewModel {
     
@@ -41,7 +42,7 @@ class CameraViewModel {
         guard let data = image.jpegData(compressionQuality: 0.8) else { return }
         
         do {
-            media = Media(type: .photo, correlationId: correlationId, fromGallery: fromGallery, thumbnail: image)
+            media = Media(type: .photo, correlationId: correlationId, fromGallery: fromGallery)
             createDocumentDirectory()
             try data.write(to: media!.url)
         } catch let error {
@@ -68,6 +69,18 @@ class CameraViewModel {
             }
         } else {
             completion(true)
+        }
+    }
+    
+    func saveScan(image: UIImage, rectangle: VNRectangleObservation, fromGallery: Bool) {
+        guard let data = image.jpegData(compressionQuality: 0.8) else { return }
+        
+        do {
+            media = ScanMedia(scanRectangle: rectangle, correlationId: correlationId, fromGallery: fromGallery)
+            createDocumentDirectory()
+            try data.write(to: media!.url)
+        } catch let error {
+            print("error saving image with error", error)
         }
     }
     

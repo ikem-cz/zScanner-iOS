@@ -105,6 +105,8 @@
 		BD88F1552308A01B00569D71 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = BD88F1572308A01B00569D71 /* Localizable.stringsdict */; };
 		BD88F1592309537F00569D71 /* UploadPageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD88F1582309537F00569D71 /* UploadPageRequest.swift */; };
 		BD88F15B230953C700569D71 /* PageNetworkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD88F15A230953C700569D71 /* PageNetworkModel.swift */; };
+		BD893803247EA4F60084FB5F /* ScanPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD893802247EA4F60084FB5F /* ScanPreviewViewController.swift */; };
+		BD893805247EA9610084FB5F /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD893804247EA9610084FB5F /* UIImageView.swift */; };
 		BD8AA80F23003D530082441F /* FolderDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8AA80E23003D530082441F /* FolderDatabaseModel.swift */; };
 		BD8F753B232407620086B097 /* ErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8F753A232407620086B097 /* ErrorHandling.swift */; };
 		BD8F753E23241F660086B097 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8F753D23241F660086B097 /* SplashViewController.swift */; };
@@ -254,6 +256,8 @@
 		BD88F1562308A01B00569D71 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = cs; path = cs.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		BD88F1582309537F00569D71 /* UploadPageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPageRequest.swift; sourceTree = "<group>"; };
 		BD88F15A230953C700569D71 /* PageNetworkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageNetworkModel.swift; sourceTree = "<group>"; };
+		BD893802247EA4F60084FB5F /* ScanPreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanPreviewViewController.swift; sourceTree = "<group>"; };
+		BD893804247EA9610084FB5F /* UIImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
 		BD8AA80E23003D530082441F /* FolderDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderDatabaseModel.swift; sourceTree = "<group>"; };
 		BD8F753A232407620086B097 /* ErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
 		BD8F753D23241F660086B097 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
@@ -389,6 +393,7 @@
 				16CBB2B8246AAC86003E5D64 /* MediumPreviewViewController.swift */,
 				16D371FD24645E7A00B845B0 /* PhotoPreviewViewController.swift */,
 				16CBB2B0246A7FA5003E5D64 /* VideoPreviewViewController.swift */,
+				BD893802247EA4F60084FB5F /* ScanPreviewViewController.swift */,
 				16EC85FA246AF77200C525B9 /* MediaListViewController.swift */,
 			);
 			path = NewDocument;
@@ -560,6 +565,7 @@
 				BD59A07522E36DEE00FA9CD0 /* UITableView.swift */,
 				BD59A0AC22E395AF00FA9CD0 /* UIColor.swift */,
 				BD59A0AE22E3966700FA9CD0 /* UIFont.swift */,
+				BD893804247EA9610084FB5F /* UIImageView.swift */,
 				BD402E782300C46F00049DF9 /* UISearchBar.swift */,
 				BD000CB122E3B38B001EE38A /* UITextField.swift */,
 				BD88F14F23087F1300569D71 /* UIView.swift */,
@@ -916,6 +922,7 @@
 				BD80224722F82C03009B8B69 /* TextInputTableViewCell.swift in Sources */,
 				BD000CD122E497B9001EE38A /* LoginDomainModel.swift in Sources */,
 				BD59A06422E36CB200FA9CD0 /* BackButton.swift in Sources */,
+				BD893803247EA4F60084FB5F /* ScanPreviewViewController.swift in Sources */,
 				16BF842E245C7136004CC132 /* CameraView.swift in Sources */,
 				BD70566F23301D7E0074184A /* URL.swift in Sources */,
 				BD7EAC3E23258A1A002C225A /* MediaDatabaseModel.swift in Sources */,
@@ -1007,6 +1014,7 @@
 				BDA25B2322EF9D7A006DA7E4 /* FirebaseAnalytics.swift in Sources */,
 				BD2F209422EBB49000534916 /* FoldersCoordinator.swift in Sources */,
 				16BF842C245C6631004CC132 /* MediaTypeCollectionViewCell.swift in Sources */,
+				BD893805247EA9610084FB5F /* UIImageView.swift in Sources */,
 				BD59A06C22E36D2A00FA9CD0 /* ViewControllerService.swift in Sources */,
 				BD59A0A022E3707E00FA9CD0 /* Config.swift in Sources */,
 				BD8F753B232407620086B097 /* ErrorHandling.swift in Sources */,

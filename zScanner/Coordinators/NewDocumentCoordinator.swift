@@ -21,9 +21,10 @@ class NewDocumentCoordinator: Coordinator {
     private var mediaViewModel: NewDocumentMediaViewModel?
     private let defaultMediaType = MediaType.photo
     private let mediaSourceTypes = [
-         MediaType.photo,
-         MediaType.video
-     ]
+        MediaType.photo,
+        MediaType.video,
+        MediaType.scan
+    ]
     
     init?(folderSelection: FolderSelection, flowDelegate: NewDocumentFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
         self.flowDelegate = flowDelegate
@@ -81,6 +82,12 @@ class NewDocumentCoordinator: Coordinator {
     private func showVideoPreviewScreen(media: Media) {
         guard let mediaViewModel = mediaViewModel else { return }
         let viewController = VideoPreviewViewController(media: media, viewModel: mediaViewModel, coordinator: self)
+        push(viewController)
+    }
+    
+    private func showScanPreviewScreen(media: Media) {
+        guard let mediaViewModel = mediaViewModel, let scanMedia = media as? ScanMedia else { return }
+        let viewController = ScanPreviewViewController(media: scanMedia, viewModel: mediaViewModel, coordinator: self)
         push(viewController)
     }
     
@@ -157,10 +164,13 @@ extension NewDocumentCoordinator: CameraCoordinator {
             mediaViewModel = NewDocumentMediaViewModel(folderName: folder.name, mediaType: media.type, tracker: tracker)
         }
         
-        if media.type == .photo {
+        switch media.type {
+        case .photo:
             showPhotoPreviewScreen(media: media)
-        } else if media.type == .video {
+        case .video:
             showVideoPreviewScreen(media: media)
+        case .scan:
+            showScanPreviewScreen(media: media)
         }
     }
 }
