@@ -9,7 +9,7 @@
 import UIKit
 
 protocol MediaPreviewCoordinator: BaseCoordinator {
-    func createNewMedia(mediaType: MediaType)
+    func createNewMedia()
     func finishEdit()
 }
 
@@ -70,13 +70,13 @@ class MediaPreviewViewController: BaseViewController {
     
     @objc func retake() {
         stopPlayingVideo()
-        coordinator.createNewMedia(mediaType: media.type)
+        coordinator.createNewMedia()
     }
     
     @objc func createAnotherMedia() {
         stopPlayingVideo()
         viewModel.addMedia(media)
-        coordinator.createNewMedia(mediaType: media.type)
+        coordinator.createNewMedia()
     }
     
     @objc func showMediaSelection() {

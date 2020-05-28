@@ -11,6 +11,8 @@ import AVFoundation
 import UPCarouselFlowLayout
 import MobileCoreServices
 import RxSwift
+import Vision
+import SnapKit
 
 protocol CameraCoordinator: BaseCoordinator {
     func mediaCreated(_ media: Media)
@@ -22,6 +24,7 @@ class CameraViewController: BaseViewController {
     // MARK: Instance part
     private var captureSession: AVCaptureSession!
     private let photoOutput = AVCapturePhotoOutput()
+    private let scanOutput = AVCaptureVideoDataOutput()
     private let videoOutput = AVCaptureMovieFileOutput()
     private let videoDevice = AVCaptureDevice.default(for: AVMediaType.video)
     private let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
@@ -65,6 +68,7 @@ class CameraViewController: BaseViewController {
 
         setupCaptureSession()
         setupView()
+        setupVision()
         setupBindings()
     }
     
@@ -88,71 +92,27 @@ class CameraViewController: BaseViewController {
                     self.middleCaptureButton.isHidden = true
                     self.middleRecordButton.isHidden = false
                 case .scan:
+                    self.prepareScanSession()
                     self.middleCaptureButton.isHidden = false
-                    self.middleCaptureButton.isHidden = true
+                    self.middleRecordButton.isHidden = true
                 }
             })
             .disposed(by: disposeBag)
     }
     
-    private func setupView() {
-        view.backgroundColor = .black
-        title = viewModel.folderName
+    // MARK: Setup media session
+    func setupCaptureSession() {
+        captureSession = AVCaptureSession()
+        captureSession.sessionPreset = .medium
         
-        view.addSubview(captureButton)
-        captureButton.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalTo(safeArea).inset(8)
-            make.height.width.equalTo(70)
+        // Add temporary input to setup preview constraints
+        if let videoDevice = videoDevice, let input = try? AVCaptureDeviceInput(device: videoDevice), captureSession.canAddInput(input) {
+            captureSession.addInput(input)
         }
         
-        captureButton.addSubview(middleCaptureButton)
-        middleCaptureButton.snp.makeConstraints { make in
-            make.centerX.centerY.equalTo(captureButton)
-            make.height.width.equalTo(60)
-        }
-        
-        captureButton.addSubview(middleRecordButton)
-        middleRecordButton.snp.makeConstraints { make in
-            make.centerX.centerY.equalTo(captureButton)
-            make.height.width.equalTo(60)
-        }
-        
-        view.addSubview(mediaSourceTypeCollectionView)
-        mediaSourceTypeCollectionView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalTo(captureButton.snp.top).inset(-10)
-            make.height.equalTo(40)
-            make.width.equalToSuperview()
-        }
-        
-        view.addSubview(cameraView)
-        cameraView.snp.makeConstraints { make in
-            make.top.equalTo(safeArea)
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
-        }
-        
-        view.addSubview(swipeMediaTypeView)
-        swipeMediaTypeView.snp.makeConstraints { make in
-            make.top.equalTo(safeArea)
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
-        }
-        
-        view.addSubview(galleryButton)
-        galleryButton.snp.makeConstraints { make in
-            make.bottom.left.equalTo(safeArea).inset(8)
-        }
-        
-        view.addSubview(timeLabel)
-        timeLabel.snp.makeConstraints { make in
-            make.top.equalTo(safeArea).inset(5)
-            make.trailing.leading.centerX.equalToSuperview()
-        }
+        videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
     }
     
-    // MARK: Setup media session
     func preparePhotoSession() {
         guard let videoDevice = videoDevice else { return }
         
@@ -202,12 +162,95 @@ class CameraViewController: BaseViewController {
             print("Error Unable to initialize video with audio:  \(error.localizedDescription).")
         }
     }
-
-    func setupCaptureSession() {
-        captureSession = AVCaptureSession()
-        captureSession.sessionPreset = .medium
+    
+    func prepareScanSession() {
+        guard let videoDevice = videoDevice else { return }
         
-        videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+        if captureSession.isRunning { captureSession.stopRunning() }
+        
+        do {
+            let input = try AVCaptureDeviceInput(device: videoDevice)
+            
+            captureSession.beginConfiguration()
+            captureSession.inputs.forEach { captureSession.removeInput($0) }
+            captureSession.outputs.forEach { captureSession.removeOutput($0) }
+            
+            if captureSession.canAddInput(input) && captureSession.canAddOutput(photoOutput) && captureSession.canAddOutput(scanOutput) {
+                captureSession.addInput(input)
+                captureSession.addOutput(photoOutput)
+                captureSession.addOutput(scanOutput)
+                scanOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "queue"))
+            }
+            
+            captureSession.commitConfiguration()
+            captureSession.startRunning()
+        } catch(let error) {
+            print("Error Unable to initialize back camera:  \(error.localizedDescription).")
+        }
+    }
+    
+    private var requests = [VNRequest]()
+
+    func setupVision() {
+        let rectangleDetectionRequest = VNDetectRectanglesRequest(completionHandler: handleRectangles)
+        rectangleDetectionRequest.minimumSize = 0.2
+        rectangleDetectionRequest.maximumObservations = 20
+        self.requests = [rectangleDetectionRequest]
+    }
+    
+    func handleRectangles(request: VNRequest, error: Error?) {
+        DispatchQueue.main.async {
+            if let results = request.results as? [VNObservation] {
+                self.drawVisionRequestResults(results)
+            }
+        }
+    }
+
+    private var rectangleLayer: CAShapeLayer?
+    private var lastResult: VNRectangleObservation?
+    
+    func drawVisionRequestResults(_ results: [VNObservation]) {
+        guard let result = results.first as? VNRectangleObservation else { return }
+        
+        if let layer = self.rectangleLayer {
+            layer.removeFromSuperlayer()
+            self.rectangleLayer = nil
+        }
+        
+        self.lastResult = result
+        let points = [result.topLeft, result.topRight, result.bottomRight, result.bottomLeft]
+        let convertedPoints = points.map { self.convertFromCamera($0) }
+        self.rectangleLayer = self.drawBoundingBox(convertedPoints, color: #colorLiteral(red: 0.3328347607, green: 0.236689759, blue: 1, alpha: 1))
+        self.cameraView.layer.addSublayer(self.rectangleLayer!)
+    }
+    
+    private func drawBoundingBox(_ points: [CGPoint], color: CGColor) -> CAShapeLayer {
+        let layer = CAShapeLayer()
+        layer.fillColor = #colorLiteral(red: 0.4506933627, green: 0.5190293554, blue: 0.9686274529, alpha: 0.2050513699)
+        layer.strokeColor = color
+        layer.lineWidth = 2
+        let path = UIBezierPath()
+        path.move(to: points.last!)
+        points.forEach { point in
+            path.addLine(to: point)
+        }
+        layer.path = path.cgPath
+        return layer
+    }
+    
+    func convertFromCamera(_ point: CGPoint) -> CGPoint {
+        let orientation = UIApplication.shared.statusBarOrientation
+        
+        switch orientation {
+        case .portrait, .unknown:
+            return CGPoint(x: point.y * self.cameraView.frame.width, y: point.x * self.cameraView.frame.height)
+        case .landscapeLeft:
+            return CGPoint(x: (1 - point.x) * self.cameraView.frame.width, y: point.y * self.cameraView.frame.height)
+        case .landscapeRight:
+            return CGPoint(x: point.x * self.cameraView.frame.width, y: (1 - point.y) * self.cameraView.frame.height)
+        case .portraitUpsideDown:
+            return CGPoint(x: (1 - point.y) * self.cameraView.frame.width, y: (1 - point.x) * self.cameraView.frame.height)
+        }
     }
 
     // MARK: Helpers
@@ -247,6 +290,75 @@ class CameraViewController: BaseViewController {
             }
         } else {
             print("Torch is not available.")
+        }
+    }
+    
+    private func setupView() {
+        view.backgroundColor = .black
+        title = viewModel.folderName
+        
+        captureSession.sessionPreset = .medium
+        view.addSubview(captureButton)
+        captureButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(safeArea).inset(8)
+            make.height.width.equalTo(70)
+        }
+        
+        captureButton.addSubview(middleCaptureButton)
+        middleCaptureButton.snp.makeConstraints { make in
+            make.centerX.centerY.equalTo(captureButton)
+            make.height.width.equalTo(60)
+        }
+        
+        captureButton.addSubview(middleRecordButton)
+        middleRecordButton.snp.makeConstraints { make in
+            make.centerX.centerY.equalTo(captureButton)
+            make.height.width.equalTo(60)
+        }
+        
+        view.addSubview(mediaSourceTypeCollectionView)
+        mediaSourceTypeCollectionView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(captureButton.snp.top).inset(-10)
+            make.height.equalTo(40)
+            make.width.equalToSuperview()
+        }
+        
+        let cameraViewContainer = UIView()
+        view.addSubview(cameraViewContainer)
+        cameraViewContainer.snp.makeConstraints { make in
+            make.top.equalTo(safeArea)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
+        }
+        
+        let previewDimensions = CMVideoFormatDescriptionGetDimensions((captureSession.inputs.first as! AVCaptureDeviceInput).device.activeFormat.formatDescription)
+        let videoAspect = Double(previewDimensions.width)/Double(previewDimensions.height)
+        cameraViewContainer.addSubview(cameraView)
+        cameraView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.top.left.greaterThanOrEqualToSuperview()
+            make.top.left.equalToSuperview().priority(500)
+            make.height.equalTo(cameraView.snp.width).multipliedBy(videoAspect)
+        }
+        
+        view.addSubview(swipeMediaTypeView)
+        swipeMediaTypeView.snp.makeConstraints { make in
+            make.top.equalTo(safeArea)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
+        }
+        
+        view.addSubview(galleryButton)
+        galleryButton.snp.makeConstraints { make in
+            make.bottom.left.equalTo(safeArea).inset(8)
+        }
+        
+        view.addSubview(timeLabel)
+        timeLabel.snp.makeConstraints { make in
+            make.top.equalTo(safeArea).inset(5)
+            make.trailing.leading.centerX.equalToSuperview()
         }
     }
     
@@ -435,8 +547,17 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         guard let imageData = photo.fileDataRepresentation() else { return }
         
         if let image = UIImage(data: imageData) {
-            viewModel.saveImage(image: image, fromGallery: false)
-            coordinator.mediaCreated(viewModel.media!)
+            if viewModel.currentMode.value == .scan {
+                if let rectangle = lastResult {
+                    viewModel.saveScan(image: image, rectangle: rectangle, fromGallery: false)
+                    coordinator.mediaCreated(viewModel.media!)
+                } else {
+                    print("No rectangle detected")
+                }
+            } else {
+                viewModel.saveImage(image: image, fromGallery: false)
+                coordinator.mediaCreated(viewModel.media!)
+            }
         }
     }
 }
@@ -510,5 +631,30 @@ extension CameraViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let offset = (layout.scrollDirection == .horizontal) ? scrollView.contentOffset.x : scrollView.contentOffset.y
         let index = Int(floor((offset - pageSide / 2) / pageSide) + 1)
         viewModel.newModeSelected(with: viewModel.mediaSourceTypes[index])
+    }
+}
+
+extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
+    
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        
+        var requestOptions = [VNImageOption: Any]()
+        
+        if let cameraInstrictData = CMGetAttachment(
+            sampleBuffer,
+            key: kCMSampleBufferAttachmentKey_CameraIntrinsicMatrix,
+            attachmentModeOut: nil
+        ) {
+            requestOptions[.cameraIntrinsics] = cameraInstrictData
+        }
+        
+        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: requestOptions)
+        
+        do {
+            try imageRequestHandler.perform(requests)
+        } catch {
+            print(error)
+        }
     }
 }
