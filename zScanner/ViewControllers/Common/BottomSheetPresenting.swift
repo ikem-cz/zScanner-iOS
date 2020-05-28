@@ -97,7 +97,7 @@ class BottomSheetPresenting: BaseViewController {
     }
     
     private let heightOfCollapsedSheet: CGFloat = 128
-    private let gapAboveExpandedSheet: CGFloat = 88
+    private let gapAboveExpandedSheet: CGFloat = 78
     
     private var frameOfExpandedView: CGRect {
         return CGRect(

@@ -37,11 +37,11 @@ class FoldersCoordinator: Coordinator {
     }
     
     // MARK: Navigation methods
-    private var foldersListViewController: FoldersListViewController {
+    private lazy var foldersListViewController: FoldersListViewController = {
         let viewModel = FoldersListViewModel(database: database, login: userSession.login, ikemNetworkManager: networkManager)
         let viewController = FoldersListViewController(viewModel: viewModel, coordinator: self)
         return viewController
-    }
+    }()
     
     private func showFoldersListScreen() {
         foldersListViewController.sheetViewController = folderSearchScreen
@@ -122,7 +122,7 @@ extension FoldersCoordinator: NewDocumentFlowDelegate {
             assertionFailure()
             return
         }
-        
+        list.dismissBottomSheet()
         list.insertNewDocument(document: documentViewModel)
     }
 }

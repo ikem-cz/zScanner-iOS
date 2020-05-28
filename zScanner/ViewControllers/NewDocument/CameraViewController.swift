@@ -200,7 +200,9 @@ class CameraViewController: BaseViewController {
     
     func handleRectangles(request: VNRequest, error: Error?) {
         DispatchQueue.main.async {
-            self.drawVisionRequestResults(request.results as! [VNObservation])
+            if let results = request.results as? [VNObservation] {
+                self.drawVisionRequestResults(results)
+            }
         }
     }
 
@@ -292,9 +294,10 @@ class CameraViewController: BaseViewController {
     }
     
     private func setupView() {
-        view.backgroundColor = .clear
+        view.backgroundColor = .black
         title = viewModel.folderName
         
+        captureSession.sessionPreset = .medium
         view.addSubview(captureButton)
         captureButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()

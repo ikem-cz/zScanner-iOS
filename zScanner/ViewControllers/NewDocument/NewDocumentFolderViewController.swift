@@ -309,6 +309,10 @@ extension NewDocumentFolderViewController: UITableViewDelegate {
 
 // MARK: - UISearchBarDelegate implementation
 extension NewDocumentFolderViewController: UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        (parent as? BottomSheetPresenting)?.expandBottomSheet()
+    }
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         var searchText = searchText
         

@@ -177,7 +177,7 @@ extension NewDocumentCoordinator: CameraCoordinator {
 
 // MARK: - MediaPreviewCoordinator implementation
 extension NewDocumentCoordinator: MediaPreviewCoordinator {
-    func createNewMedia(mediaType: MediaType) {
+    func createNewMedia() {
         guard let mediaViewModel = mediaViewModel else { return }
         showNewMediaScreen(mediaType: mediaViewModel.mediaType, mediaSourceTypes: [mediaViewModel.mediaType])
     }
@@ -192,17 +192,20 @@ extension NewDocumentCoordinator: MediaPreviewCoordinator {
 }
 
 // MARK: - NewDocumentMediaCoordinator implementation
-extension NewDocumentCoordinator: MediaListCoordinator {
+extension NewDocumentCoordinator: MediaListCoordinator {    
     func upload() {
         saveMediaToDocument((mediaViewModel?.mediaArray.value)!)
         finish()
     }
     
-    func reeditMedium(media: Media) {
-        if media.type == .photo {
+    func reeditMedia(media: Media) {
+        switch media.type {
+        case .photo:
             showPhotoPreviewScreen(media: media)
-        } else if media.type == .video {
+        case .video:
             showVideoPreviewScreen(media: media)
+        case .scan:
+            showScanPreviewScreen(media: media)
         }
     }
 }

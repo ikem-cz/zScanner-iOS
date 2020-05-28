@@ -13,7 +13,8 @@ import MobileCoreServices
 
 protocol MediaListCoordinator: BaseCoordinator {
     func upload()
-    func reeditMedium(media: Media)
+    func reeditMedia(media: Media)
+    func createNewMedia()
 }
 
 class MediaListViewController: BaseViewController {
@@ -42,8 +43,18 @@ class MediaListViewController: BaseViewController {
         setupBindings()
     }
     
+    override var rightBarButtonItems: [UIBarButtonItem] {
+        return [
+            UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(takeNewPicture))
+        ]
+    }
+    
     // MARK: Helpers
     let disposeBag = DisposeBag()
+    
+    @objc private func takeNewPicture() {
+        coordinator.createNewMedia()
+    }
     
     private func setupBindings() {
         viewModel.mediaArray
@@ -61,7 +72,7 @@ class MediaListViewController: BaseViewController {
             .subscribe(onNext: { indexPath in
                 let cell = self.collectionView.cellForItem(at: indexPath) as! PhotoSelectorCollectionViewCell
                 guard let media = cell.element else { return }
-                self.coordinator.reeditMedium(media: media)
+                self.coordinator.reeditMedia(media: media)
             }).disposed(by: disposeBag)
         
         viewModel.mediaArray
