@@ -76,6 +76,20 @@ class SegmentControlField: FormField {
 }
 
 // MARK: -
+class CollectionViewField: FormField {
+    var title: String = ""
+
+    var value: Observable<String> {
+        return picturesCount.map({ _ in "" }).asObservable()
+    }
+    var isValid: Observable<Bool> {
+        return picturesCount.map({ $0 != nil }).asObservable()
+    }
+    
+    let picturesCount = BehaviorRelay<Int?>(value: nil)
+}
+
+// MARK: -
 class ProtectedTextInputField: TextInputField {
 
     var protected = BehaviorRelay<Bool>(value: true)

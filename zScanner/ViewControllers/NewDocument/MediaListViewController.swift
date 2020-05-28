@@ -59,22 +59,6 @@ class MediaListViewController: BaseViewController {
     }
     
     private func setupBindings() {
-        collectionView
-            .rx
-            .itemSelected
-            .subscribe(onNext: { indexPath in
-                if let cell = self.collectionView.cellForItem(at: indexPath) as? PhotoSelectorCollectionViewCell {
-                    guard let media = cell.element else { return }
-                    self.coordinator.reeditMedia(media: media)
-                }
-            }).disposed(by: disposeBag)
-        
-        viewModel.mediaArray
-            .subscribe(onNext: { [weak self] pictures in
-                self?.collectionView.backgroundView?.isHidden = pictures.count > 0
-            })
-            .disposed(by: disposeBag)
-        
         viewModel.mediaArray
             .map({ !$0.isEmpty })
             .bind(to: continueButton.rx.isEnabled)
@@ -137,57 +121,13 @@ class MediaListViewController: BaseViewController {
             make.right.bottom.left.equalTo(safeArea).inset(20)
             make.height.equalTo(44)
         }
-//        view.addSubview(deleteButton)
-//        deleteButton.snp.makeConstraints { make in
-//            make.top.equalTo(safeArea)
-//            make.leading.trailing.equalToSuperview().inset(20)
-//            make.height.equalTo(30)
-//        }
-//
-//        view.addSubview(tableView)
-//        tableView.snp.makeConstraints { make in
-//            make.edges.equalToSuperview()
-//        }
-//        view.addSubview(collectionView)
-//        collectionView.snp.makeConstraints { make in
-//            make.top.equalTo(deleteButton.snp.bottom)
-//            make.leading.trailing.bottom.equalToSuperview()
-//        }
-        
-//        view.addSubview(gradientView)
-//        gradientView.snp.makeConstraints { make in
-//            make.top.equalTo(safeArea.snp.bottom).offset(-80)
-//            make.right.bottom.left.equalToSuperview()
-//        }
-//
-//        view.addSubview(continueButton)
-//        continueButton.snp.makeConstraints { make in
-//            make.right.bottom.left.equalTo(safeArea).inset(20)
-//            make.height.equalTo(44)
-//        }
-//
-//        collectionView.backgroundView = emptyView
-//
-//        emptyView.addSubview(emptyViewLabel)
-//        emptyViewLabel.snp.makeConstraints { make in
-//            make.width.equalToSuperview().multipliedBy(0.75)
-//            make.centerX.equalToSuperview()
-//            make.top.greaterThanOrEqualTo(collectionView.safeAreaLayoutGuide.snp.top)
-//            make.centerY.equalToSuperview().multipliedBy(0.666).priority(900)
-//        }
+
+        view.addSubview(gradientView)
+        gradientView.snp.makeConstraints { make in
+            make.top.equalTo(safeArea.snp.bottom).offset(-80)
+            make.right.bottom.left.equalToSuperview()
+        }
     }
-    
-    private lazy var scrollView = UIScrollView()
-    
-    private lazy var stackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.distribution = .fill
-        stackView.spacing = 0
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        return stackView
-    }()
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -197,20 +137,11 @@ class MediaListViewController: BaseViewController {
         tableView.registerCell(TextInputTableViewCell.self)
         tableView.registerCell(DateTimePickerTableViewCell.self)
         tableView.registerCell(SegmentControlTableViewCell.self)
+        tableView.registerCell(CollectionViewTableViewCell.self)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44
         tableView.tableFooterView = UIView()
         return tableView
-    }()
-
-    
-    private lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: flowLayout)
-        collectionView.backgroundColor = .white
-        collectionView.register(PhotoSelectorCollectionViewCell.self, forCellWithReuseIdentifier: "PhotoSelectorCollectionViewCell")
-        collectionView.register(AddNewMediaCollectionViewCell.self, forCellWithReuseIdentifier: "AddNewMediaCollectionViewCell")
-        collectionView.dataSource = self
-        return collectionView
     }()
     
     private lazy var continueButton: PrimaryButton = {
@@ -220,70 +151,7 @@ class MediaListViewController: BaseViewController {
         return button
     }()
     
-    private lazy var deleteButton: UIButton = {
-        let button = UIButton()
-        let attributedString = NSAttributedString(string: "newDocumentPhotos.deleteDocument.title".localized,
-                                                  attributes: [
-                                                       .underlineStyle: NSUnderlineStyle.single.rawValue,
-                                                       .foregroundColor: UIColor.red,
-                                                       .font: UIFont.footnote
-                                                  ])
-        button.setAttributedTitle(attributedString, for: .normal)
-        button.addTarget(self, action: #selector(deleteDocument), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var emptyView = UIView()
-    
-    private lazy var emptyViewLabel: UILabel = {
-        let label = UILabel()
-        label.text = "newDocumentPhotos.emptyView.title".localized
-        label.textColor = .black
-        label.numberOfLines = 0
-        label.font = .body
-        label.textAlignment = .center
-        return label
-    }()
-    
     private lazy var gradientView = GradientView()
-    
-    private let margin: CGFloat = 10
-    private let numberofColumns: CGFloat = 2
-    
-    private var itemWidth: CGFloat {
-        let screenWidth = UIScreen.main.bounds.width
-        return (screenWidth - (numberofColumns + 1) * margin) / numberofColumns
-    }
-    
-    private lazy var flowLayout: UICollectionViewLayout = {
-        let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: itemWidth, height: itemWidth)
-        layout.scrollDirection = .vertical
-        layout.minimumInteritemSpacing = margin
-        layout.minimumLineSpacing = margin
-        layout.sectionInset = UIEdgeInsets(top: margin, left: margin, bottom: margin, right: margin)
-        return layout
-    }()
-}
-
-// MARK: - UICollectionViewDataSource implementation
-extension MediaListViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.mediaArray.value.count + 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.row == viewModel.mediaArray.value.count {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AddNewMediaCollectionViewCell", for: indexPath) as! AddNewMediaCollectionViewCell
-            cell.setup(delegate: self)
-            return cell
-        } else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoSelectorCollectionViewCell", for: indexPath) as! PhotoSelectorCollectionViewCell
-            let media = viewModel.mediaArray.value[indexPath.row]
-            cell.setup(with: media, delegate: self)
-            return cell
-        }
-    }
 }
 
 // MARK: - UITableViewDataSource implementation
@@ -314,6 +182,12 @@ extension MediaListViewController: UITableViewDataSource {
             return cell
         case _ as SegmentControlField:
             let cell = tableView.dequeueCell(SegmentControlTableViewCell.self)
+            cell.selectionStyle = .none
+            return cell
+        case _ as CollectionViewField:
+            let cell = tableView.dequeueCell(CollectionViewTableViewCell.self)
+            cell.setup(with: viewModel, delegate: self)
+            cell.selectionStyle = .none
             return cell
         default:
             return UITableViewCell()
@@ -353,17 +227,13 @@ extension MediaListViewController: UITableViewDelegate {
     }
 }
 
-
-// MARK: - PhotoSelectorCellDelegate implementation
-extension MediaListViewController: PhotoSelectorCellDelegate {
-    func delete(media: Media) {
-        viewModel.removeMedia(media)
+// MARK: - CollectionViewCellDelegate implementation
+extension MediaListViewController: CollectionViewCellDelegate {
+    func reeditMedium(media: Media) {
+        coordinator.reeditMedium(media: media)
     }
-}
-
-// MARK: - AddNewMediaCellDelegate implementation
-extension MediaListViewController: AddNewMediaCellDelegate {
-    func createNewMedia() {
+    
+    func createNewMedium() {
         coordinator.createNewMedium()
     }
 }

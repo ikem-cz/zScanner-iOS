@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1656AAFB247FAA47008F20AF /* AddNewMediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1656AAFA247FAA47008F20AF /* AddNewMediaCollectionViewCell.swift */; };
 		1656AAFD24800778008F20AF /* SegmentControlTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1656AAFC24800778008F20AF /* SegmentControlTableViewCell.swift */; };
+		1656AAFF24800E4E008F20AF /* CollectionViewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1656AAFE24800E4E008F20AF /* CollectionViewTableViewCell.swift */; };
 		1663AAA8245C0AD3004A3472 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1663AAA7245C0AD3004A3472 /* CameraViewController.swift */; };
 		16647ECA2460657E00A374F2 /* GalleryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16647EC92460657E00A374F2 /* GalleryButton.swift */; };
 		16908399246D9582009967A1 /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16908398246D9582009967A1 /* Themes.swift */; };
@@ -161,6 +162,7 @@
 		0010D71E93DE2CB854BEA615 /* Pods-zScanner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zScanner.release.xcconfig"; path = "Target Support Files/Pods-zScanner/Pods-zScanner.release.xcconfig"; sourceTree = "<group>"; };
 		1656AAFA247FAA47008F20AF /* AddNewMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewMediaCollectionViewCell.swift; sourceTree = "<group>"; };
 		1656AAFC24800778008F20AF /* SegmentControlTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentControlTableViewCell.swift; sourceTree = "<group>"; };
+		1656AAFE24800E4E008F20AF /* CollectionViewTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewTableViewCell.swift; sourceTree = "<group>"; };
 		1663AAA7245C0AD3004A3472 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		16647EC92460657E00A374F2 /* GalleryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryButton.swift; sourceTree = "<group>"; };
 		16908398246D9582009967A1 /* Themes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Themes.swift; sourceTree = "<group>"; };
@@ -654,6 +656,7 @@
 				16647EC92460657E00A374F2 /* GalleryButton.swift */,
 				1656AAFA247FAA47008F20AF /* AddNewMediaCollectionViewCell.swift */,
 				1656AAFC24800778008F20AF /* SegmentControlTableViewCell.swift */,
+				1656AAFE24800E4E008F20AF /* CollectionViewTableViewCell.swift */,
 			);
 			path = NewDocument;
 			sourceTree = "<group>";
@@ -1009,6 +1012,7 @@
 				BD59A0A322E371E200FA9CD0 /* AppCoordinator.swift in Sources */,
 				BD000CE122E4FB5A001EE38A /* FoldersListViewModel.swift in Sources */,
 				BDBF4E21232EED4C0078BF53 /* LoginDatabaseModel.swift in Sources */,
+				1656AAFF24800E4E008F20AF /* CollectionViewTableViewCell.swift in Sources */,
 				BD59A09822E36EF900FA9CD0 /* Request.swift in Sources */,
 				BD59A0AF22E3966700FA9CD0 /* UIFont.swift in Sources */,
 				16CBB2B1246A7FA5003E5D64 /* VideoPreviewViewController.swift in Sources */,
