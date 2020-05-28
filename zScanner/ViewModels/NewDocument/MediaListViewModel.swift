@@ -28,9 +28,19 @@ class MediaListViewModel {
         self.database = database
         self.mode = documentMode
         self.fields = fields(for: mode)
-//        self.isValid = Observable
-//            .combineLatest(fields.map({ $0.isValid }))
-//            .map({ results in results.reduce(true, { $0 && $1 }) })
+        
+        var sectionsResults: [Observable<Bool>] = []
+        for section in 0..<(fields.count-1) {
+            sectionsResults.append(
+                Observable
+                    .combineLatest(fields[section].map({ $0.isValid }))
+                    .map({ results in results.reduce(true, { $0 && $1 }) })
+            )
+        }
+        
+        self.isValid = Observable
+            .combineLatest(sectionsResults)
+            .map({ results in results.reduce(true, { $0 && $1 }) })
     }
     
     // MARK: Interface
@@ -71,24 +81,27 @@ class MediaListViewModel {
     
     // MARK: Helpers
     private func fields(for mode: DocumentMode) -> [[FormField]] {
-//        var documentTypes: [DocumentTypeDomainModel] {
-//            return database.loadObjects(DocumentTypeDatabaseModel.self)
-//                .map({ $0.toDomainModel() })
-//                .filter({ $0.mode == mode })
-//                .sorted(by: { $0.name < $1.name })
-//        }
-//
-//        switch mode {
-//        case .document, .examination, .ext:
+        var documentTypes: [DocumentTypeDomainModel] {
+            return database.loadObjects(DocumentTypeDatabaseModel.self)
+                .map({ $0.toDomainModel() })
+                .filter({ $0.mode == mode })
+                .sorted(by: { $0.name < $1.name })
+        }
+
+        switch mode {
+        case .document, .examination, .ext:
             return [
                 [SegmentControlField()],
-//                ListPickerField<DocumentTypeDomainModel>(title: "form.listPicker.title".localized, list: documentTypes),
-                [TextInputField(title: "form.documentDecription.title".localized, validator: { _ in true }),
-                DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil })],
+                [ListPickerField<DocumentTypeDomainModel>(title: "form.listPicker.title".localized, list: documentTypes),
+                 TextInputField(title: "form.documentDecription.title".localized, validator: { _ in true }),
+                 DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil })],
                 [CollectionViewField()]
             ]
-//        case .photo, .video, .undefined:
-//            return []
-//        }
+        case .photo, .video, .undefined:
+            return [
+                [DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil })],
+                [CollectionViewField()]
+            ]
+        }
     }
 }

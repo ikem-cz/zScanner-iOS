@@ -25,6 +25,7 @@ class CollectionViewTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         setupView()
+        setupBindings()
     }
     
     required init?(coder: NSCoder) {
@@ -43,9 +44,11 @@ class CollectionViewTableViewCell: UITableViewCell {
     // MARK: Interface
     private var disposeBag = DisposeBag()
     
-    func setup(with viewModel: MediaListViewModel, delegate: CollectionViewCellDelegate) {
+    func setup(with field: CollectionViewField, viewModel: MediaListViewModel, delegate: CollectionViewCellDelegate) {
         self.viewModel = viewModel
         self.delegate = delegate
+        
+        field.picturesCount.accept(viewModel.mediaArray.value.isEmpty ? nil : viewModel.mediaArray.value.count )
         
         resetHeight()
     }

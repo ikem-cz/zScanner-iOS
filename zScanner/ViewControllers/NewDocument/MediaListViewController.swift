@@ -61,10 +61,14 @@ class MediaListViewController: BaseViewController {
     private func setupBindings() {
         viewModel.mediaArray
             .map({ !$0.isEmpty })
-            .bind(to: continueButton.rx.isEnabled)
+            .bind(to: sendButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
-        continueButton.rx.tap.do(onNext: { [unowned self] in
+        viewModel.isValid
+            .bind(to: sendButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        sendButton.rx.tap.do(onNext: { [unowned self] in
             self.tableView.visibleCells.forEach({ ($0 as? TextInputTableViewCell)?.enableSelection() })
             if self.pickerIndexPath != nil {
                 self.hideDateTimePicker()
@@ -111,15 +115,13 @@ class MediaListViewController: BaseViewController {
     private func setupView() {
         navigationItem.title = viewModel.folderName
         
-        
-        
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
-        view.addSubview(continueButton)
-        continueButton.snp.makeConstraints { make in
+        view.addSubview(sendButton)
+        sendButton.snp.makeConstraints { make in
             make.right.bottom.left.equalTo(safeArea).inset(20)
             make.height.equalTo(44)
         }
@@ -146,7 +148,7 @@ class MediaListViewController: BaseViewController {
         return tableView
     }()
     
-    private lazy var continueButton: PrimaryButton = {
+    private lazy var sendButton: PrimaryButton = {
         let button = PrimaryButton()
         button.setTitle("newDocumentPhotos.button.title".localized, for: .normal)
         button.dropShadow()
@@ -187,14 +189,15 @@ extension MediaListViewController: UITableViewDataSource {
             cell.setup(with: datePicker)
             cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
             return cell
-        case _ as SegmentControlField:
+        case let segmentControl as SegmentControlField:
             let cell = tableView.dequeueCell(SegmentControlTableViewCell.self)
+            cell.setup(with: segmentControl)
             cell.selectionStyle = .none
             cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
             return cell
-        case _ as CollectionViewField:
+        case let collectionView as CollectionViewField:
             let cell = tableView.dequeueCell(CollectionViewTableViewCell.self)
-            cell.setup(with: viewModel, delegate: self)
+            cell.setup(with: collectionView, viewModel: viewModel, delegate: self)
             cell.selectionStyle = .none
             cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
             return cell

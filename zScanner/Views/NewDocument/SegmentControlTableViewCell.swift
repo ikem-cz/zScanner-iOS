@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RxSwift
 
 class SegmentControlTableViewCell: UITableViewCell {
 
@@ -21,17 +22,18 @@ class SegmentControlTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: Lifecycle
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        
-    }
-    
     // MARK: Interface
-    func setup(with textInput: TextInputField) {
+    func setup(with field: SegmentControlField) {
+        segmentControl
+            .rx
+            .selectedSegmentIndex
+            .subscribe(onNext: { field.segmentSelected.accept($0) })
+            .disposed(by: disposeBag)
     }
     
     // MARK: Helpers
+    private var disposeBag = DisposeBag()
+    
     private func setupView() {
         contentView.addSubview(segmentControl)
         segmentControl.snp.makeConstraints { make in
