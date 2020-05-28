@@ -32,7 +32,13 @@ class CameraViewController: BaseViewController {
     let disposeBag = DisposeBag()
     
     private var isRecording: Bool = false
-    private var isFlashing: Bool = false
+    private var isFlashing: Bool = false {
+        didSet {
+            flashMode = isFlashing ? .on : .off
+        }
+    }
+     
+    private var flashMode: AVCaptureDevice.FlashMode = .off
     
     override var rightBarButtonItems: [UIBarButtonItem] {
         return [flashButton]
@@ -90,7 +96,7 @@ class CameraViewController: BaseViewController {
     }
     
     private func setupView() {
-        view.backgroundColor = .clear
+        view.backgroundColor = .black
         title = viewModel.folderName
         
         view.addSubview(captureButton)
@@ -231,16 +237,9 @@ class CameraViewController: BaseViewController {
         if device.hasTorch {
             do {
                 try device.lockForConfiguration()
-
-                if isFlashing {
-                    device.torchMode = .off
-                    isFlashing = false
-                    flashButton.image = UIImage(systemName: "bolt.fill")
-                } else {
-                    device.torchMode = .on
-                    isFlashing = true
-                    flashButton.image = UIImage(systemName: "bolt.slash.fill")
-                }
+                
+                isFlashing.toggle()
+                flashButton.image = isFlashing ? UIImage(systemName: "bolt.fill") : UIImage(systemName: "bolt.slash.fill")
 
                 device.unlockForConfiguration()
             } catch {
@@ -285,11 +284,21 @@ class CameraViewController: BaseViewController {
         }
     }
     
+    private func getSettings(camera: AVCaptureDevice, flashMode: AVCaptureDevice.FlashMode) -> AVCapturePhotoSettings {
+        let settings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
+
+        if camera.hasFlash {
+            settings.flashMode = flashMode
+        }
+        
+        return settings
+    }
+    
     @objc func takePicture() {
         animateCaptureButton(toValue: 4, duration: 0.3)
         takePictureFlash()
         animateCaptureButton(toValue: 2, duration: 0.3)
-        let settings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
+        let settings = getSettings(camera: videoDevice!, flashMode: flashMode)
         photoOutput.capturePhoto(with: settings, delegate: self)
     }
     
@@ -299,7 +308,7 @@ class CameraViewController: BaseViewController {
         picker.mediaTypes = viewModel.currentMode.value == .photo ? [kUTTypeImage as String] : [kUTTypeMovie as String]
         picker.sourceType = .photoLibrary
         picker.videoMaximumDuration = Config.maximumSecondsOfVideoRecording
-        picker.allowsEditing = true
+        picker.allowsEditing = viewModel.currentMode.value == .video ? true : false
         present(picker, animated: true, completion: nil)
     }
     
@@ -417,7 +426,7 @@ class CameraViewController: BaseViewController {
         return timeLabel
     }()
     
-    private lazy var flashButton = UIBarButtonItem(image: UIImage(systemName: "bolt.fill"), style: .plain, target: self, action: #selector(toggleTorch))
+    private lazy var flashButton = UIBarButtonItem(image: UIImage(systemName: "bolt.slash.fill"), style: .plain, target: self, action: #selector(toggleTorch))
 }
 
 // MARK: - AVCapturePhotoCaptureDelegate implementation
