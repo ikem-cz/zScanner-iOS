@@ -29,7 +29,6 @@ class CameraViewController: BaseViewController {
     private let videoDevice = AVCaptureDevice.default(for: AVMediaType.video)
     private let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
     private var videoPreviewLayer: AVCaptureVideoPreviewLayer!
-    private var videoAspectConstraint: Constraint?
     
     private unowned let coordinator: CameraCoordinator
     private let viewModel: CameraViewModel
@@ -338,7 +337,7 @@ class CameraViewController: BaseViewController {
             make.center.equalToSuperview()
             make.top.left.greaterThanOrEqualToSuperview()
             make.top.left.equalToSuperview().priority(500)
-            videoAspectConstraint = make.height.equalTo(cameraView.snp.width).multipliedBy(videoAspect).constraint
+            make.height.equalTo(cameraView.snp.width).multipliedBy(videoAspect)
         }
         
         view.addSubview(swipeMediaTypeView)
@@ -647,8 +646,6 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
             requestOptions[.cameraIntrinsics] = cameraInstrictData
         }
         
-//        let exifOrientation = exifOrientationFromDeviceOrientation()
-        
         let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: requestOptions)
         
         do {
@@ -656,31 +653,5 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
         } catch {
             print(error)
         }
-    }
-    
-    func exifOrientationFromDeviceOrientation() -> Int32 {
-        enum DeviceOrientation: Int32 {
-            case top0ColLeft = 1
-            case top0ColRight = 2
-            case bottom0ColRight = 3
-            case bottom0ColLeft = 4
-            case left0ColTop = 5
-            case right0ColTop = 6
-            case right0ColBottom = 7
-            case left0ColBottom = 8
-        }
-        var exifOrientation: DeviceOrientation
-        
-        switch UIDevice.current.orientation {
-        case .portraitUpsideDown:
-            exifOrientation = .left0ColBottom
-        case .landscapeLeft:
-            exifOrientation = .top0ColLeft
-        case .landscapeRight:
-            exifOrientation = .bottom0ColRight
-        default:
-            exifOrientation = .right0ColTop
-        }
-        return exifOrientation.rawValue
     }
 }
