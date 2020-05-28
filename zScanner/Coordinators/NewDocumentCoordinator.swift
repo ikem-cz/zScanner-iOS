@@ -48,11 +48,18 @@ class NewDocumentCoordinator: Coordinator {
     private let tracker: Tracker = FirebaseAnalytics()
     
     // TODO: Remove this function later
-    private func showDocumentTypeSelectionScreen() {
-        let viewModel = NewDocumentTypeViewModel(documentMode: .document, database: database)
-        let viewController = NewDocumentTypeViewController(viewModel: viewModel, coordinator: self)
+    private func showFolderSelectionScreen() {
+        let viewModel = NewDocumentFolderViewModel(database: database, networkManager: networkManager, tracker: tracker)
+        let viewController = NewDocumentFolderViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
+    
+    // TODO: Remove this function later
+//    private func showDocumentTypeSelectionScreen() {
+//        let viewModel = NewDocumentTypeViewModel(documentMode: .document, database: database)
+//        let viewController = NewDocumentTypeViewController(viewModel: viewModel, coordinator: self)
+//        push(viewController)
+//    }
     
     private func showNewMediaScreen(mediaType: MediaType, mediaSourceTypes: [MediaType]) {
         if !(viewControllers.first is CameraViewController) {
@@ -124,7 +131,7 @@ class NewDocumentCoordinator: Coordinator {
             })
     }
     
-    private func deleteDocumentFolder() {
+    private func deleteMedia() {
         let folderURL = URL(documentsWith: newDocument.id)
         do {
             try FileManager.default.removeItem(at: folderURL)
@@ -170,7 +177,7 @@ class NewDocumentCoordinator: Coordinator {
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ media: Media) {
         if mediaViewModel == nil {
-            mediaViewModel = NewDocumentMediaViewModel(folderName: folder.name, mediaType: media.type, tracker: tracker)
+            mediaViewModel = NewDocumentMediaViewModel(documentMode: DocumentMode.photo, database: database, folderName: newDocument.folder.name, mediaType: media.type, tracker: tracker)
         }
         
         switch media.type {
@@ -201,42 +208,12 @@ extension NewDocumentCoordinator: MediaPreviewCoordinator {
 }
 
 // MARK: - NewDocumentMediaCoordinator implementation
-extension NewDocumentCoordinator: MediaListCoordinator {    
-    func upload() {
-        saveMediaToDocument((mediaViewModel?.mediaArray.value)!)
-        finish()
-    }
-    
-    func reeditMedia(media: Media) {
-        switch media.type {
-        case .photo:
-            showPhotoPreviewScreen(media: media)
-        case .video:
-            showVideoPreviewScreen(media: media)
-        case .scan:
-            showScanPreviewScreen(media: media)
-        }
-    }
-    
-    func createNewMedium() {
-        guard let mediaViewModel = mediaViewModel else { return }
-        showNewMediaScreen(mediaType: mediaViewModel.mediaType, mediaSourceTypes: [mediaViewModel.mediaType])
-    }
-    
-    func deleteDocument() {
-        deleteDocumentFolder()
-        popAll()
-        flowDelegate.coordinatorDidFinish(self)
-    }
-}
-
-// MARK: - NewDocumentTypeCoordinator implementation
-extension NewDocumentCoordinator: NewDocumentTypeCoordinator {
+extension NewDocumentCoordinator: MediaListCoordinator {
     func showSelector<T: ListItem>(for list: ListPickerField<T>) {
         showListItemSelectionScreen(for: list)
     }
     
-    func saveFields(_ fields: [FormField]) {
+    func upload(_ fields: [FormField]) {
         for field in fields {
             switch field {
             case let textField as TextInputField:
@@ -253,6 +230,28 @@ extension NewDocumentCoordinator: NewDocumentTypeCoordinator {
                 break
             }
         }
+        
+        saveMediaToDocument((mediaViewModel?.mediaArray.value)!)
+        finish()
+    }
+    
+    func reeditMedium(media: Media) {
+        if media.type == .photo {
+            showPhotoPreviewScreen(media: media)
+        } else if media.type == .video {
+            showVideoPreviewScreen(media: media)
+        }
+    }
+    
+    func createNewMedium() {
+        guard let mediaViewModel = mediaViewModel else { return }
+        showNewMediaScreen(mediaType: mediaViewModel.mediaType, mediaSourceTypes: [mediaViewModel.mediaType])
+    }
+    
+    func deleteDocument() {
+        deleteMedia()
+        popAll()
+        flowDelegate.coordinatorDidFinish(self)
     }
 }
 

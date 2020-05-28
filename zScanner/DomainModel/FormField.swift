@@ -62,6 +62,20 @@ class TextInputField: FormField {
 }
 
 // MARK: -
+class SegmentControlField: FormField {
+    var title: String = ""
+
+    var value: Observable<String> {
+        return segmentSelected.map({ $0 == 0 ? "doc" : "exam" }).asObservable()
+    }
+    var isValid: Observable<Bool> {
+        return segmentSelected.map({ $0 != nil }).asObservable()
+    }
+    
+    let segmentSelected = BehaviorRelay<Int?>(value: nil)
+}
+
+// MARK: -
 class ProtectedTextInputField: TextInputField {
 
     var protected = BehaviorRelay<Bool>(value: true)
