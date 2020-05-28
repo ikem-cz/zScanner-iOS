@@ -124,10 +124,13 @@ class NewDocumentCoordinator: Coordinator {
             })
     }
     
-    private func deleteMedia() {
-        mediaViewModel?.mediaArray.value.forEach({ media in
-            media.deleteMedia()
-        })
+    private func deleteDocumentFolder() {
+        let folderURL = URL(documentsWith: newDocument.id)
+        do {
+            try FileManager.default.removeItem(at: folderURL)
+        } catch let error as NSError {
+            print("Error: \(error.domain)")
+        }
     }
     
     // MARK: - BaseCordinator implementation
@@ -221,7 +224,7 @@ extension NewDocumentCoordinator: MediaListCoordinator {
     }
     
     func deleteDocument() {
-        deleteMedia()
+        deleteDocumentFolder()
         popAll()
         flowDelegate.coordinatorDidFinish(self)
     }

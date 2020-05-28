@@ -52,14 +52,6 @@ class Media {
             return nil
         }
     }
-    
-    func deleteMedia() {
-        do {
-            try FileManager.default.removeItem(at: url)
-        } catch let error as NSError {
-            print("Error: \(error.domain)")
-        }
-    }
 }
 
 extension Media: Equatable {
