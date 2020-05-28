@@ -9,6 +9,15 @@
 import UIKit
 import Vision
 
+enum ScanMode: String {
+    case edit
+    case preview
+    
+    var title: String {
+        return "newDocumentPhotos.scanMode[\(self.rawValue)].title".localized
+    }
+}
+
 class ScanPreviewViewController: MediaPreviewViewController {
 
     // MARK: Instance part
@@ -29,10 +38,16 @@ class ScanPreviewViewController: MediaPreviewViewController {
     
     // MARK: View setup
     override func setupView() {
+        view.addSubview(modeSwich)
+        modeSwich.snp.makeConstraints { make in
+            make.top.leading.trailing.equalTo(safeArea).inset(8)
+        }
+        
         view.addSubview(imageView)
         imageView.snp.makeConstraints { make in
+            make.top.equalTo(modeSwich.snp.bottom).offset(8)
+            make.leading.trailing.equalTo(safeArea)
             make.bottom.equalTo(buttonStackView.snp.top)
-            make.top.leading.trailing.equalTo(safeArea)
         }
     }
     
@@ -40,20 +55,39 @@ class ScanPreviewViewController: MediaPreviewViewController {
     
     func setupSelection() {
         rectangleLayer = newRectangleLayer()
-        imageView.layer.addSublayer(rectangleLayer)
-        corners = scan.rectangle.points
-            .map({
-                RectangleCorner(
-                    point: convertFromCamera($0),
-                    didMovedTo: { newCenter in
-                        scan.rectangle.topRight = newCenter
-                    })
+        imageView.layer.addSublayer(rectangleLayer!)
+        corners = [
+            RectangleCorner(
+                point: convertFromCamera(scan.rectangle.topLeft),
+                didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .topLeft, newCorner: newValue)
+            }),
+            RectangleCorner(
+                point: convertFromCamera(scan.rectangle.topRight),
+                didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .topRight, newCorner: newValue)
+            }),
+            RectangleCorner(
+                point: convertFromCamera(scan.rectangle.bottomLeft),
+                didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .bottomLeft, newCorner: newValue)
+            }),
+            RectangleCorner(
+                point: convertFromCamera(scan.rectangle.bottomRight),
+                didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .bottomRight, newCorner: newValue)
             })
+        ]
         corners.forEach({ imageView.addSubview($0) })
         imageView.isUserInteractionEnabled = true
     }
+    
+    func updateRectangle(corner: UIRectCorner, newCorner: CGPoint) {
+        scan.rectangle = scan.rectangle.updatingCorner(corner, newCorner: convertToCamera(newCorner))
+        rectangleLayer?.removeFromSuperlayer()
+        rectangleLayer = newRectangleLayer()
+        imageView.layer.addSublayer(rectangleLayer!)
+    }
 
     // MARK: Helpers
+    let modes = [ScanMode.edit, .preview]
+    
     override func loadMedia() {
         do {
             let data = try Data(contentsOf: media.url)
@@ -63,13 +97,41 @@ class ScanPreviewViewController: MediaPreviewViewController {
         }
     }
     
+    @objc private func switchMode(_ segmentedControl: UISegmentedControl) {
+        let mode = modes[segmentedControl.selectedSegmentIndex]
+        switch mode {
+        case .edit:
+            rectangleLayer?.removeFromSuperlayer()
+            rectangleLayer = newRectangleLayer()
+            imageView.layer.addSublayer(rectangleLayer!)
+            corners.forEach({ imageView.addSubview($0) })
+            imageView.image = image
+        case .preview:
+            rectangleLayer?.removeFromSuperlayer()
+            rectangleLayer = nil
+            corners.forEach({ $0.removeFromSuperview() })
+            imageView.image = scan.thumbnail
+        }
+    }
+        
+    
     // MARK: Lazy instance part
+    private lazy var modeSwich: UISegmentedControl = {
+        let modeSwitch = UISegmentedControl(items: modes.map({ $0.title }))
+        modeSwitch.selectedSegmentIndex = 0
+        modeSwitch.addTarget(self, action: #selector(switchMode(_:)), for: .valueChanged)
+        modeSwitch.backgroundColor = .lightGray
+        modeSwitch.selectedSegmentTintColor = .black
+        modeSwitch.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
+        return modeSwitch
+    }()
+    
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView(image: image)
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-    private var rectangleLayer: CAShapeLayer!
+    private var rectangleLayer: CAShapeLayer?
     
     func newRectangleLayer() -> CAShapeLayer {
         let points = scan.rectangle.points.map { convertFromCamera($0) }
@@ -145,6 +207,7 @@ class ScanPreviewViewController: MediaPreviewViewController {
 }
 
 class RectangleCorner: UIView {
+    let padding: CGFloat = 20
     let radius: CGFloat = 20
     let callback: (CGPoint) -> Void
     lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(move(_:)))
@@ -176,10 +239,10 @@ class RectangleCorner: UIView {
             width: frame.width,
             height: frame.height
         )
-        let newCenter = CGPoint(x: newFrame.origin.x - radius, y: newFrame.origin.y - radius)
+        let newCenter = CGPoint(x: newFrame.origin.x + radius, y: newFrame.origin.y + radius)
 
         frame.origin = newFrame.origin
-        callback(newFrame.origin)
+        callback(newCenter)
 
         recognizer.setTranslation(.zero, in: nil)
     }
@@ -189,11 +252,14 @@ extension VNRectangleObservation {
     var points: [CGPoint] {
         [topLeft, topRight, bottomRight, bottomLeft]
     }
-}
-
-extension CGRect {
-    var topLeadingPoint: CGPoint { return CGPoint(x: minX, y: minY) }
-    var topTrailingPoint: CGPoint { return CGPoint(x: maxX, y: minY) }
-    var bottomLeadingPoint: CGPoint { return CGPoint(x: minX, y: maxY) }
-    var bottomTrailingPoint: CGPoint { return CGPoint(x: maxX, y: maxY) }
+    
+    func updatingCorner(_ corner: UIRectCorner, newCorner: CGPoint) -> VNRectangleObservation {
+        VNRectangleObservation(
+            requestRevision: self.requestRevision,
+            topLeft: corner.contains(.topLeft) ? newCorner : topLeft,
+            bottomLeft: corner.contains(.bottomLeft) ? newCorner : bottomLeft,
+            bottomRight: corner.contains(.bottomRight) ? newCorner : bottomRight,
+            topRight: corner.contains(.topRight) ? newCorner : topRight
+        )
+    }
 }

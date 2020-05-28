@@ -66,6 +66,9 @@
 "newDocumentPhotos.continue.title" = "Pokračovat";
 "newDocumentPhotos.nextPhoto.title" = "Vyfotit další";
 
+"newDocumentPhotos.scanMode[edit].title" = "Upravit";
+"newDocumentPhotos.scanMode[preview].title" = "Náhled";
+
 "newDocument.popAlert.title" = "Opravdu chcete jít o krok zpět?";
 "newDocument.popAlert.message" = "Změny provedené na této obrazovce nebudou uloženy.";
 "newDocument.popAlert.confirm" = "Ano";
