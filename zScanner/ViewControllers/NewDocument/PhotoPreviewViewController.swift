@@ -14,7 +14,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     private var image: UIImage?
     
     // MARK: Lifecycle
-    init(media: Media, viewModel: NewDocumentMediaViewModel, coordinator: MediaPreviewCoordinator) {
+    init(media: Media, viewModel: MediaListViewModel, coordinator: MediaPreviewCoordinator) {
         
         super.init(viewModel: viewModel, media: media, coordinator: coordinator)
     }

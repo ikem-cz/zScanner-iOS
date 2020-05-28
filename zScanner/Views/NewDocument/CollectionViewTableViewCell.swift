@@ -18,7 +18,7 @@ protocol CollectionViewCellDelegate {
 class CollectionViewTableViewCell: UITableViewCell {
     
     // MARK: Instance part
-    private(set) var viewModel: NewDocumentMediaViewModel?
+    private(set) var viewModel: MediaListViewModel?
     private var delegate: CollectionViewCellDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -43,7 +43,7 @@ class CollectionViewTableViewCell: UITableViewCell {
     // MARK: Interface
     private var disposeBag = DisposeBag()
     
-    func setup(with viewModel: NewDocumentMediaViewModel, delegate: CollectionViewCellDelegate) {
+    func setup(with viewModel: MediaListViewModel, delegate: CollectionViewCellDelegate) {
         self.viewModel = viewModel
         self.delegate = delegate
         

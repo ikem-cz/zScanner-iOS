@@ -13,7 +13,7 @@ import MobileCoreServices
 
 protocol MediaListCoordinator: BaseCoordinator {
     func showSelector<T: ListItem>(for list: ListPickerField<T>)
-    func upload(_ fields: [FormField])
+    func upload(_ fields: [[FormField]])
     func reeditMedia(media: Media)
     func createNewMedia()
     func deleteDocument()
@@ -23,9 +23,9 @@ class MediaListViewController: BaseViewController {
     
     // MARK: Instance part
     unowned let coordinator: MediaListCoordinator
-    let viewModel: NewDocumentMediaViewModel
+    let viewModel: MediaListViewModel
     
-    init(viewModel: NewDocumentMediaViewModel, coordinator: MediaListCoordinator) {
+    init(viewModel: MediaListViewModel, coordinator: MediaListCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         
@@ -109,7 +109,9 @@ class MediaListViewController: BaseViewController {
     }
     
     private func setupView() {
-        navigationItem.title = "newDocumentPhotos.screen.title".localized
+        navigationItem.title = viewModel.folderName
+        
+        
         
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
@@ -156,12 +158,16 @@ class MediaListViewController: BaseViewController {
 
 // MARK: - UITableViewDataSource implementation
 extension MediaListViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        viewModel.fields.count
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.fields.count
+        return viewModel.fields[section].count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let item = viewModel.fields[indexPath.row]
+        let item = viewModel.fields[indexPath.section][indexPath.row]
         
         switch item {
         case let list as ListPickerField<DocumentTypeDomainModel>:
@@ -179,15 +185,18 @@ extension MediaListViewController: UITableViewDataSource {
         case let datePicker as DateTimePickerPlaceholder:
             let cell = tableView.dequeueCell(DateTimePickerTableViewCell.self)
             cell.setup(with: datePicker)
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
             return cell
         case _ as SegmentControlField:
             let cell = tableView.dequeueCell(SegmentControlTableViewCell.self)
             cell.selectionStyle = .none
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
             return cell
         case _ as CollectionViewField:
             let cell = tableView.dequeueCell(CollectionViewTableViewCell.self)
             cell.setup(with: viewModel, delegate: self)
             cell.selectionStyle = .none
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
             return cell
         default:
             return UITableViewCell()
@@ -197,8 +206,16 @@ extension MediaListViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate implementation
 extension MediaListViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return UIView()
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 10
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = viewModel.fields[indexPath.row]
+        let item = viewModel.fields[indexPath.section][indexPath.row]
         
         // Hide picker if user select different cell
         if self.pickerIndexPath != nil && !(item is DateTimePickerField) {

@@ -16,7 +16,7 @@ class VideoPreviewViewController: MediaPreviewViewController {
     private let videoViewController = AVPlayerViewController()
     
     // MARK: Lifecycle
-    init(media: Media, viewModel: NewDocumentMediaViewModel, coordinator: MediaPreviewCoordinator) {
+    init(media: Media, viewModel: MediaListViewModel, coordinator: MediaPreviewCoordinator) {
         super.init(viewModel: viewModel, media: media, coordinator: coordinator)
     }
     

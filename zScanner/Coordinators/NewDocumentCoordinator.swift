@@ -18,7 +18,7 @@ class NewDocumentCoordinator: Coordinator {
     unowned private let flowDelegate: NewDocumentFlowDelegate
     private var newDocument = DocumentDomainModel.emptyDocument
     private var folder: FolderDomainModel
-    private var mediaViewModel: NewDocumentMediaViewModel?
+    private var mediaViewModel: MediaListViewModel?
     private let defaultMediaType = MediaType.photo
     private let mediaSourceTypes = [
         MediaType.photo,
@@ -177,7 +177,7 @@ class NewDocumentCoordinator: Coordinator {
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ media: Media) {
         if mediaViewModel == nil {
-            mediaViewModel = NewDocumentMediaViewModel(documentMode: DocumentMode.photo, database: database, folderName: newDocument.folder.name, mediaType: media.type, tracker: tracker)
+            mediaViewModel = MediaListViewModel(documentMode: DocumentMode.photo, database: database, folderName: newDocument.folder.name, mediaType: media.type, tracker: tracker)
         }
         
         switch media.type {
@@ -213,21 +213,23 @@ extension NewDocumentCoordinator: MediaListCoordinator {
         showListItemSelectionScreen(for: list)
     }
     
-    func upload(_ fields: [FormField]) {
-        for field in fields {
-            switch field {
-            case let textField as TextInputField:
-                newDocument.notes = textField.text.value
-            case let datePicker as DateTimePickerField:
-                if let date = datePicker.date.value {
-                    newDocument.date = date
+    func upload(_ fields: [[FormField]]) {
+        for section in fields {
+            for field in section {
+                switch field {
+                case let textField as TextInputField:
+                    newDocument.notes = textField.text.value
+                case let datePicker as DateTimePickerField:
+                    if let date = datePicker.date.value {
+                        newDocument.date = date
+                    }
+                case let listPicker as ListPickerField<DocumentTypeDomainModel>:
+                    if let type = listPicker.selected.value {
+                        newDocument.type = type
+                    }
+                default:
+                    break
                 }
-            case let listPicker as ListPickerField<DocumentTypeDomainModel>:
-                if let type = listPicker.selected.value {
-                    newDocument.type = type
-                }
-            default:
-                break
             }
         }
         

@@ -17,12 +17,12 @@ class MediaPreviewViewController: BaseViewController {
 
     // MARK: Instance part
     let media: Media
-    let viewModel: NewDocumentMediaViewModel
+    let viewModel: MediaListViewModel
     
     unowned let coordinator: MediaPreviewCoordinator
     
     // MARK: Lifecycle
-    init(viewModel: NewDocumentMediaViewModel, media: Media, coordinator: MediaPreviewCoordinator) {
+    init(viewModel: MediaListViewModel, media: Media, coordinator: MediaPreviewCoordinator) {
         self.viewModel = viewModel
         self.media = media
         self.coordinator = coordinator

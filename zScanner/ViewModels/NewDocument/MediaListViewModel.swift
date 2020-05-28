@@ -11,7 +11,7 @@ import RxSwift
 import RxRelay
 import AVFoundation
 
-class NewDocumentMediaViewModel {
+class MediaListViewModel {
     
     // MARK: Instance part
     private let tracker: Tracker
@@ -28,9 +28,9 @@ class NewDocumentMediaViewModel {
         self.database = database
         self.mode = documentMode
         self.fields = fields(for: mode)
-        self.isValid = Observable
-            .combineLatest(fields.map({ $0.isValid }))
-            .map({ results in results.reduce(true, { $0 && $1 }) })
+//        self.isValid = Observable
+//            .combineLatest(fields.map({ $0.isValid }))
+//            .map({ results in results.reduce(true, { $0 && $1 }) })
     }
     
     // MARK: Interface
@@ -57,20 +57,20 @@ class NewDocumentMediaViewModel {
         mediaArray.accept(newArray)
     }
     
-    private(set) var fields: [FormField] = []
+    private(set) var fields: [[FormField]] = [[]]
     
     var isValid = Observable<Bool>.just(false)
     
     func addDateTimePickerPlaceholder(at index: Int, for date: DateTimePickerField) {
-        fields.insert(DateTimePickerPlaceholder(for: date), at: index)
+        fields[1].insert(DateTimePickerPlaceholder(for: date), at: index)
     }
     
     func removeDateTimePickerPlaceholder() {
-        fields.removeAll(where: { $0 is DateTimePickerPlaceholder })
+        fields[1].removeAll(where: { $0 is DateTimePickerPlaceholder })
     }
     
     // MARK: Helpers
-    private func fields(for mode: DocumentMode) -> [FormField] {
+    private func fields(for mode: DocumentMode) -> [[FormField]] {
 //        var documentTypes: [DocumentTypeDomainModel] {
 //            return database.loadObjects(DocumentTypeDatabaseModel.self)
 //                .map({ $0.toDomainModel() })
@@ -81,11 +81,11 @@ class NewDocumentMediaViewModel {
 //        switch mode {
 //        case .document, .examination, .ext:
             return [
-                SegmentControlField(),
+                [SegmentControlField()],
 //                ListPickerField<DocumentTypeDomainModel>(title: "form.listPicker.title".localized, list: documentTypes),
-                TextInputField(title: "form.documentDecription.title".localized, validator: { _ in true }),
-                DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil }),
-                CollectionViewField()
+                [TextInputField(title: "form.documentDecription.title".localized, validator: { _ in true }),
+                DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil })],
+                [CollectionViewField()]
             ]
 //        case .photo, .video, .undefined:
 //            return []
