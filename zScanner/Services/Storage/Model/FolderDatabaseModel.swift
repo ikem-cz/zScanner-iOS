@@ -14,6 +14,7 @@ class FolderDatabaseModel: Object {
     @objc dynamic var id = ""
     @objc dynamic var name = ""
     @objc dynamic var lastUsed = Date()
+    let documents = List<DocumentDatabaseModel>()
     
     convenience init(folder: FolderDomainModel) {
         self.init()
@@ -22,21 +23,23 @@ class FolderDatabaseModel: Object {
         self.externalId = folder.externalId
         self.name = folder.name
         self.lastUsed = Date()
+        self.documents.append(objectsIn: folder.documents.map { DocumentDatabaseModel(document: $0) })
     }
     
     override class func primaryKey() -> String {
         return "id"
     }
     
-    static func updateLastUsage(of folder: FolderDatabaseModel) {
+    static func updateLastUsage(of folder: FolderDomainModel) {
         let realm = try! Realm()
         if let stored = realm.object(ofType: FolderDatabaseModel.self, forPrimaryKey: folder.id) {
             try! realm.write {
                 stored.lastUsed = Date()
             }
         } else {
+            let databaseFolder = FolderDatabaseModel(folder: folder)
             try! realm.write {
-                realm.add(folder)
+                realm.add(databaseFolder)
             }
         }
     }
@@ -47,7 +50,8 @@ extension FolderDatabaseModel {
         return FolderDomainModel(
             externalId: externalId,
             id: id,
-            name: name
+            name: name,
+            documents: documents.map { $0.toDomainModel() }
         )
     }
 }

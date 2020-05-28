@@ -20,7 +20,7 @@ struct DocumentNetworkModel: Encodable {
     
     init(from domainModel: DocumentDomainModel) {
         self.correlation = domainModel.id
-        self.folderInternalId = domainModel.folder.id
+        self.folderInternalId = domainModel.folderId
         self.documentMode = domainModel.type.mode.rawValue
         self.documentType = domainModel.type.id
         

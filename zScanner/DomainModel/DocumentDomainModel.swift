@@ -10,7 +10,7 @@ import UIKit
 
 struct DocumentDomainModel {
     var id: String
-    var folder: FolderDomainModel
+    var folderId: String
     var type: DocumentTypeDomainModel
     var date: Date
     var name: String
@@ -18,9 +18,13 @@ struct DocumentDomainModel {
     var pages: [MediaDomainModel]
 }
 
-extension DocumentDomainModel: Equatable {
+extension DocumentDomainModel: Hashable {
     static func == (lhs: DocumentDomainModel, rhs: DocumentDomainModel) -> Bool {
         return lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 
@@ -28,11 +32,7 @@ extension DocumentDomainModel {
     static var emptyDocument: DocumentDomainModel {
         return DocumentDomainModel(
             id: UUID().uuidString,
-            folder: FolderDomainModel(
-                externalId: "",
-                id: "",
-                name: ""
-            ),
+            folderId: "",
             type: DocumentTypeDomainModel(
                 id: "",
                 name: "",

@@ -1,5 +1,5 @@
 //
-//  DocumentTableViewCell.swift
+//  FolderStatusTableViewCell.swift
 //  zScanner
 //
 //  Created by Jakub Skořepa on 21/07/2019.
@@ -8,21 +8,24 @@
 
 import UIKit
 import RxSwift
+import SnapKit
 
-protocol DocumentViewDelegate {
+protocol FolderViewDelegate {
     func handleError(_ error: RequestError)
+    func createNewDocumentToFolder(folderViewModel: FolderViewModel)
 }
 
-class DocumentTableViewCell: UITableViewCell {
+class FolderStatusTableViewCell: UITableViewCell {
     
     //MARK: Instance part
-    private var viewModel: DocumentViewModel?
-    private var delegate: DocumentViewDelegate?
+    private var viewModel: FolderViewModel?
+    private var delegate: FolderViewDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         setupView()
+        isStatusContainerVisible = true
     }
     
     required init?(coder: NSCoder) {
@@ -35,35 +38,35 @@ class DocumentTableViewCell: UITableViewCell {
         
         viewModel = nil
         delegate = nil
-        titleLabel.text = nil
-        detailLabel.text = nil
+        nameLabel.text = nil
+        pinLabel.text = nil
         loadingCircle.isHidden = true
         loadingCircle.progressValue(is: 0, animated: false)
         successImageView.isHidden = true
         retryButton.isHidden = true
+        isStatusContainerVisible = true
         
         disposeBag = DisposeBag()
     }
     
     //MARK: Interface
-    func setup(with model: DocumentViewModel, delegate: DocumentViewDelegate) {
+    func setup(with model: FolderViewModel, delegate: FolderViewDelegate) {
         self.viewModel = model
         self.delegate = delegate
+
+        nameLabel.text = model.folder.name + String(model.documents.value.count)
+        pinLabel.text = model.folder.externalId
         
-        // Make sure the label will keep the space even when empty while respecting the dynamic font size
-        titleLabel.text = String(format: "%@ %@", model.document.folder.externalId, model.document.folder.name)
-        detailLabel.text = [
-            model.document.type.mode.title,
-            model.document.type.name,
-            String(format: "document.documentCell.numberOfPagesFormat".localized, model.document.pages.count),
-        ]
-        .filter({ !$0.isEmpty })
-        .joined(separator: " - ")
+        let tap = UITapGestureRecognizer(target: self, action: #selector(createDocumentToThisFolder))
+        addGestureRecognizer(tap)
+        isUserInteractionEnabled = true
+        
+        isStatusContainerVisible = false
         
         let onCompleted: () -> Void = { [weak self] in
             self?.retryButton.isHidden = true
             
-            // If not animating, skip trnasition animation
+            // If not animating, skip transition animation
             if self?.loadingCircle.isHidden == true {
                 self?.loadingCircle.isHidden = true
                 self?.successImageView.isHidden = false
@@ -83,6 +86,7 @@ class DocumentTableViewCell: UITableViewCell {
                 self?.loadingCircle.isHidden = true
                 self?.loadingCircle.alpha = 1
                 self?.loadingCircle.transform = CGAffineTransform(scaleX: 1, y: 1)
+                self?.isStatusContainerVisible = false
             })
         }
         
@@ -95,19 +99,23 @@ class DocumentTableViewCell: UITableViewCell {
             }
         }
         
-        model.documentUploadStatus
+        model.folderStatus
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] status in
+                guard let self = self else { return }
+                
                 switch status {
                 case .awaitingInteraction:
-                    self?.loadingCircle.isHidden = true
-                    self?.successImageView.isHidden = true
-                    self?.retryButton.isHidden = true
+                    self.isStatusContainerVisible = true
+                    self.loadingCircle.isHidden = true
+                    self.successImageView.isHidden = true
+                    self.retryButton.isHidden = true
                 case .progress(let percentage):
-                    self?.loadingCircle.progressValue(is: percentage)
-                    self?.loadingCircle.isHidden = false
-                    self?.successImageView.isHidden = true
-                    self?.retryButton.isHidden = true
+                    self.isStatusContainerVisible = true
+                    self.loadingCircle.progressValue(is: percentage)
+                    self.loadingCircle.isHidden = false
+                    self.successImageView.isHidden = true
+                    self.retryButton.isHidden = true
                 case .success:
                     onCompleted()
                 case .failed(let error):
@@ -117,6 +125,7 @@ class DocumentTableViewCell: UITableViewCell {
             .disposed(by: disposeBag)
         
         retryButton.rx.tap.subscribe(onNext: { [weak self] in
+  
             self?.viewModel?.reupload()
         })
         .disposed(by: disposeBag)
@@ -125,69 +134,100 @@ class DocumentTableViewCell: UITableViewCell {
     //MARK: Helpers
     private var disposeBag = DisposeBag()
     
+    private var textToStatus: Constraint?
+    private var textToSuperview: Constraint?
+    
+    private var isStatusContainerVisible: Bool = false {
+        didSet {
+            // TODO: Temporary show upload status for every case. Uncomment when done.
+//            if isStatusContainerVisible {
+//                statusContainer.isHidden = false
+//                textToSuperview?.deactivate()
+//                textToStatus?.activate()
+//            } else {
+//                statusContainer.isHidden = true
+//                textToStatus?.deactivate()
+//                textToSuperview?.activate()
+//            }
+            
+            if isStatusContainerVisible {
+                statusContainer.alpha = 1
+            } else {
+                statusContainer.alpha = 0.3
+            }
+            textToSuperview?.deactivate()
+            textToStatus?.activate()
+        }
+    }
+    
+    @objc func createDocumentToThisFolder() {
+        guard let folder = viewModel else { return }
+        delegate?.createNewDocumentToFolder(folderViewModel: folder)
+    }
+    
     private func setupView() {
         selectionStyle = .none
+        backgroundColor = UIColor.lightGray.withAlphaComponent(0.2)
         
         preservesSuperviewLayoutMargins = true
         contentView.preservesSuperviewLayoutMargins = true
+        
+        contentView.addSubview(statusContainer)
+        statusContainer.snp.makeConstraints { make in
+            make.leading.equalTo(contentView.snp.leadingMargin)
+            make.width.height.equalTo(30)
+            make.centerY.equalToSuperview()
+        }
+
+        statusContainer.addSubview(loadingCircle)
+        loadingCircle.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+
+        statusContainer.addSubview(successImageView)
+        successImageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        statusContainer.addSubview(retryButton)
+        retryButton.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         
         contentView.addSubview(textContainer)
         textContainer.snp.makeConstraints { make in
             make.top.equalTo(contentView.snp.topMargin)
             make.bottom.equalTo(contentView.snp.bottomMargin)
-            make.left.equalTo(contentView.snp.leftMargin)
+            make.trailing.equalTo(contentView.snp.trailingMargin)
+            // Set priority to 999 to silence console error for UIViewAlertForUnsatisfiableConstraints
+            textToStatus = make.leading.equalTo(statusContainer.snp.trailing).offset(8).priority(999).constraint
+            textToSuperview = make.leading.equalTo(contentView.snp.leadingMargin).constraint
+        }
+        textToStatus?.deactivate()
+        
+        
+        textContainer.addSubview(nameLabel)
+        nameLabel.snp.makeConstraints { make in
+            make.top.leading.bottom.equalToSuperview()
         }
         
-        textContainer.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.top.right.left.equalToSuperview()
-        }
-        
-        titleLabel.setContentHuggingPriority(.init(rawValue: 251), for: .vertical)
-        titleLabel.setContentCompressionResistancePriority(.init(rawValue: 751), for: .vertical)
-        
-        textContainer.addSubview(detailLabel)
-        detailLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(4)
-            make.right.left.bottom.equalToSuperview()
-        }
-        
-        contentView.addSubview(statusContainer)
-        statusContainer.snp.makeConstraints { make in
-            make.right.equalTo(contentView.snp.rightMargin)
-            make.left.equalTo(textContainer.snp.right).offset(8)
-            make.width.height.equalTo(30)
-            make.centerY.equalToSuperview()
-        }
-        
-        statusContainer.addSubview(loadingCircle)
-        loadingCircle.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-        
-        statusContainer.addSubview(successImageView)
-        successImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
-        statusContainer.addSubview(retryButton)
-        retryButton.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+        textContainer.addSubview(pinLabel)
+        pinLabel.snp.makeConstraints { make in
+            make.top.trailing.bottom.equalToSuperview()
         }
     }
     
-    private var titleLabel: UILabel = {
+    private var nameLabel: UILabel = {
         let label = UILabel()
         label.font = .body
         label.textColor = .black
         return label
     }()
     
-    private var detailLabel: UILabel = {
+    private var pinLabel: UILabel = {
         let label = UILabel()
-        label.font = .footnote
-        label.textColor = UIColor.black.withAlphaComponent(0.7)
-        label.numberOfLines = 0
+        label.font = .body
+        label.textColor = .black
         return label
     }()
     

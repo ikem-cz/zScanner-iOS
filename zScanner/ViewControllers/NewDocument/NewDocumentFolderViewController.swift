@@ -9,9 +9,14 @@
 import UIKit
 import RxSwift
 
+
+struct FolderSelection {
+    let folder: FolderDomainModel
+    let searchMode: SearchMode
+}
+
 protocol NewDocumentFolderCoordinator: BaseCoordinator {
-    func saveFolder(_ folder: FolderDomainModel, searchMode: SearchMode)
-    func folderDidSelect()
+    func folderSelected(_ folderSelection: FolderSelection)
 }
 
 // MARK: -
@@ -43,7 +48,9 @@ class NewDocumentFolderViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.setFocusToSearchBar()
+        if parent == nil {
+            self.setFocusToSearchBar()
+        }
     }
 
     override var rightBarButtonItems: [UIBarButtonItem] {
@@ -115,11 +122,36 @@ class NewDocumentFolderViewController: BaseViewController {
     }
     
     private func setupView() {
-        navigationItem.title = "newDocumentFolder.screen.title".localized
+        
+        if parent == nil {
+            navigationItem.title = "newDocumentFolder.screen.title".localized
+        } else {
+            view.addSubview(presentedNavigationBar)
+            presentedNavigationBar.snp.makeConstraints { make in
+                make.top.equalToSuperview().offset(21)
+                make.leading.trailing.equalToSuperview()
+            }
+            
+            presentedNavigationBar.addSubview(presentedTitle)
+            presentedTitle.snp.makeConstraints { make in
+                make.top.leading.bottom.equalToSuperview().inset(8)
+            }
+            
+            presentedNavigationBar.addSubview(presentedScanButton)
+            presentedScanButton.snp.makeConstraints { make in
+                make.top.trailing.bottom.equalToSuperview().inset(8)
+                make.leading.greaterThanOrEqualTo(presentedTitle.snp.trailing).offset(16)
+            }
+        }
         
         view.addSubview(searchBar)
         searchBar.snp.makeConstraints { make in
-            make.top.right.left.equalTo(safeArea)
+            if parent == nil {
+                make.top.equalTo(safeArea)
+            } else {
+                make.top.equalTo(presentedNavigationBar.snp.bottom)
+            }
+            make.right.left.equalTo(safeArea)
             make.height.equalTo(56) // Default searchBar height
         }
         
@@ -161,6 +193,7 @@ class NewDocumentFolderViewController: BaseViewController {
         search.delegate = self
         search.placeholder = "newDocumentFolder.searchBar.title".localized
         search.sizeToFit()
+        search.setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
         return search
     }()
     
@@ -175,6 +208,40 @@ class NewDocumentFolderViewController: BaseViewController {
         label.textAlignment = .center
         return label
     }()
+    
+    private lazy var presentedNavigationBar = UIView()
+    
+    private lazy var presentedTitle: UILabel = {
+        let label = UILabel()
+        label.text = "newDocumentFolder.screen.title".localized
+        label.textColor = .black
+        label.numberOfLines = 1
+        label.font = .headline
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private lazy var presentedScanButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(systemName: "qrcode.viewfinder", withConfiguration: UIImage.SymbolConfiguration(pointSize: 28)), for: .normal)
+        button.setTitle("newDocumentFolder.scanButton.title".localized, for: .normal)
+        button.setTitleColor(button.tintColor, for: .normal)
+        button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 4)
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 0)
+        button.addTarget(self, action: #selector(scanBarcode), for: .touchUpInside)
+        return button
+    }()
+}
+
+// MARK: - Presentable implementation
+extension NewDocumentFolderViewController: Presentable {
+    func willDismiss() {
+        searchBar.resignFirstResponder()
+    }
+    
+    func willExpand() {
+        // Nothing to do here
+    }
 }
 
 // MARK: - UITableViewDataSource implementation
@@ -236,8 +303,7 @@ extension NewDocumentFolderViewController: UITableViewDelegate {
         
         guard item != .notFound else { return }
         
-        coordinator.saveFolder(item, searchMode: searchMode)
-        coordinator.folderDidSelect()
+        coordinator.folderSelected(FolderSelection(folder: item, searchMode: searchMode))
     }
 }
 

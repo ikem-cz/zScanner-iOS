@@ -41,7 +41,7 @@ class DocumentViewModel {
     // MARK: Instance part
     private var networkManager: NetworkManager
     private var database: Database
-    private let internalUploadStatus = BehaviorSubject<DocumentViewModel.UploadStatus>(value: .awaitingInteraction)
+    private let internalUploadStatus = BehaviorSubject<UploadStatus>(value: .awaitingInteraction)
     private let pages: [MediaViewModel]
 
     let document: DocumentDomainModel
@@ -137,7 +137,6 @@ class DocumentViewModel {
     }
     
     private lazy var statusToProgress: ([UploadStatus]) -> UploadStatus = { [weak self] tasks in
-        
         var progresses = [Double]()
         var inProgressCount = 0
         var awaitingCount = 0
@@ -198,8 +197,12 @@ class DocumentViewModel {
     }
 }
 
-extension DocumentViewModel: Equatable {
+extension DocumentViewModel: Hashable {
     static func == (lhs: DocumentViewModel, rhs: DocumentViewModel) -> Bool {
         return lhs.document == rhs.document
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(document)
     }
 }

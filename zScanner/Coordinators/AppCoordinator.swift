@@ -34,7 +34,7 @@ class AppCoordinator: Coordinator {
     }
     
     private func startDocumentsCoordinator(with userSession: UserSession) {
-        let coordinator = DocumentsCoordinator(userSession: userSession, flowDelegate: self, window: window)
+        let coordinator = FoldersCoordinator(userSession: userSession, flowDelegate: self, window: window)
         addChildCoordinator(coordinator)
         coordinator.begin()
     }
@@ -85,7 +85,7 @@ extension AppCoordinator: LoginFlowDelegate {
 }
 
 // MARK: - DocumentsFlowDelegate implementation
-extension AppCoordinator: DocumentsFlowDelegate {
+extension AppCoordinator: FoldersFlowDelegate {
     func logout() {
         removeUserSession()
         SeaCatClient.reset()

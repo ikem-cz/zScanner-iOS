@@ -17,6 +17,7 @@ class NewDocumentCoordinator: Coordinator {
     // MARK: Instance part
     unowned private let flowDelegate: NewDocumentFlowDelegate
     private var newDocument = DocumentDomainModel.emptyDocument
+    private var folder: FolderDomainModel
     private var mediaViewModel: NewDocumentMediaViewModel?
     private let defaultMediaType = MediaType.photo
     private let mediaSourceTypes = [
@@ -24,28 +25,26 @@ class NewDocumentCoordinator: Coordinator {
          MediaType.video
      ]
     
-    init?(flowDelegate: NewDocumentFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
+    init?(folderSelection: FolderSelection, flowDelegate: NewDocumentFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
         self.flowDelegate = flowDelegate
+        self.folder = folderSelection.folder
+        newDocument.folderId = folderSelection.folder.id
         
         super.init(window: window, navigationController: navigationController)
+        
+        FolderDatabaseModel.updateLastUsage(of: folderSelection.folder)
+        tracker.track(.userFoundBy(folderSelection.searchMode))
     }
     
     // MARK: Interface
     func begin() {
-        showFolderSelectionScreen()
+        showNewMediaScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
     }
     
     // MARK: Helepers
     private let database: Database = try! RealmDatabase()
     private let networkManager: NetworkManager = IkemNetworkManager(api: NativeAPI())
     private let tracker: Tracker = FirebaseAnalytics()
-    
-    // TODO: Remove this function later
-    private func showFolderSelectionScreen() {
-        let viewModel = NewDocumentFolderViewModel(database: database, networkManager: networkManager, tracker: tracker)
-        let viewController = NewDocumentFolderViewController(viewModel: viewModel, coordinator: self)
-        push(viewController)
-    }
     
     // TODO: Remove this function later
     private func showDocumentTypeSelectionScreen() {
@@ -59,7 +58,7 @@ class NewDocumentCoordinator: Coordinator {
             popAll(animated: false)
         }
         
-        let viewModel = CameraViewModel(initialMode: mediaType, folderName: newDocument.folder.name, correlationId: newDocument.id, mediaSourceTypes: mediaSourceTypes)
+        let viewModel = CameraViewModel(initialMode: mediaType, folderName: folder.name, correlationId: newDocument.id, mediaSourceTypes: mediaSourceTypes)
         let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
         
         if let index = navigationController?.viewControllers.firstIndex(where: { $0 is CameraViewController }) {
@@ -151,25 +150,11 @@ class NewDocumentCoordinator: Coordinator {
     }
 }
 
-// MARK: - NewDocumentTypeCoordinator implementation
-extension NewDocumentCoordinator: NewDocumentFolderCoordinator {
-    func folderDidSelect() {
-        showNewMediaScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
-    }
-    
-    func saveFolder(_ folder: FolderDomainModel, searchMode: SearchMode) {
-        newDocument.folder = folder
-        let databaseFolder = FolderDatabaseModel(folder: folder)
-        FolderDatabaseModel.updateLastUsage(of: databaseFolder)
-        tracker.track(.userFoundBy(searchMode))
-    }
-}
-
 // MARK: - CameraCoordinator implementation
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ media: Media) {
         if mediaViewModel == nil {
-            mediaViewModel = NewDocumentMediaViewModel(folderName: newDocument.folder.name, mediaType: media.type, tracker: tracker)
+            mediaViewModel = NewDocumentMediaViewModel(folderName: folder.name, mediaType: media.type, tracker: tracker)
         }
         
         if media.type == .photo {
