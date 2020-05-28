@@ -208,6 +208,11 @@ extension NewDocumentCoordinator: MediaListCoordinator {
             showScanPreviewScreen(media: media)
         }
     }
+    
+    func createNewMedium() {
+        guard let mediaViewModel = mediaViewModel else { return }
+        showNewMediaScreen(mediaType: mediaViewModel.mediaType, mediaSourceTypes: [mediaViewModel.mediaType])
+    }
 }
 
 // MARK: - NewDocumentTypeCoordinator implementation

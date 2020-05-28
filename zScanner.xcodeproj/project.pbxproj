@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1656AAFB247FAA47008F20AF /* AddNewMediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1656AAFA247FAA47008F20AF /* AddNewMediaCollectionViewCell.swift */; };
 		1663AAA8245C0AD3004A3472 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1663AAA7245C0AD3004A3472 /* CameraViewController.swift */; };
 		16647ECA2460657E00A374F2 /* GalleryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16647EC92460657E00A374F2 /* GalleryButton.swift */; };
 		16908399246D9582009967A1 /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16908398246D9582009967A1 /* Themes.swift */; };
@@ -157,6 +158,7 @@
 
 /* Begin PBXFileReference section */
 		0010D71E93DE2CB854BEA615 /* Pods-zScanner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zScanner.release.xcconfig"; path = "Target Support Files/Pods-zScanner/Pods-zScanner.release.xcconfig"; sourceTree = "<group>"; };
+		1656AAFA247FAA47008F20AF /* AddNewMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewMediaCollectionViewCell.swift; sourceTree = "<group>"; };
 		1663AAA7245C0AD3004A3472 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		16647EC92460657E00A374F2 /* GalleryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryButton.swift; sourceTree = "<group>"; };
 		16908398246D9582009967A1 /* Themes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Themes.swift; sourceTree = "<group>"; };
@@ -648,6 +650,7 @@
 				16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */,
 				16BF842D245C7136004CC132 /* CameraView.swift */,
 				16647EC92460657E00A374F2 /* GalleryButton.swift */,
+				1656AAFA247FAA47008F20AF /* AddNewMediaCollectionViewCell.swift */,
 			);
 			path = NewDocument;
 			sourceTree = "<group>";
@@ -965,6 +968,7 @@
 				BD59A09922E36EF900FA9CD0 /* NativeAPI.swift in Sources */,
 				BD2B9E8822EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift in Sources */,
 				BDA25B2022EF9C33006DA7E4 /* Event.swift in Sources */,
+				1656AAFB247FAA47008F20AF /* AddNewMediaCollectionViewCell.swift in Sources */,
 				16CBB2B9246AAC86003E5D64 /* MediumPreviewViewController.swift in Sources */,
 				BD59A0AD22E395AF00FA9CD0 /* UIColor.swift in Sources */,
 				BD59A09022E36EF900FA9CD0 /* RequestBehavior.swift in Sources */,

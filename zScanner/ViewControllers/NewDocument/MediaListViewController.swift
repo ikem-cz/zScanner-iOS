@@ -57,22 +57,14 @@ class MediaListViewController: BaseViewController {
     }
     
     private func setupBindings() {
-        viewModel.mediaArray
-            .bind(
-                to: collectionView.rx.items(cellIdentifier: "PhotoSelectorCollectionViewCell", cellType: PhotoSelectorCollectionViewCell.self),
-                curriedArgument: { [unowned self] (row, media, cell) in
-                    cell.setup(with: media, delegate: self)
-                }
-            )
-            .disposed(by: disposeBag)
-        
         collectionView
             .rx
             .itemSelected
             .subscribe(onNext: { indexPath in
-                let cell = self.collectionView.cellForItem(at: indexPath) as! PhotoSelectorCollectionViewCell
-                guard let media = cell.element else { return }
-                self.coordinator.reeditMedia(media: media)
+                if let cell = self.collectionView.cellForItem(at: indexPath) as? PhotoSelectorCollectionViewCell {
+                    guard let media = cell.element else { return }
+                    self.coordinator.reeditMedia(media: media)
+                }
             }).disposed(by: disposeBag)
         
         viewModel.mediaArray
@@ -128,6 +120,8 @@ class MediaListViewController: BaseViewController {
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: flowLayout)
         collectionView.backgroundColor = .white
         collectionView.register(PhotoSelectorCollectionViewCell.self, forCellWithReuseIdentifier: "PhotoSelectorCollectionViewCell")
+        collectionView.register(AddNewMediaCollectionViewCell.self, forCellWithReuseIdentifier: "AddNewMediaCollectionViewCell")
+        collectionView.dataSource = self
         return collectionView
     
     }()
@@ -172,9 +166,36 @@ class MediaListViewController: BaseViewController {
     }()
 }
 
+// MARK: - UICollectionViewDataSource implementation
+extension MediaListViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModel.mediaArray.value.count + 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if indexPath.row == viewModel.mediaArray.value.count {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AddNewMediaCollectionViewCell", for: indexPath) as! AddNewMediaCollectionViewCell
+            cell.setup(delegate: self)
+            return cell
+        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoSelectorCollectionViewCell", for: indexPath) as! PhotoSelectorCollectionViewCell
+            let media = viewModel.mediaArray.value[indexPath.row]
+            cell.setup(with: media, delegate: self)
+            return cell
+        }
+    }
+}
+
 // MARK: - PhotoSelectorCellDelegate implementation
 extension MediaListViewController: PhotoSelectorCellDelegate {
     func delete(media: Media) {
         viewModel.removeMedia(media)
+    }
+}
+
+// MARK: - AddNewMediaCellDelegate implementation
+extension MediaListViewController: AddNewMediaCellDelegate {
+    func createNewMedia() {
+        coordinator.createNewMedium()
     }
 }
