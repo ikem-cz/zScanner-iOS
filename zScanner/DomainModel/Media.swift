@@ -27,8 +27,18 @@ class Media {
         }
     }
     
-    var videoThumbnail: UIImage? {
-        let asset = AVURLAsset(url: self.url)
+    init(type: MediaType, correlationId: String, fromGallery: Bool, thumbnail: UIImage? = nil) {
+        self.id = UUID().uuidString
+        self.type = type
+        self.correlationId = correlationId
+        self.relativePath = correlationId + "/" + id + type.suffix
+        self.url = URL(documentsWith: relativePath)
+        self.fromGallery = fromGallery
+        self.thumbnail = thumbnail
+    }
+    
+    func makeVideoThumbnail() {
+        let asset = AVURLAsset(url: url)
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
 
@@ -43,12 +53,12 @@ class Media {
         }
     }
     
-    init(type: MediaType, correlationId: String, fromGallery: Bool) {
-        self.id = UUID().uuidString
-        self.type = type
-        self.correlationId = correlationId
-        self.relativePath = correlationId + "/" + id + type.suffix
-        self.fromGallery = fromGallery
+    func deleteMedia() {
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch let error as NSError {
+            print("Error: \(error.domain)")
+        }
     }
 }
 

@@ -15,6 +15,7 @@ protocol MediaListCoordinator: BaseCoordinator {
     func upload()
     func reeditMedia(media: Media)
     func createNewMedia()
+    func deleteDocument()
 }
 
 class MediaListViewController: BaseViewController {
@@ -85,12 +86,29 @@ class MediaListViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
     
+    @objc func deleteDocument() {
+        let alert = UIAlertController(title: "newDocument.popAlert.title".localized, message: "newDocument.popAlert.message".localized, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "newDocument.popAlert.confirm".localized, style: .default, handler: { _ in self.coordinator.deleteDocument() }))
+        alert.addAction(UIAlertAction(title: "newDocument.popAlert.cancel".localized, style: .cancel, handler: nil))
+        
+        self.present(alert, animated: true)
+    }
+    
     private func setupView() {
         navigationItem.title = "newDocumentPhotos.screen.title".localized
 
+        view.addSubview(deleteButton)
+        deleteButton.snp.makeConstraints { make in
+            make.top.equalTo(safeArea)
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.height.equalTo(30)
+        }
+        
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalTo(deleteButton.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
         }
         
         view.addSubview(gradientView)
@@ -116,6 +134,18 @@ class MediaListViewController: BaseViewController {
         }
     }
     
+    private lazy var scrollView = UIScrollView()
+    
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        stackView.spacing = 0
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: flowLayout)
         collectionView.backgroundColor = .white
@@ -130,6 +160,19 @@ class MediaListViewController: BaseViewController {
         let button = PrimaryButton()
         button.setTitle("newDocumentPhotos.button.title".localized, for: .normal)
         button.dropShadow()
+        return button
+    }()
+    
+    private lazy var deleteButton: UIButton = {
+        let button = UIButton()
+        let attributedString = NSAttributedString(string: "newDocumentPhotos.deleteDocument.title".localized,
+                                                  attributes: [
+                                                       .underlineStyle: NSUnderlineStyle.single.rawValue,
+                                                       .foregroundColor: UIColor.red,
+                                                       .font: UIFont.footnote
+                                                  ])
+        button.setAttributedTitle(attributedString, for: .normal)
+        button.addTarget(self, action: #selector(deleteDocument), for: .touchUpInside)
         return button
     }()
     

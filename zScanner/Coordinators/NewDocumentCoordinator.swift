@@ -124,6 +124,12 @@ class NewDocumentCoordinator: Coordinator {
             })
     }
     
+    private func deleteMedia() {
+        mediaViewModel?.mediaArray.value.forEach({ media in
+            media.deleteMedia()
+        })
+    }
+    
     // MARK: - BaseCordinator implementation
     override func willPreventPop(for sender: BaseViewController) -> Bool {
         switch sender {
@@ -212,6 +218,12 @@ extension NewDocumentCoordinator: MediaListCoordinator {
     func createNewMedium() {
         guard let mediaViewModel = mediaViewModel else { return }
         showNewMediaScreen(mediaType: mediaViewModel.mediaType, mediaSourceTypes: [mediaViewModel.mediaType])
+    }
+    
+    func deleteDocument() {
+        deleteMedia()
+        popAll()
+        flowDelegate.coordinatorDidFinish(self)
     }
 }
 
