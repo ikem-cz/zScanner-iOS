@@ -20,6 +20,7 @@ class NewDocumentCoordinator: Coordinator {
     private var folder: FolderDomainModel
     private var mediaViewModel: MediaListViewModel?
     private let defaultMediaType = MediaType.photo
+    #warning("Should depend on document modes?")
     private let mediaSourceTypes = [
         MediaType.photo,
         MediaType.video,
@@ -110,6 +111,18 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func finish() {
+        switch mediaViewModel?.mediaType {
+        case .photo:
+            newDocument.type.mode = DocumentMode.photo
+        case .video:
+            newDocument.type.mode = DocumentMode.video
+        case .scan:
+            // Will get from SegmentControllField
+            break
+        default:
+            print("Unknown mediaType.")
+        }
+        
         let databaseDocument = DocumentDatabaseModel(document: newDocument)
         database.saveObject(databaseDocument)
         
@@ -176,7 +189,7 @@ class NewDocumentCoordinator: Coordinator {
 // MARK: - NewDocumentTypeCoordinator implementation
 extension NewDocumentCoordinator: NewDocumentFolderCoordinator {
     func folderSelected(_ folderSelection: FolderSelection) {
-        
+        #warning("What should do it?")
     }
     
 //    func folderDidSelect() {
@@ -234,6 +247,8 @@ extension NewDocumentCoordinator: MediaListCoordinator {
         for section in fields {
             for field in section {
                 switch field {
+                case let segmentControl as SegmentControlField:
+                    newDocument.type.mode = segmentControl.segmentSelected.value == 0 ? DocumentMode.document : DocumentMode.examination
                 case let textField as TextInputField:
                     newDocument.notes = textField.text.value
                 case let datePicker as DateTimePickerField:
