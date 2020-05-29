@@ -71,10 +71,10 @@ class CollectionViewTableViewCell: UITableViewCell {
         collectionView
             .rx
             .itemSelected
-            .subscribe(onNext: { indexPath in
-                if let cell = self.collectionView.cellForItem(at: indexPath) as? PhotoSelectorCollectionViewCell {
+            .subscribe(onNext: { [weak self] indexPath in
+                if let cell = self?.collectionView.cellForItem(at: indexPath) as? PhotoSelectorCollectionViewCell {
                     guard let media = cell.element else { return }
-                    self.delegate!.reeditMedium(media: media)
+                    self?.delegate!.reeditMedium(media: media)
                 }
             }).disposed(by: disposeBag)
     }
