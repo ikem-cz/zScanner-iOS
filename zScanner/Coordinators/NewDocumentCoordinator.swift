@@ -207,7 +207,7 @@ extension NewDocumentCoordinator: NewDocumentFolderCoordinator {
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ media: Media) {
         if mediaViewModel == nil {
-            mediaViewModel = MediaListViewModel(documentMode: DocumentMode.photo, database: database, folderName: folder.name, mediaType: media.type, tracker: tracker)
+            mediaViewModel = MediaListViewModel(database: database, folderName: folder.name, mediaType: media.type, tracker: tracker)
         }
         
         switch media.type {

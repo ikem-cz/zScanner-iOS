@@ -21,13 +21,20 @@ class MediaListViewModel {
     let folderName: String
     let mediaArray = BehaviorRelay<[Media]>(value: [])
     
-    init(documentMode: DocumentMode, database: Database, folderName: String, mediaType: MediaType, tracker: Tracker) {
+    init(database: Database, folderName: String, mediaType: MediaType, tracker: Tracker) {
         self.tracker = tracker
         self.mediaType = mediaType
         self.folderName = folderName
         self.database = database
-        self.mode = documentMode
-        self.fields = fields(for: mode)
+        
+        switch mediaType {
+        case .photo: self.mode = .photo
+        case .video: self.mode = .video
+        case .scan: self.mode = .ext
+        default: self.mode = .undefined
+        }
+        
+        self.fields = fields(for: mediaType)
         
         var sectionsResults: [Observable<Bool>] = []
         for section in 0..<(fields.count-1) {
@@ -80,7 +87,7 @@ class MediaListViewModel {
     }
     
     // MARK: Helpers
-    private func fields(for mode: DocumentMode) -> [[FormField]] {
+    private func fields(for type: MediaType) -> [[FormField]] {
         var documentTypes: [DocumentTypeDomainModel] {
             return database.loadObjects(DocumentTypeDatabaseModel.self)
                 .map({ $0.toDomainModel() })
@@ -88,8 +95,8 @@ class MediaListViewModel {
                 .sorted(by: { $0.name < $1.name })
         }
 
-        switch mode {
-        case .document, .examination, .ext:
+        switch type {
+        case .scan:
             return [
                 [SegmentControlField()],
                 [ListPickerField<DocumentTypeDomainModel>(title: "form.listPicker.title".localized, list: documentTypes),
@@ -97,7 +104,7 @@ class MediaListViewModel {
                  DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil })],
                 [CollectionViewField()]
             ]
-        case .photo, .video, .undefined:
+        case .photo, .video:
             return [
                 [DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil })],
                 [CollectionViewField()]
