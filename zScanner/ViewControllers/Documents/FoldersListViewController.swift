@@ -72,6 +72,17 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     }
     
     private func setupBindings() {
+        viewModel.documentModesState
+            .observeOn(MainScheduler.instance )
+            .subscribe(onNext: { [weak self] state in
+                switch state {
+                case .error:
+                    self?.showDocumentTypesErrorAlert()
+                default:
+                    break
+                }
+            }).disposed(by: disposeBag)
+        
         Observable.combineLatest([
                 viewModel.activeFolders,
                 viewModel.sentFolders
@@ -81,6 +92,14 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
                 self?.updateTableView()
             })
             .disposed(by: disposeBag)
+    }
+    
+    func showDocumentTypesErrorAlert() {
+        let alert = UIAlertController(title: "dialog.requestError.title".localized, message: "dialog.requestError.noDocumentTypes".localized, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "dialog.requestError.retry".localized, style: .default, handler: { _ in self.viewModel.fetchDocumentTypes() }))
+        
+        self.present(alert, animated: true)
     }
     
     @objc private func openMenu() {

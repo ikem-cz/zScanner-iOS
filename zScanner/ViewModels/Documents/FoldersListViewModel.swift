@@ -115,7 +115,7 @@ class FoldersListViewModel {
                     self?.storeDocumentTypes(documents)
                     self?.storeDocumentModes(from: documents)
 
-                    self?.documentModesState.onNext(.error(RequestError(.noInternetConnection, message: "No types")))
+                    self?.documentModesState.onNext(.success)
 
                 case .error(let error):
                     self?.documentModesState.onNext(.error(error))

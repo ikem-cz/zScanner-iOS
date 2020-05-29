@@ -106,3 +106,4 @@
 "dialog.requestError.message[seacatError]" = "Nelze ověřit vaši identitu, prosím obraťte se na podporu.";
 "dialog.requestError.message[timeout]" = "Časový limit vypršel, zkuste to prosím znovu.";
 "dialog.requestError.message[timeout]" = "";
+"dialog.requestError.noDocumentTypes" = "Nepodařilo se načíst typy dokumentu.";
