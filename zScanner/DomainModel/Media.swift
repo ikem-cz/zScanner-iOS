@@ -23,21 +23,19 @@ class Media {
         case .photo, .scan:
             return UIImage(data: try! Data(contentsOf: url))!
         case .video:
-            return videoThumbnail
+            return makeVideoThumbnail()
         }
     }
     
-    init(type: MediaType, correlationId: String, fromGallery: Bool, thumbnail: UIImage? = nil) {
+    init(type: MediaType, correlationId: String, fromGallery: Bool) {
         self.id = UUID().uuidString
         self.type = type
         self.correlationId = correlationId
         self.relativePath = correlationId + "/" + id + type.suffix
-        self.url = URL(documentsWith: relativePath)
         self.fromGallery = fromGallery
-        self.thumbnail = thumbnail
     }
     
-    func makeVideoThumbnail() {
+    func makeVideoThumbnail() -> UIImage? {
         let asset = AVURLAsset(url: url)
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true

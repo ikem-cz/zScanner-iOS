@@ -173,11 +173,28 @@ class NewDocumentCoordinator: Coordinator {
     }
 }
 
+// MARK: - NewDocumentTypeCoordinator implementation
+extension NewDocumentCoordinator: NewDocumentFolderCoordinator {
+    func folderSelected(_ folderSelection: FolderSelection) {
+        
+    }
+    
+//    func folderDidSelect() {
+//        showNewMediaScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
+//    }
+//    
+//    func saveFolder(_ folder: FolderDomainModel, searchMode: SearchMode) {
+//        newDocument.folder = folder
+//        let databaseFolder = FolderDatabaseModel(folder: folder)
+//        FolderDatabaseModel.updateLastUsage(of: databaseFolder)
+//        tracker.track(.userFoundBy(searchMode))
+//    }
+}
 // MARK: - CameraCoordinator implementation
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ media: Media) {
         if mediaViewModel == nil {
-            mediaViewModel = MediaListViewModel(documentMode: DocumentMode.photo, database: database, folderName: newDocument.folder.name, mediaType: media.type, tracker: tracker)
+            mediaViewModel = MediaListViewModel(documentMode: DocumentMode.photo, database: database, folderName: folder.name, mediaType: media.type, tracker: tracker)
         }
         
         switch media.type {
@@ -237,17 +254,12 @@ extension NewDocumentCoordinator: MediaListCoordinator {
         finish()
     }
     
-    func reeditMedium(media: Media) {
+    func reeditMedia(media: Media) {
         if media.type == .photo {
             showPhotoPreviewScreen(media: media)
         } else if media.type == .video {
             showVideoPreviewScreen(media: media)
         }
-    }
-    
-    func createNewMedium() {
-        guard let mediaViewModel = mediaViewModel else { return }
-        showNewMediaScreen(mediaType: mediaViewModel.mediaType, mediaSourceTypes: [mediaViewModel.mediaType])
     }
     
     func deleteDocument() {

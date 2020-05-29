@@ -25,7 +25,7 @@ class ScanPreviewViewController: MediaPreviewViewController {
     private var scan: ScanMedia { media as! ScanMedia }
     
     // MARK: Lifecycle
-    init(media: ScanMedia, viewModel: NewDocumentMediaViewModel, coordinator: MediaPreviewCoordinator) {
+    init(media: ScanMedia, viewModel: MediaListViewModel, coordinator: MediaPreviewCoordinator) {
         
         super.init(viewModel: viewModel, media: media, coordinator: coordinator)
     }

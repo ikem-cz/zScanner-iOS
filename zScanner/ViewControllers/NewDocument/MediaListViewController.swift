@@ -250,10 +250,10 @@ extension MediaListViewController: UITableViewDelegate {
 // MARK: - CollectionViewCellDelegate implementation
 extension MediaListViewController: CollectionViewCellDelegate {
     func reeditMedium(media: Media) {
-        coordinator.reeditMedium(media: media)
+        coordinator.reeditMedia(media: media)
     }
     
     func createNewMedium() {
-        coordinator.createNewMedium()
+        coordinator.createNewMedia()
     }
 }
