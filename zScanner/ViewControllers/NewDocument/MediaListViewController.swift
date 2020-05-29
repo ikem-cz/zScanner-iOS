@@ -45,12 +45,6 @@ class MediaListViewController: BaseViewController {
         setupBindings()
     }
     
-    override var rightBarButtonItems: [UIBarButtonItem] {
-        return [
-            UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(takeNewPicture))
-        ]
-    }
-    
     // MARK: Helpers
     let disposeBag = DisposeBag()
     
