@@ -71,12 +71,12 @@ class MediaListViewModel {
     
     var isValid = Observable<Bool>.just(false)
     
-    func addDateTimePickerPlaceholder(at index: Int, for date: DateTimePickerField) {
-        fields[1].insert(DateTimePickerPlaceholder(for: date), at: index)
+    func addDateTimePickerPlaceholder(index: Int, section: Int, for date: DateTimePickerField) {
+        fields[section].insert(DateTimePickerPlaceholder(for: date), at: index)
     }
     
-    func removeDateTimePickerPlaceholder() {
-        fields[1].removeAll(where: { $0 is DateTimePickerPlaceholder })
+    func removeDateTimePickerPlaceholder(section: Int) {
+        fields[section].removeAll(where: { $0 is DateTimePickerPlaceholder })
     }
     
     // MARK: Helpers

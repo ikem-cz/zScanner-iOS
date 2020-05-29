@@ -62,15 +62,11 @@ class MediaListViewController: BaseViewController {
             .bind(to: sendButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
-        sendButton.rx.tap.do(onNext: { [unowned self] in
-            self.tableView.visibleCells.forEach({ ($0 as? TextInputTableViewCell)?.enableSelection() })
-            if self.pickerIndexPath != nil {
-                self.hideDateTimePicker()
-            }
-        })
-        .subscribe(onNext: { [unowned self] in
-            self.coordinator.upload(self.viewModel.fields)
-        }).disposed(by: disposeBag)
+        sendButton.rx.tap
+            .subscribe(onNext: { [unowned self] in
+                self.coordinator.upload(self.viewModel.fields)
+            })
+            .disposed(by: disposeBag)
     }
     
     @objc func deleteDocument() {
@@ -87,7 +83,7 @@ class MediaListViewController: BaseViewController {
     private func showDateTimePicker(for indexPath: IndexPath, date: DateTimePickerField) {
         tableView.beginUpdates()
         let newIndex = indexPath.row + 1
-        viewModel.addDateTimePickerPlaceholder(at: newIndex, for: date)
+        viewModel.addDateTimePickerPlaceholder(index: newIndex, section: indexPath.section, for: date)
         let index = IndexPath(row: newIndex, section: indexPath.section)
         tableView.insertRows(at: [index], with: .fade)
         tableView.endUpdates()
@@ -95,10 +91,10 @@ class MediaListViewController: BaseViewController {
         pickerIndexPath = index
     }
     
-    private func hideDateTimePicker() {
+    private func hideDateTimePicker(section: Int) {
         tableView.beginUpdates()
         if let index = pickerIndexPath {
-            viewModel.removeDateTimePickerPlaceholder()
+            viewModel.removeDateTimePickerPlaceholder(section: section)
             tableView.deleteRows(at: [index], with: .fade)
         }
         tableView.endUpdates()
@@ -216,7 +212,7 @@ extension MediaListViewController: UITableViewDelegate {
         
         // Hide picker if user select different cell
         if self.pickerIndexPath != nil && !(item is DateTimePickerField) {
-            self.hideDateTimePicker()
+            self.hideDateTimePicker(section: indexPath.section)
         }
         
         // Remove focus from textField is user select different cell
@@ -229,7 +225,7 @@ extension MediaListViewController: UITableViewDelegate {
             if pickerIndexPath == nil {
                 showDateTimePicker(for: indexPath, date: date)
             } else {
-                hideDateTimePicker()
+                hideDateTimePicker(section: indexPath.section)
             }
         case is TextInputField:
             if let cell = tableView.cellForRow(at: indexPath) as? TextInputTableViewCell {
