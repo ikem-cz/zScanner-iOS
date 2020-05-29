@@ -48,20 +48,6 @@ class NewDocumentCoordinator: Coordinator {
     private let networkManager: NetworkManager = IkemNetworkManager(api: NativeAPI())
     private let tracker: Tracker = FirebaseAnalytics()
     
-    // TODO: Remove this function later
-    private func showFolderSelectionScreen() {
-        let viewModel = NewDocumentFolderViewModel(database: database, networkManager: networkManager, tracker: tracker)
-        let viewController = NewDocumentFolderViewController(viewModel: viewModel, coordinator: self)
-        push(viewController)
-    }
-    
-    // TODO: Remove this function later
-//    private func showDocumentTypeSelectionScreen() {
-//        let viewModel = NewDocumentTypeViewModel(documentMode: .document, database: database)
-//        let viewController = NewDocumentTypeViewController(viewModel: viewModel, coordinator: self)
-//        push(viewController)
-//    }
-    
     private func showNewMediaScreen(mediaType: MediaType, mediaSourceTypes: [MediaType]) {
         if !(viewControllers.first is CameraViewController) {
             popAll(animated: false)
@@ -186,23 +172,6 @@ class NewDocumentCoordinator: Coordinator {
     }
 }
 
-// MARK: - NewDocumentTypeCoordinator implementation
-extension NewDocumentCoordinator: NewDocumentFolderCoordinator {
-    func folderSelected(_ folderSelection: FolderSelection) {
-        #warning("What should do it?")
-    }
-    
-//    func folderDidSelect() {
-//        showNewMediaScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
-//    }
-//    
-//    func saveFolder(_ folder: FolderDomainModel, searchMode: SearchMode) {
-//        newDocument.folder = folder
-//        let databaseFolder = FolderDatabaseModel(folder: folder)
-//        FolderDatabaseModel.updateLastUsage(of: databaseFolder)
-//        tracker.track(.userFoundBy(searchMode))
-//    }
-}
 // MARK: - CameraCoordinator implementation
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ media: Media) {

@@ -31,7 +31,6 @@ class MediaListViewModel {
         case .photo: self.mode = .photo
         case .video: self.mode = .video
         case .scan: self.mode = .ext
-        default: self.mode = .undefined
         }
         
         self.fields = fields(for: mediaType)
