@@ -106,7 +106,7 @@ class MediaListViewModel {
             ]
         case .photo, .video:
             return [
-                [DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil })],
+                [DateTimePickerField(title: "form.dateTimePicker.title".localized, setDate: true, validator: { $0 != nil })],
                 [CollectionViewField()]
             ]
         }

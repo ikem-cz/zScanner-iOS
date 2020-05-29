@@ -111,9 +111,11 @@ class DateTimePickerField: FormField {
     let date = BehaviorRelay<Date?>(value: nil)
     let validator: (Date?) -> Bool
     
-    init(title: String, validator: @escaping (Date?) -> Bool) {
+    init(title: String, setDate: Bool = false, validator: @escaping (Date?) -> Bool) {
         self.title = title
         self.validator = validator
+        
+        if setDate { self.date.accept(Date()) }
     }
 }
 
