@@ -13,6 +13,7 @@ protocol CollectionViewCellDelegate {
     func reeditMedium(media: Media)
     func deleteDocument()
     func createNewMedium()
+    func reload()
 }
 
 class CollectionViewTableViewCell: UITableViewCell {
@@ -57,12 +58,13 @@ class CollectionViewTableViewCell: UITableViewCell {
         contentView.addSubview(deleteButton)
         deleteButton.snp.makeConstraints { make in
             make.leading.trailing.centerX.bottom.equalToSuperview()
+            make.height.equalTo(30)
         }
         
         contentView.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(deleteButton.snp.top).inset(10)
+            make.bottom.equalTo(deleteButton.snp.top).inset(-10)
         }
     }
     
@@ -88,9 +90,7 @@ class CollectionViewTableViewCell: UITableViewCell {
             elementsPair = (count+1) / 2
         }
         
-        let newHeight = CGFloat(elementsPair) * itemWidth + deleteButton.frame.height + 20
-        
-        #warning("Fix resize view when user will delete medium")
+        let newHeight = CGFloat(elementsPair) * itemWidth + deleteButton.frame.height
         collectionView.snp.makeConstraints { make in
             make.height.equalTo(newHeight)
         }
@@ -167,6 +167,7 @@ extension CollectionViewTableViewCell: PhotoSelectorCellDelegate {
         viewModel!.removeMedia(media)
         collectionView.reloadData()
         resetHeight()
+        delegate!.reload()
     }
 }
 

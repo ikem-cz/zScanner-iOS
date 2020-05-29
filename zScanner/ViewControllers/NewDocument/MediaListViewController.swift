@@ -246,4 +246,10 @@ extension MediaListViewController: CollectionViewCellDelegate {
     func createNewMedium() {
         coordinator.createNewMedia()
     }
+    
+    func reload() {
+        DispatchQueue.main.async{
+            self.tableView.reloadData()
+        }
+    }
 }
