@@ -19,8 +19,16 @@ extension Encodable {
         var properties = [(name: String, value: Any)]()
         for attribute in mirror.children {
             if let propertyName = attribute.label {
-                let property = (name: propertyName, value: attribute.value)
-                properties.append(property)
+                let mirroredValue = Mirror(reflecting: attribute.value)
+                if mirroredValue.displayStyle == Mirror.DisplayStyle.optional {
+                    if let unwrapped = mirroredValue.children.first?.value {
+                        let property = (name: propertyName, value: unwrapped)
+                        properties.append(property)
+                    }
+                } else {
+                    let property = (name: propertyName, value: attribute.value)
+                    properties.append(property)
+                }
             }
         }
         return properties

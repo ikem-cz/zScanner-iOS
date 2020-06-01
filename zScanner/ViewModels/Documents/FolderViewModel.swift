@@ -11,23 +11,18 @@ import RxSwift
 import RxRelay
 
 
-class FolderViewModel {
+final class FolderViewModel {
     typealias UploadStatus = DocumentViewModel.UploadStatus
 
     // MARK: Instance part
-    private var networkManager: NetworkManager
-    private var database: Database
-
     let folder: FolderDomainModel
-    var documents = BehaviorRelay<[DocumentViewModel]>(value: [])
+    let documents: BehaviorRelay<[DocumentViewModel]>
     var folderStatus = BehaviorRelay<UploadStatus>(value: .awaitingInteraction)
     
-    init(folder: FolderDomainModel, networkManager: NetworkManager, database: Database) {
+    init(folder: FolderDomainModel, documents: [DocumentViewModel]) {
         self.folder = folder
-        self.networkManager = networkManager
-        self.database = database
+        self.documents = BehaviorRelay(value: documents)
         
-        loadDocuments()
         setupBindings()
     }
     
@@ -81,9 +76,7 @@ class FolderViewModel {
             guard let self = self else { return }
             
             let tasks = documents.map({
-                $0.documentUploadStatus
-                    .distinctUntilChanged()
-                    .asObservable()
+                $0.documentUploadStatus.asObservable()
             })
             
             self.folderStatusSubscription?.dispose()
@@ -97,26 +90,20 @@ class FolderViewModel {
         .disposed(by: disposeBag)
     }
     
-    func insertNewDocument(_ document: DocumentViewModel) {
+    func insertNewDocument(_ newDocument: DocumentViewModel) {
         var newArray = documents.value
-        newArray.append(document)
+        let _ = newArray.first(where: { $0.document.id == newDocument.document.id }).flatMap({ newArray.remove($0) })
+        newArray.insert(newDocument, at: 0)
         documents.accept(newArray)
-    }
-    
-    func loadDocuments() {
-        let newDocuments = folder.documents.map { DocumentViewModel(document: $0, networkManager: networkManager, database: database) }
-        documents.accept(newDocuments)
     }
 }
 
 extension FolderViewModel: Hashable {
     static func == (lhs: FolderViewModel, rhs: FolderViewModel) -> Bool {
-        return lhs.hashValue == rhs.hashValue
+        return lhs.folder.id == rhs.folder.id
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(folder.id)
-        hasher.combine(folder.externalId)
-        hasher.combine(folder.name)
     }
 }

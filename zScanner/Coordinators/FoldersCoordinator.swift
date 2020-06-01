@@ -122,6 +122,7 @@ extension FoldersCoordinator: NewDocumentFlowDelegate {
             assertionFailure()
             return
         }
+        
         list.dismissBottomSheet()
         list.insertNewDocument(document: documentViewModel)
     }

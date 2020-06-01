@@ -14,7 +14,6 @@ class FolderDatabaseModel: Object {
     @objc dynamic var id = ""
     @objc dynamic var name = ""
     @objc dynamic var lastUsed = Date()
-    let documents = List<DocumentDatabaseModel>()
     
     convenience init(folder: FolderDomainModel) {
         self.init()
@@ -23,7 +22,6 @@ class FolderDatabaseModel: Object {
         self.externalId = folder.externalId
         self.name = folder.name
         self.lastUsed = Date()
-        self.documents.append(objectsIn: folder.documents.map { DocumentDatabaseModel(document: $0) })
     }
     
     override class func primaryKey() -> String {
@@ -50,8 +48,7 @@ extension FolderDatabaseModel {
         return FolderDomainModel(
             externalId: externalId,
             id: id,
-            name: name,
-            documents: documents.map { $0.toDomainModel() }
+            name: name
         )
     }
 }

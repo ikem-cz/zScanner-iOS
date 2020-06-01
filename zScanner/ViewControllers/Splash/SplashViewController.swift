@@ -70,6 +70,7 @@ class SeaCatSplashViewController: BaseViewController, ErrorHandling {
    
     private func initializeSeaCat() {
         SeaCatClient.configure(with: nil)
+        SeaCatClient.setLogMask(SCLogFlag(rawValue: 0))
         
         infoLabel.text = "splash.waitingForSeaCat.message".localized
         
@@ -128,7 +129,8 @@ class SeaCatSplashViewController: BaseViewController, ErrorHandling {
     }()
     
     private lazy var loading: UIActivityIndicatorView = {
-        let loading = UIActivityIndicatorView(style: .gray)
+        let loading = UIActivityIndicatorView(style: .medium)
+        loading.color = .gray
         loading.startAnimating()
         return loading
     }()

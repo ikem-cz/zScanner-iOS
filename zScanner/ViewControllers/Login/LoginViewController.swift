@@ -208,7 +208,8 @@ class LoginViewController: BaseViewController, ErrorHandling {
     }()
     
     private lazy var loading: UIActivityIndicatorView = {
-        let loading = UIActivityIndicatorView(style: .white)
+        let loading = UIActivityIndicatorView(style: .medium)
+        loading.color = .white
         loading.hidesWhenStopped = true
         return loading
     }()

@@ -23,12 +23,20 @@ class Media {
         case .photo, .scan:
             return UIImage(data: try! Data(contentsOf: url))!
         case .video:
-            return videoThumbnail
+            return makeVideoThumbnail()
         }
     }
     
-    var videoThumbnail: UIImage? {
-        let asset = AVURLAsset(url: self.url)
+    init(type: MediaType, correlationId: String, fromGallery: Bool) {
+        self.id = UUID().uuidString
+        self.type = type
+        self.correlationId = correlationId
+        self.relativePath = correlationId + "/" + id + type.suffix
+        self.fromGallery = fromGallery
+    }
+    
+    func makeVideoThumbnail() -> UIImage? {
+        let asset = AVURLAsset(url: url)
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
 
@@ -41,14 +49,6 @@ class Media {
             print("Video snapshot generation failed with error \(error)")
             return nil
         }
-    }
-    
-    init(type: MediaType, correlationId: String, fromGallery: Bool) {
-        self.id = UUID().uuidString
-        self.type = type
-        self.correlationId = correlationId
-        self.relativePath = correlationId + "/" + id + type.suffix
-        self.fromGallery = fromGallery
     }
 }
 

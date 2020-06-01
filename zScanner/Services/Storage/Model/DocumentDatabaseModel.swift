@@ -17,7 +17,7 @@ class DocumentDatabaseModel: Object {
     @objc dynamic var date = Date()
     @objc dynamic var name = ""
     @objc dynamic var notes = ""
-    let folder = LinkingObjects(fromType: FolderDatabaseModel.self, property: "documents")
+    @objc dynamic var folder: FolderDatabaseModel?
     let pages = List<PageDatabaseModel>()
     
     convenience init(document: DocumentDomainModel) {
@@ -33,18 +33,8 @@ class DocumentDatabaseModel: Object {
         self.pages.append(objectsIn: document.pages.map({ PageDatabaseModel(media: $0) }))
         
         let realm = try! Realm()
-        if let folder = realm.loadObject(FolderDatabaseModel.self, withId: document.folderId) {
-            try! realm.write({
-                folder.documents.append(self)
-            })
-        } else {
-            let folder = FolderDatabaseModel()
-            folder.documents.append(self)
-            
-            try! realm.write({
-                realm.add(folder)
-            })
-        }
+        self.folder = realm.loadObject(FolderDatabaseModel.self, withId: document.folderId)!
+        
     }
     
     override class func primaryKey() -> String {
@@ -57,7 +47,7 @@ extension DocumentDatabaseModel {
     func toDomainModel() -> DocumentDomainModel {
         return DocumentDomainModel(
             id: id,
-            folderId: folder.first!.id,
+            folderId: folder!.id,
             type: DocumentTypeDomainModel(
                 id: documentType,
                 name: documentTypeName,

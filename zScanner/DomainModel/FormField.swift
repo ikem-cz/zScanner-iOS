@@ -62,6 +62,46 @@ class TextInputField: FormField {
 }
 
 // MARK: -
+protocol SegmentItem {
+    var title: String { get }
+}
+
+// MARK: -
+class SegmentPickerField<T: SegmentItem>: FormField {
+    var title: String = ""
+    
+    var value: Observable<String> {
+        return selected.map({
+            $0?.title ?? "form.segmentControl.unselected".localized
+        }).asObservable()
+    }
+    var isValid: Observable<Bool> {
+        return selected.map({ $0 != nil }).asObservable()
+    }
+    
+    var values: [T]
+    let selected = BehaviorRelay<T?>(value: nil)
+    
+    init(values: [T]) {
+        self.values = values
+    }
+}
+
+// MARK: -
+class CollectionViewField: FormField {
+    var title: String = ""
+
+    var value: Observable<String> {
+        return picturesCount.map({ _ in "" }).asObservable()
+    }
+    var isValid: Observable<Bool> {
+        return picturesCount.map({ $0 > 0 }).asObservable()
+    }
+    
+    let picturesCount = BehaviorRelay<Int>(value: 0)
+}
+
+// MARK: -
 class ProtectedTextInputField: TextInputField {
 
     var protected = BehaviorRelay<Bool>(value: true)
@@ -69,10 +109,11 @@ class ProtectedTextInputField: TextInputField {
 
 // MARK: -
 class DateTimePickerField: FormField {
+   
     var title: String
     var value: Observable<String> {
         return date.map({
-            return $0?.dateTimeString ?? "form.listPicker.unselected".localized
+            $0?.dateTimeString ?? "form.listPicker.unselected".localized
         }).asObservable()
     }
     
@@ -83,9 +124,11 @@ class DateTimePickerField: FormField {
     let date = BehaviorRelay<Date?>(value: nil)
     let validator: (Date?) -> Bool
     
-    init(title: String, validator: @escaping (Date?) -> Bool) {
+    init(title: String, setDate: Bool = false, validator: @escaping (Date?) -> Bool) {
         self.title = title
         self.validator = validator
+        
+        if setDate { self.date.accept(Date()) }
     }
 }
 

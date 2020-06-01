@@ -103,7 +103,6 @@ class CameraViewController: BaseViewController {
     // MARK: Setup media session
     func setupCaptureSession() {
         captureSession = AVCaptureSession()
-        captureSession.sessionPreset = .medium
         
         // Add temporary input to setup preview constraints
         if let videoDevice = videoDevice, let input = try? AVCaptureDeviceInput(device: videoDevice), captureSession.canAddInput(input) {
@@ -239,18 +238,29 @@ class CameraViewController: BaseViewController {
     }
     
     func convertFromCamera(_ point: CGPoint) -> CGPoint {
-        let orientation = UIApplication.shared.statusBarOrientation
+        let orientation = UIApplication.shared.windows.first!.windowScene!.interfaceOrientation
+        let rect = cameraView.frame
+        
+        var x: CGFloat = point.x
+        var y: CGFloat = point.y
         
         switch orientation {
         case .portrait, .unknown:
-            return CGPoint(x: point.y * self.cameraView.frame.width, y: point.x * self.cameraView.frame.height)
+            x = point.y
+            y = point.x
         case .landscapeLeft:
-            return CGPoint(x: (1 - point.x) * self.cameraView.frame.width, y: point.y * self.cameraView.frame.height)
+            x = 1 - point.x
+            y = point.y
         case .landscapeRight:
-            return CGPoint(x: point.x * self.cameraView.frame.width, y: (1 - point.y) * self.cameraView.frame.height)
+            x = point.x
+            y = 1 - point.y
         case .portraitUpsideDown:
-            return CGPoint(x: (1 - point.y) * self.cameraView.frame.width, y: (1 - point.x) * self.cameraView.frame.height)
+            x = 1 - point.y
+            y = 1 - point.x
+        @unknown default:
+            break
         }
+        return CGPoint(x: x * rect.width + rect.minX, y: y * rect.height + rect.minY)
     }
 
     // MARK: Helpers
@@ -297,7 +307,6 @@ class CameraViewController: BaseViewController {
         view.backgroundColor = .black
         title = viewModel.folderName
         
-        captureSession.sessionPreset = .medium
         view.addSubview(captureButton)
         captureButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()

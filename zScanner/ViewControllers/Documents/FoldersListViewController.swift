@@ -46,12 +46,6 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
         setupBindings()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        dismissBottomSheet()
-    }
-    
     override var leftBarButtonItems: [UIBarButtonItem] {
         return [
             hambugerButton
@@ -72,15 +66,35 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     }
     
     private func setupBindings() {
+        viewModel.documentModesState
+            .observeOn(MainScheduler.instance )
+            .subscribe(onNext: { [weak self] state in
+                switch state {
+                case .error:
+                    self?.showDocumentTypesErrorAlert()
+                default:
+                    break
+                }
+            }).disposed(by: disposeBag)
+        
         Observable.combineLatest([
                 viewModel.activeFolders,
                 viewModel.sentFolders
             ])
+            .distinctUntilChanged()
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 self?.updateTableView()
             })
             .disposed(by: disposeBag)
+    }
+    
+    func showDocumentTypesErrorAlert() {
+        let alert = UIAlertController(title: "dialog.requestError.title".localized, message: "dialog.requestError.noDocumentTypes".localized, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "dialog.requestError.retry".localized, style: .default, handler: { _ in self.viewModel.fetchDocumentTypes() }))
+        
+        self.present(alert, animated: true)
     }
     
     @objc private func openMenu() {
@@ -135,10 +149,7 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
             snapshot.appendSections([.sent])
             snapshot.appendItems(sent, toSection: .sent)
         }
-        
-        // Not sure if it helps, I just tried it. 
-        snapshot.reloadSections(Section.allCases)
-        
+
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     

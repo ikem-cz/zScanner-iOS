@@ -15,9 +15,9 @@ enum MediaType: Equatable {
     
     var description: String {
         switch self {
-        case .photo: return "newDocumentPhotos.mediaType.photo".localized
-        case .video: return "newDocumentPhotos.mediaType.video".localized
-        case .scan: return "newDocumentPhotos.mediaType.scan".localized
+            case .photo: return "newDocumentPhotos.mediaType.photo".localized
+            case .video: return "newDocumentPhotos.mediaType.video".localized
+            case .scan: return "newDocumentPhotos.mediaType.scan".localized
         }
     }
     
@@ -29,7 +29,7 @@ enum MediaType: Equatable {
     }
 }
 
-enum DocumentMode: String {
+enum DocumentMode: String, SegmentItem {
     case ext
     case document = "doc"
     case examination = "exam"
