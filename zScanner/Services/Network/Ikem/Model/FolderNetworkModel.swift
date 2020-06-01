@@ -19,8 +19,7 @@ extension FolderNetworkModel {
         return FolderDomainModel(
             externalId: externalId,
             id: internalId,
-            name: name,
-            documents: []
+            name: name
         )
     }
 }

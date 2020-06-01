@@ -55,40 +55,38 @@ class NewDocumentCoordinator: Coordinator {
         
         let viewModel = CameraViewModel(initialMode: mediaType, folderName: folder.name, correlationId: newDocument.id, mediaSourceTypes: mediaSourceTypes)
         let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
-        
-        if let index = navigationController?.viewControllers.firstIndex(where: { $0 is CameraViewController }) {
-            navigationController?.viewControllers.insert(viewController, at: index)
-            if let localIndex = viewControllers.firstIndex(where: { $0 is CameraViewController }) {
-                viewControllers.insert(viewController, at: localIndex)
-            }
-            pop(to: viewController, animated: true)
-        } else {
-            push(viewController, animated: true)
+        push(viewController, animated: true)
+    }
+    
+    private func showPreviewScreen(for media: Media, editing: Bool = false) {
+        let viewController = mediaScreen(for: media, editing: editing)
+        push(viewController, animated: true)
+    }
+    
+    private func mediaScreen(for media: Media, editing: Bool) -> MediaPreviewViewController {
+        if mediaViewModel == nil {
+            mediaViewModel = MediaListViewModel(database: database, folderName: folder.name, mediaType: media.type, tracker: tracker)
+        }
+        let viewModel = mediaViewModel!
+
+        switch media.type {
+        case .photo:
+            return PhotoPreviewViewController(media: media, viewModel: viewModel, coordinator: self, editing: editing)
+        case .video:
+            return VideoPreviewViewController(media: media, viewModel: viewModel, coordinator: self, editing: editing)
+        case .scan:
+            return ScanPreviewViewController(media: media as! ScanMedia, viewModel: viewModel, coordinator: self, editing: editing)
         }
     }
     
-    private func showPhotoPreviewScreen(media: Media) {
-        guard let mediaViewModel = mediaViewModel else { return }
-        let viewController = PhotoPreviewViewController(media: media, viewModel: mediaViewModel, coordinator: self)
-        push(viewController)
-    }
-    
-    private func showVideoPreviewScreen(media: Media) {
-        guard let mediaViewModel = mediaViewModel else { return }
-        let viewController = VideoPreviewViewController(media: media, viewModel: mediaViewModel, coordinator: self)
-        push(viewController)
-    }
-    
-    private func showScanPreviewScreen(media: Media) {
-        guard let mediaViewModel = mediaViewModel, let scanMedia = media as? ScanMedia else { return }
-        let viewController = ScanPreviewViewController(media: scanMedia, viewModel: mediaViewModel, coordinator: self)
-        push(viewController)
-    }
-    
     private func showMediaListScreen() {
-        guard let mediaViewModel = mediaViewModel else { return }
-        let viewController = MediaListViewController(viewModel: mediaViewModel, coordinator: self)
-        push(viewController)
+        if let mediaListViewController = navigationController?.viewControllers.first(where: { $0 is MediaListViewController }) as? BaseViewController {
+            pop(to: mediaListViewController)
+        } else {
+            guard let mediaViewModel = mediaViewModel else { return }
+            let viewController = MediaListViewController(viewModel: mediaViewModel, coordinator: self)
+            push(viewController)
+        }
     }
     
     private func showListItemSelectionScreen<T: ListItem>(for list: ListPickerField<T>) {
@@ -131,6 +129,8 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func deleteMedia() {
+        #warning("TODO")
+        // TODO: Create a folder structure `/FolderId/DocumentId/MediaId.jpg` and remove the document properly
         let folderURL = URL(documentsWith: newDocument.id)
         do {
             try FileManager.default.removeItem(at: folderURL)
@@ -142,10 +142,9 @@ class NewDocumentCoordinator: Coordinator {
     // MARK: - BaseCordinator implementation
     override func willPreventPop(for sender: BaseViewController) -> Bool {
         switch sender {
-        case
-        is MediaListViewController,
-        is NewDocumentTypeViewController,
-        is NewDocumentFolderViewController:
+        case is MediaListViewController,
+             is NewDocumentTypeViewController,
+             is NewDocumentFolderViewController:
             return true
         default:
             return false
@@ -175,18 +174,7 @@ class NewDocumentCoordinator: Coordinator {
 // MARK: - CameraCoordinator implementation
 extension NewDocumentCoordinator: CameraCoordinator {
     func mediaCreated(_ media: Media) {
-        if mediaViewModel == nil {
-            mediaViewModel = MediaListViewModel(database: database, folderName: folder.name, mediaType: media.type, tracker: tracker)
-        }
-        
-        switch media.type {
-        case .photo:
-            showPhotoPreviewScreen(media: media)
-        case .video:
-            showVideoPreviewScreen(media: media)
-        case .scan:
-            showScanPreviewScreen(media: media)
-        }
+        showPreviewScreen(for: media)
     }
 }
 
@@ -198,11 +186,7 @@ extension NewDocumentCoordinator: MediaPreviewCoordinator {
     }
     
     func finishEdit() {
-        if let mediaListViewController = navigationController?.viewControllers.first(where: { $0 is MediaListViewController }) as? BaseViewController {
-            pop(to: mediaListViewController)
-        } else {
-            showMediaListScreen()
-        }
+        showMediaListScreen()
     }
 }
 
@@ -216,18 +200,14 @@ extension NewDocumentCoordinator: MediaListCoordinator {
         for section in fields {
             for field in section {
                 switch field {
-                case let segmentControl as SegmentControlField:
-                    newDocument.type.mode = segmentControl.segmentSelected.value == 0 ? DocumentMode.document : DocumentMode.examination
+                case let segmentControl as SegmentPickerField<DocumentMode>:
+                    segmentControl.selected.value.flatMap({ newDocument.type.mode = $0 })
                 case let textField as TextInputField:
                     newDocument.notes = textField.text.value
                 case let datePicker as DateTimePickerField:
-                    if let date = datePicker.date.value {
-                        newDocument.date = date
-                    }
+                    datePicker.date.value.flatMap({ newDocument.date = $0 })
                 case let listPicker as ListPickerField<DocumentTypeDomainModel>:
-                    if let type = listPicker.selected.value {
-                        newDocument.type = type
-                    }
+                    listPicker.selected.value.flatMap({newDocument.type = $0 })
                 default:
                     break
                 }
@@ -239,11 +219,7 @@ extension NewDocumentCoordinator: MediaListCoordinator {
     }
     
     func reeditMedia(media: Media) {
-        if media.type == .photo {
-            showPhotoPreviewScreen(media: media)
-        } else if media.type == .video {
-            showVideoPreviewScreen(media: media)
-        }
+        showPreviewScreen(for: media, editing: true)
     }
     
     func deleteDocument() {

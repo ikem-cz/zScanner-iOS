@@ -9,6 +9,7 @@
 import UIKit
 
 protocol PhotoSelectorCellDelegate: class {
+    func edit(media: Media)
     func delete(media: Media)
 }
 
@@ -48,7 +49,12 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     // MARK: Helpers
     private weak var delegate: PhotoSelectorCellDelegate?
     
-    @objc private func deleteMedium() {
+    @objc private func editMedia() {
+        guard let element = element else { return }
+        delegate?.edit(media: element)
+    }
+    
+    @objc private func deleteMedia() {
         guard let element = element else { return }
         delegate?.delete(media: element)
     }
@@ -65,7 +71,11 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
             make.top.right.equalToSuperview().inset(4)
         }
         
-        deleteButton.addTarget(self, action: #selector(deleteMedium), for: .touchUpInside)
+        deleteButton.addTarget(self, action: #selector(deleteMedia), for: .touchUpInside)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(editMedia))
+        addGestureRecognizer(tap)
+        isUserInteractionEnabled = true
     }
     
     private var imageView: UIImageView = {

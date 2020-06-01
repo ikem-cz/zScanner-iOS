@@ -62,17 +62,29 @@ class TextInputField: FormField {
 }
 
 // MARK: -
-class SegmentControlField: FormField {
-    var title: String = ""
+protocol SegmentItem {
+    var title: String { get }
+}
 
+// MARK: -
+class SegmentPickerField<T: SegmentItem>: FormField {
+    var title: String = ""
+    
     var value: Observable<String> {
-        return segmentSelected.map({ $0 == 0 ? "doc" : "exam" }).asObservable()
+        return selected.map({
+            $0?.title ?? "form.segmentControl.unselected".localized
+        }).asObservable()
     }
     var isValid: Observable<Bool> {
-        return segmentSelected.map({ $0 != nil }).asObservable()
+        return selected.map({ $0 != nil }).asObservable()
     }
     
-    let segmentSelected = BehaviorRelay<Int?>(value: nil)
+    var values: [T]
+    let selected = BehaviorRelay<T?>(value: nil)
+    
+    init(values: [T]) {
+        self.values = values
+    }
 }
 
 // MARK: -
@@ -83,10 +95,10 @@ class CollectionViewField: FormField {
         return picturesCount.map({ _ in "" }).asObservable()
     }
     var isValid: Observable<Bool> {
-        return picturesCount.map({ $0 != nil }).asObservable()
+        return picturesCount.map({ $0 > 0 }).asObservable()
     }
     
-    let picturesCount = BehaviorRelay<Int?>(value: nil)
+    let picturesCount = BehaviorRelay<Int>(value: 0)
 }
 
 // MARK: -
@@ -97,10 +109,11 @@ class ProtectedTextInputField: TextInputField {
 
 // MARK: -
 class DateTimePickerField: FormField {
+   
     var title: String
     var value: Observable<String> {
         return date.map({
-            return $0?.dateTimeString ?? "form.listPicker.unselected".localized
+            $0?.dateTimeString ?? "form.listPicker.unselected".localized
         }).asObservable()
     }
     

@@ -25,9 +25,9 @@ class ScanPreviewViewController: MediaPreviewViewController {
     private var scan: ScanMedia { media as! ScanMedia }
     
     // MARK: Lifecycle
-    init(media: ScanMedia, viewModel: MediaListViewModel, coordinator: MediaPreviewCoordinator) {
+    init(media: ScanMedia, viewModel: MediaListViewModel, coordinator: MediaPreviewCoordinator, editing: Bool) {
         
-        super.init(viewModel: viewModel, media: media, coordinator: coordinator)
+        super.init(viewModel: viewModel, media: media, coordinator: coordinator, editing: editing)
     }
         
     override func viewDidAppear(_ animated: Bool) {
@@ -152,7 +152,7 @@ class ScanPreviewViewController: MediaPreviewViewController {
     }
     
     func convertFromCamera(_ point: CGPoint) -> CGPoint {
-        let orientation = UIApplication.shared.statusBarOrientation
+        let orientation = UIApplication.shared.windows.first!.windowScene!.interfaceOrientation
         let rect = imageView.contentClippingRect
         
         var x: CGFloat = point.x
@@ -178,7 +178,7 @@ class ScanPreviewViewController: MediaPreviewViewController {
     }
     
     func convertToCamera(_ point: CGPoint) -> CGPoint {
-        let orientation = UIApplication.shared.statusBarOrientation
+        let orientation = UIApplication.shared.windows.first!.windowScene!.interfaceOrientation
         let rect = imageView.contentClippingRect
         
         let point = CGPoint(x: (point.x - rect.minX) / rect.width, y: (point.y - rect.minY) / rect.height)

@@ -54,7 +54,7 @@ class FolderStatusTableViewCell: UITableViewCell {
         self.viewModel = model
         self.delegate = delegate
 
-        nameLabel.text = model.folder.name + String(model.documents.value.count)
+        nameLabel.text = model.folder.name
         pinLabel.text = model.folder.externalId
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(createDocumentToThisFolder))
@@ -125,7 +125,6 @@ class FolderStatusTableViewCell: UITableViewCell {
             .disposed(by: disposeBag)
         
         retryButton.rx.tap.subscribe(onNext: { [weak self] in
-  
             self?.viewModel?.reupload()
         })
         .disposed(by: disposeBag)

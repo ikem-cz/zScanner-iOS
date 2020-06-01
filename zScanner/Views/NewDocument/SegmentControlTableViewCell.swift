@@ -22,12 +22,23 @@ class SegmentControlTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: Lifecycle
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        segmentedControl.removeAllSegments()
+        disposeBag = DisposeBag()
+    }
+    
     // MARK: Interface
-    func setup(with field: SegmentControlField) {
-        segmentControl
+    func setup<T>(with segmentPicker: SegmentPickerField<T>) {
+        segmentPicker.values.enumerated().forEach({
+            segmentedControl.insertSegment(withTitle: $0.element.title, at: $0.offset, animated: false)
+        })
+        segmentedControl.selectedSegmentIndex = 0
+        segmentedControl
             .rx
             .selectedSegmentIndex
-            .subscribe(onNext: { field.segmentSelected.accept($0) })
+            .subscribe(onNext: { segmentPicker.selected.accept(segmentPicker.values[$0]) })
             .disposed(by: disposeBag)
     }
     
@@ -35,16 +46,20 @@ class SegmentControlTableViewCell: UITableViewCell {
     private var disposeBag = DisposeBag()
     
     private func setupView() {
-        contentView.addSubview(segmentControl)
-        segmentControl.snp.makeConstraints { make in
+        selectionStyle = .none
+        
+        preservesSuperviewLayoutMargins = true
+        contentView.preservesSuperviewLayoutMargins = true
+        
+        contentView.addSubview(segmentedControl)
+        segmentedControl.snp.makeConstraints { make in
             make.edges.equalTo(contentView.snp.margins)
         }
     }
     
-    private lazy var segmentControl: UISegmentedControl = {
-        let segmentControl = UISegmentedControl()
-        segmentControl.insertSegment(withTitle: "documentMode.doc.name".localized, at: 0, animated: true)
-        segmentControl.insertSegment(withTitle: "documentMode.exam.name".localized, at: 1, animated: true)
-        return segmentControl
+    private lazy var segmentedControl: UISegmentedControl = {
+        let segmentedControl = UISegmentedControl()
+        segmentedControl.selectedSegmentIndex = 0
+        return segmentedControl
     }()
 }

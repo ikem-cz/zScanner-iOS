@@ -199,10 +199,10 @@ class DocumentViewModel {
 
 extension DocumentViewModel: Hashable {
     static func == (lhs: DocumentViewModel, rhs: DocumentViewModel) -> Bool {
-        return lhs.document == rhs.document
+        return lhs.document.id == rhs.document.id
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(document)
+        hasher.combine(document.id)
     }
 }

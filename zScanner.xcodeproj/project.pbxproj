@@ -77,7 +77,6 @@
 		BD59A07322E36DB000FA9CD0 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A07222E36DB000FA9CD0 /* String.swift */; };
 		BD59A07622E36DEE00FA9CD0 /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A07522E36DEE00FA9CD0 /* UITableView.swift */; };
 		BD59A09022E36EF900FA9CD0 /* RequestBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A07D22E36EF900FA9CD0 /* RequestBehavior.swift */; };
-		BD59A09122E36EF900FA9CD0 /* NetworkActivityIndicatorBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A07E22E36EF900FA9CD0 /* NetworkActivityIndicatorBehavior.swift */; };
 		BD59A09522E36EF900FA9CD0 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A08322E36EF900FA9CD0 /* Reachability.swift */; };
 		BD59A09822E36EF900FA9CD0 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A08722E36EF900FA9CD0 /* Request.swift */; };
 		BD59A09922E36EF900FA9CD0 /* NativeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A08922E36EF900FA9CD0 /* NativeAPI.swift */; };
@@ -127,6 +126,7 @@
 		BDBF4E21232EED4C0078BF53 /* LoginDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBF4E20232EED4C0078BF53 /* LoginDatabaseModel.swift */; };
 		BDC4A3E022E5004900D1CF6A /* FolderStatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC4A3DF22E5004900D1CF6A /* FolderStatusTableViewCell.swift */; };
 		BDC4A3E322E5008800D1CF6A /* DocumentDomainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC4A3E222E5008800D1CF6A /* DocumentDomainModel.swift */; };
+		BDD316F62484E39F0065D16B /* QueryNetworkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD316F52484E39F0065D16B /* QueryNetworkModel.swift */; };
 		BDD3C0F122F8CBAF008406EA /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD3C0F022F8CBAF008406EA /* Date.swift */; };
 		BDDA1271231408C10029A7DF /* SubmitPasswordRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDDA1270231408C10029A7DF /* SubmitPasswordRequest.swift */; };
 		BDDA1273231409120029A7DF /* AuthNetworkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDDA1272231409120029A7DF /* AuthNetworkModel.swift */; };
@@ -231,7 +231,6 @@
 		BD59A07222E36DB000FA9CD0 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		BD59A07522E36DEE00FA9CD0 /* UITableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableView.swift; sourceTree = "<group>"; };
 		BD59A07D22E36EF900FA9CD0 /* RequestBehavior.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestBehavior.swift; sourceTree = "<group>"; };
-		BD59A07E22E36EF900FA9CD0 /* NetworkActivityIndicatorBehavior.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkActivityIndicatorBehavior.swift; sourceTree = "<group>"; };
 		BD59A08322E36EF900FA9CD0 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		BD59A08722E36EF900FA9CD0 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		BD59A08922E36EF900FA9CD0 /* NativeAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NativeAPI.swift; sourceTree = "<group>"; };
@@ -282,6 +281,7 @@
 		BDBF4E20232EED4C0078BF53 /* LoginDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDatabaseModel.swift; sourceTree = "<group>"; };
 		BDC4A3DF22E5004900D1CF6A /* FolderStatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderStatusTableViewCell.swift; sourceTree = "<group>"; };
 		BDC4A3E222E5008800D1CF6A /* DocumentDomainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDomainModel.swift; sourceTree = "<group>"; };
+		BDD316F52484E39F0065D16B /* QueryNetworkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryNetworkModel.swift; sourceTree = "<group>"; };
 		BDD3C0F022F8CBAF008406EA /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		BDDA1270231408C10029A7DF /* SubmitPasswordRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmitPasswordRequest.swift; sourceTree = "<group>"; };
 		BDDA1272231409120029A7DF /* AuthNetworkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNetworkModel.swift; sourceTree = "<group>"; };
@@ -425,6 +425,7 @@
 				BD88F15A230953C700569D71 /* PageNetworkModel.swift */,
 				BDDA1272231409120029A7DF /* AuthNetworkModel.swift */,
 				BD94413C231F19F10085BB4D /* StatusNetworkModel.swift */,
+				BDD316F52484E39F0065D16B /* QueryNetworkModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -611,7 +612,6 @@
 			isa = PBXGroup;
 			children = (
 				BD59A07D22E36EF900FA9CD0 /* RequestBehavior.swift */,
-				BD59A07E22E36EF900FA9CD0 /* NetworkActivityIndicatorBehavior.swift */,
 			);
 			path = Middleware;
 			sourceTree = "<group>";
@@ -937,7 +937,6 @@
 				BD7EAC3E23258A1A002C225A /* MediaDatabaseModel.swift in Sources */,
 				BD389A2A22F7093B002F935F /* FolderDomainModel.swift in Sources */,
 				BD000CB222E3B38B001EE38A /* UITextField.swift in Sources */,
-				BD59A09122E36EF900FA9CD0 /* NetworkActivityIndicatorBehavior.swift in Sources */,
 				BD2B9E8622EDCD0900FFCD3B /* IkemEndpoint.swift in Sources */,
 				BD59A06D22E36D2A00FA9CD0 /* PluggableViewController.swift in Sources */,
 				BD406FDE22FF15260096693D /* FolderSearchRequest.swift in Sources */,
@@ -951,6 +950,7 @@
 				BD59A06B22E36D2400FA9CD0 /* Closures.swift in Sources */,
 				BD1426902328351D0079465F /* PageUploadStatusDatabaseModel.swift in Sources */,
 				BDEA570D22FA2CD9004C48F0 /* DocumentNetworkModel.swift in Sources */,
+				BDD316F62484E39F0065D16B /* QueryNetworkModel.swift in Sources */,
 				BD402E772300B99100049DF9 /* GetFolderRequest.swift in Sources */,
 				BD8AA80F23003D530082441F /* FolderDatabaseModel.swift in Sources */,
 				BD2B9E8122EDC1FA00FFCD3B /* DocumentTypeDomainModel.swift in Sources */,

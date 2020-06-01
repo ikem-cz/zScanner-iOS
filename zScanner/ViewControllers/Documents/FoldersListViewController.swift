@@ -46,12 +46,6 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
         setupBindings()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        dismissBottomSheet()
-    }
-    
     override var leftBarButtonItems: [UIBarButtonItem] {
         return [
             hambugerButton
@@ -87,6 +81,7 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
                 viewModel.activeFolders,
                 viewModel.sentFolders
             ])
+            .distinctUntilChanged()
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 self?.updateTableView()
@@ -154,10 +149,7 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
             snapshot.appendSections([.sent])
             snapshot.appendItems(sent, toSection: .sent)
         }
-        
-        // Not sure if it helps, I just tried it. 
-        snapshot.reloadSections(Section.allCases)
-        
+
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     

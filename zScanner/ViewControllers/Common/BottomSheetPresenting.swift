@@ -49,10 +49,10 @@ class BottomSheetPresenting: BaseViewController {
     
     func dismissBottomSheet() {
         (sheetViewController as? Presentable)?.willDismiss()
+        self.expanded = false
         
         UIView.animate(withDuration: 0.25) {
             self.presentedView.frame = self.frameOfDismissedView
-            self.expanded = false
         }
         
         view.endEditing(true)
@@ -60,10 +60,10 @@ class BottomSheetPresenting: BaseViewController {
     
     func expandBottomSheet() {
         (sheetViewController as? Presentable)?.willExpand()
+        self.expanded = true
         
         UIView.animate(withDuration: 0.25) {
             self.presentedView.frame = self.frameOfExpandedView
-            self.expanded = true
         }
     }
     
@@ -145,7 +145,8 @@ class BottomSheetPresenting: BaseViewController {
         
         presentedView.snp.makeConstraints { make in
             make.top.equalTo(shadow).offset(10)
-            make.leading.trailing.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview().priority(999)
         }
         
         return view

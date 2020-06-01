@@ -140,7 +140,7 @@ class NewDocumentFolderViewController: BaseViewController {
             presentedNavigationBar.addSubview(presentedScanButton)
             presentedScanButton.snp.makeConstraints { make in
                 make.top.trailing.bottom.equalToSuperview().inset(8)
-                make.leading.greaterThanOrEqualTo(presentedTitle.snp.trailing).offset(16)
+                make.leading.greaterThanOrEqualTo(presentedTitle.snp.trailing).offset(16).priority(999)
             }
         }
         
@@ -304,6 +304,7 @@ extension NewDocumentFolderViewController: UITableViewDelegate {
         guard item != .notFound else { return }
         
         coordinator.folderSelected(FolderSelection(folder: item, searchMode: searchMode))
+        searchBar.endEditing(true)
     }
 }
 

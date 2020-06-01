@@ -16,7 +16,7 @@ struct SearchFoldersRequest: Request, ParametersURLEncoded {
     var parameters: Parameters?
     var headers: HTTPHeaders = [:]
     
-    init(query: String) {
-        parameters = ["query": query]
+    init(with query: QueryNetworkModel) {
+        parameters = query
     }
 }

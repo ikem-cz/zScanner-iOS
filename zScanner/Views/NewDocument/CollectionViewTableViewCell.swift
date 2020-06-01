@@ -8,11 +8,12 @@
 
 import UIKit
 import RxSwift
+import SnapKit
 
 protocol CollectionViewCellDelegate {
-    func reeditMedium(media: Media)
+    func reeditMedia(media: Media)
     func deleteDocument()
-    func createNewMedium()
+    func createNewMedia()
     func reload()
 }
 
@@ -26,7 +27,6 @@ class CollectionViewTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         setupView()
-        setupBindings()
     }
     
     required init?(coder: NSCoder) {
@@ -49,12 +49,18 @@ class CollectionViewTableViewCell: UITableViewCell {
         self.viewModel = viewModel
         self.delegate = delegate
         
-        field.picturesCount.accept(viewModel.mediaArray.value.isEmpty ? nil : viewModel.mediaArray.value.count )
+        field.picturesCount.accept(viewModel.mediaArray.value.count)
         
         resetHeight()
+        collectionView.reloadData()
     }
     
     private func setupView() {
+        selectionStyle = .none
+           
+        preservesSuperviewLayoutMargins = true
+        contentView.preservesSuperviewLayoutMargins = true
+    
         contentView.addSubview(deleteButton)
         deleteButton.snp.makeConstraints { make in
             make.leading.trailing.centerX.bottom.equalToSuperview()
@@ -69,30 +75,16 @@ class CollectionViewTableViewCell: UITableViewCell {
     }
     
     // MARK: Helpers
-    private func setupBindings() {
-        collectionView
-            .rx
-            .itemSelected
-            .subscribe(onNext: { [weak self] indexPath in
-                if let cell = self?.collectionView.cellForItem(at: indexPath) as? PhotoSelectorCollectionViewCell {
-                    guard let media = cell.element else { return }
-                    self?.delegate!.reeditMedium(media: media)
-                }
-            }).disposed(by: disposeBag)
-    }
+    var heightConstraint: Constraint?
     
-    private func resetHeight(){
-        var elementsPair: Int
+    private func resetHeight() {
         let count = viewModel!.mediaArray.value.count + 1
-        if count % 2 == 0 {
-            elementsPair = count / 2
-        } else {
-            elementsPair = (count+1) / 2
-        }
+        let elementsPair = (count+1)/2
+        let newHeight = CGFloat(elementsPair) * (itemWidth + margin) + margin + deleteButton.frame.height
         
-        let newHeight = CGFloat(elementsPair) * itemWidth + deleteButton.frame.height
+        heightConstraint?.deactivate()
         collectionView.snp.makeConstraints { make in
-            make.height.equalTo(newHeight)
+            heightConstraint = make.height.equalTo(newHeight).priority(999).constraint
         }
     }
     
@@ -103,6 +95,8 @@ class CollectionViewTableViewCell: UITableViewCell {
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: flowLayout)
         collectionView.backgroundColor = .white
+        collectionView.isScrollEnabled = false
+        
         collectionView.register(PhotoSelectorCollectionViewCell.self, forCellWithReuseIdentifier: "PhotoSelectorCollectionViewCell")
         collectionView.register(AddNewMediaCollectionViewCell.self, forCellWithReuseIdentifier: "AddNewMediaCollectionViewCell")
         collectionView.dataSource = self
@@ -144,11 +138,11 @@ class CollectionViewTableViewCell: UITableViewCell {
 // MARK: - UICollectionViewDataSource implementation
 extension CollectionViewTableViewCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel!.mediaArray.value.count + 1
+        return (viewModel?.mediaArray.value.count ?? 0) + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.row == viewModel!.mediaArray.value.count {
+        if indexPath.row == viewModel?.mediaArray.value.count {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AddNewMediaCollectionViewCell", for: indexPath) as! AddNewMediaCollectionViewCell
             cell.setup(delegate: self)
             return cell
@@ -163,17 +157,21 @@ extension CollectionViewTableViewCell: UICollectionViewDataSource {
 
 // MARK: - PhotoSelectorCellDelegate implementation
 extension CollectionViewTableViewCell: PhotoSelectorCellDelegate {
+    func edit(media: Media) {
+        delegate?.reeditMedia(media: media)
+    }
+    
     func delete(media: Media) {
-        viewModel!.removeMedia(media)
+        viewModel?.removeMedia(media)
         collectionView.reloadData()
         resetHeight()
-        delegate!.reload()
+        delegate?.reload()
     }
 }
 
 // MARK: - AddNewMediaCellDelegate implementation
 extension CollectionViewTableViewCell: AddNewMediaCellDelegate {
     func createNewMedia() {
-        delegate!.createNewMedium()
+        delegate?.createNewMedia()
     }
 }

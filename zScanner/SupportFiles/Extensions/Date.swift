@@ -10,15 +10,15 @@ import Foundation
 
 extension Date {
 
-    public func round(precision: TimeInterval) -> Date {
+    func round(precision: TimeInterval) -> Date {
         return round(precision: precision, rule: .toNearestOrAwayFromZero)
     }
 
-    public func ceil(precision: TimeInterval) -> Date {
+    func ceil(precision: TimeInterval) -> Date {
         return round(precision: precision, rule: .up)
     }
 
-    public func floor(precision: TimeInterval) -> Date {
+    func floor(precision: TimeInterval) -> Date {
         return round(precision: precision, rule: .down)
     }
 

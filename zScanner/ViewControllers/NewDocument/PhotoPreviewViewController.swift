@@ -14,9 +14,9 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     private var image: UIImage?
     
     // MARK: Lifecycle
-    init(media: Media, viewModel: MediaListViewModel, coordinator: MediaPreviewCoordinator) {
+    init(media: Media, viewModel: MediaListViewModel, coordinator: MediaPreviewCoordinator, editing: Bool) {
         
-        super.init(viewModel: viewModel, media: media, coordinator: coordinator)
+        super.init(viewModel: viewModel, media: media, coordinator: coordinator, editing: editing)
     }
     
     // MARK: View setup
@@ -39,5 +39,9 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     }
     
     // MARK: Lazy instance part
-    private lazy var imageView = UIImageView(image: image)
+    private lazy var imageView: UIImageView = {
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
 }

@@ -18,14 +18,16 @@ class MediaPreviewViewController: BaseViewController {
     // MARK: Instance part
     let media: Media
     let viewModel: MediaListViewModel
+    let mediaEditing: Bool
     
     unowned let coordinator: MediaPreviewCoordinator
     
     // MARK: Lifecycle
-    init(viewModel: MediaListViewModel, media: Media, coordinator: MediaPreviewCoordinator) {
+    init(viewModel: MediaListViewModel, media: Media, coordinator: MediaPreviewCoordinator, editing: Bool = false) {
         self.viewModel = viewModel
         self.media = media
         self.coordinator = coordinator
+        self.mediaEditing = editing
         
         super.init(coordinator: coordinator, theme: .dark)
     }
@@ -36,6 +38,15 @@ class MediaPreviewViewController: BaseViewController {
         loadMedia()
         setupButtons()
         setupView()
+    }
+    
+    override func setupBackButton() {
+        // Prevent back button when going from camera screen
+        if mediaEditing {
+            super.setupBackButton()
+            nextPhotoButton.isHidden = true
+            againButton.isHidden = true
+        }
     }
     
     // MARK: View setup
@@ -53,9 +64,20 @@ class MediaPreviewViewController: BaseViewController {
         
         view.addSubview(buttonStackView)
         buttonStackView.snp.makeConstraints { make in
-            make.bottom.equalTo(safeArea).inset(10)
-            make.leading.trailing.equalToSuperview().inset(5)
-            make.height.equalTo(70)
+            make.leading.trailing.bottom.equalTo(safeArea).inset(10)
+            make.height.equalTo(64)
+        }
+        
+        againButton.snp.makeConstraints { make in
+            make.height.equalTo(44)
+        }
+        
+        nextPhotoButton.snp.makeConstraints { make in
+            make.height.equalTo(44)
+        }
+        
+        continueButton.snp.makeConstraints { make in
+            make.height.equalTo(44)
         }
     }
     

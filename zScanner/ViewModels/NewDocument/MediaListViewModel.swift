@@ -28,9 +28,9 @@ class MediaListViewModel {
         self.database = database
         
         switch mediaType {
-        case .photo: self.mode = .photo
-        case .video: self.mode = .video
-        case .scan: self.mode = .ext
+            case .photo: self.mode = .photo
+            case .video: self.mode = .video
+            case .scan: self.mode = .ext
         }
         
         self.fields = fields(for: mediaType)
@@ -97,16 +97,26 @@ class MediaListViewModel {
         switch type {
         case .scan:
             return [
-                [SegmentControlField()],
-                [ListPickerField<DocumentTypeDomainModel>(title: "form.listPicker.title".localized, list: documentTypes),
-                 TextInputField(title: "form.documentDecription.title".localized, validator: { _ in true }),
-                 DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil })],
-                [CollectionViewField()]
+                [
+                    SegmentPickerField(values: [DocumentMode.document, .examination])
+                ],
+                [
+                    ListPickerField<DocumentTypeDomainModel>(title: "form.listPicker.title".localized, list: documentTypes),
+                    TextInputField(title: "form.documentDecription.title".localized, validator: { _ in true }),
+                    DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil })
+                ],
+                [
+                    CollectionViewField()
+                ]
             ]
         case .photo, .video:
             return [
-                [DateTimePickerField(title: "form.dateTimePicker.title".localized, setDate: true, validator: { $0 != nil })],
-                [CollectionViewField()]
+                [
+                    DateTimePickerField(title: "form.dateTimePicker.title".localized, setDate: true, validator: { $0 != nil })
+                ],
+                [
+                    CollectionViewField()
+                ]
             ]
         }
     }

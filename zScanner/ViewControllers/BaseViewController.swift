@@ -65,7 +65,11 @@ class BaseViewController: PluggableViewController {
         navigationItem.leftBarButtonItems = leftBarButtonItems
         navigationItem.rightBarButtonItems = rightBarButtonItems
         
-        if navigationController.viewControllers.count > 1 {
+        setupBackButton()
+    }
+    
+    func setupBackButton() {
+        if (navigationController?.viewControllers.count ?? 0) > 1 {
             let backButton = BackButton()
             backButton.delegate = self
             navigationItem.leftBarButtonItems?.insert(backButton, at: 0)

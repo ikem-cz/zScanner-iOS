@@ -45,8 +45,23 @@ class MediaListViewController: BaseViewController {
         setupBindings()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        if self.viewModel.mediaArray.value.count > 1 {
+            let indexPath = IndexPath(item: 0, section: viewModel.fields.count - 1)
+            tableView.scrollToRow(at: indexPath, at: .middle, animated: false) // Starting position of the animation, to ease the animation for longer content
+            tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)  // Animate to bottom
+        }
+    }
+    
+    override func setupBackButton() {
+        // Prevent back button on this screen
+    }
+    
     // MARK: Helpers
     let disposeBag = DisposeBag()
+    let bottomGradientOverlayHeight: CGFloat = 80
     
     @objc private func takeNewPicture() {
         coordinator.createNewMedia()
@@ -55,6 +70,9 @@ class MediaListViewController: BaseViewController {
     private func setupBindings() {
         viewModel.mediaArray
             .map({ !$0.isEmpty })
+            .do(onNext: { [weak self] _ in
+                self?.tableView.reloadData()
+            })
             .bind(to: sendButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
@@ -118,7 +136,7 @@ class MediaListViewController: BaseViewController {
 
         view.addSubview(gradientView)
         gradientView.snp.makeConstraints { make in
-            make.top.equalTo(safeArea.snp.bottom).offset(-80)
+            make.top.equalTo(safeArea.snp.bottom).offset(-bottomGradientOverlayHeight)
             make.right.bottom.left.equalToSuperview()
         }
     }
@@ -135,6 +153,8 @@ class MediaListViewController: BaseViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44
         tableView.tableFooterView = UIView()
+        let bottomInset = (UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0) + bottomGradientOverlayHeight
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
         return tableView
     }()
     
@@ -177,19 +197,14 @@ extension MediaListViewController: UITableViewDataSource {
         case let datePicker as DateTimePickerPlaceholder:
             let cell = tableView.dequeueCell(DateTimePickerTableViewCell.self)
             cell.setup(with: datePicker)
-            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
             return cell
-        case let segmentControl as SegmentControlField:
+        case let segmentControl as SegmentPickerField<DocumentMode>:
             let cell = tableView.dequeueCell(SegmentControlTableViewCell.self)
             cell.setup(with: segmentControl)
-            cell.selectionStyle = .none
-            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
             return cell
         case let collectionView as CollectionViewField:
             let cell = tableView.dequeueCell(CollectionViewTableViewCell.self)
             cell.setup(with: collectionView, viewModel: viewModel, delegate: self)
-            cell.selectionStyle = .none
-            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
             return cell
         default:
             return UITableViewCell()
@@ -239,11 +254,11 @@ extension MediaListViewController: UITableViewDelegate {
 
 // MARK: - CollectionViewCellDelegate implementation
 extension MediaListViewController: CollectionViewCellDelegate {
-    func reeditMedium(media: Media) {
+    func reeditMedia(media: Media) {
         coordinator.reeditMedia(media: media)
     }
     
-    func createNewMedium() {
+    func createNewMedia() {
         coordinator.createNewMedia()
     }
     
