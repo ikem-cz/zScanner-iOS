@@ -17,7 +17,7 @@ enum Config {
     static let folderUsageHistoryCount = 3
     static let minimumSearchLength = 3
     static let maximumNumberOfConcurentUploads = 4
-    static let maximumSecondsOfVideoRecording: Double = 5
+    static let maximumSecondsOfVideoRecording: Double = 30
     static let numberOfTuskitRetries: Int32 = 3
 }
 

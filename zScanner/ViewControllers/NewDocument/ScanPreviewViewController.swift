@@ -38,16 +38,17 @@ class ScanPreviewViewController: MediaPreviewViewController {
     
     // MARK: View setup
     override func setupView() {
-        view.addSubview(modeSwich)
-        modeSwich.snp.makeConstraints { make in
-            make.top.leading.trailing.equalTo(safeArea).inset(8)
-        }
-        
         view.addSubview(imageView)
+        view.addSubview(modeSwich)
+        
         imageView.snp.makeConstraints { make in
             make.top.equalTo(modeSwich.snp.bottom).offset(8)
             make.leading.trailing.equalTo(safeArea)
             make.bottom.equalTo(buttonStackView.snp.top)
+        }
+        
+        modeSwich.snp.makeConstraints { make in
+            make.top.leading.trailing.equalTo(safeArea).inset(8)
         }
     }
     
@@ -101,11 +102,12 @@ class ScanPreviewViewController: MediaPreviewViewController {
         let mode = modes[segmentedControl.selectedSegmentIndex]
         switch mode {
         case .edit:
+            imageView.image = image
+
             rectangleLayer?.removeFromSuperlayer()
             rectangleLayer = newRectangleLayer()
             imageView.layer.addSublayer(rectangleLayer!)
             corners.forEach({ imageView.addSubview($0) })
-            imageView.image = image
         case .preview:
             rectangleLayer?.removeFromSuperlayer()
             rectangleLayer = nil
@@ -113,7 +115,6 @@ class ScanPreviewViewController: MediaPreviewViewController {
             imageView.image = scan.thumbnail
         }
     }
-        
     
     // MARK: Lazy instance part
     private lazy var modeSwich: UISegmentedControl = {
@@ -129,8 +130,10 @@ class ScanPreviewViewController: MediaPreviewViewController {
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView(image: image)
         imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
         return imageView
     }()
+    
     private var rectangleLayer: CAShapeLayer?
     
     func newRectangleLayer() -> CAShapeLayer {
@@ -152,57 +155,13 @@ class ScanPreviewViewController: MediaPreviewViewController {
     }
     
     func convertFromCamera(_ point: CGPoint) -> CGPoint {
-        let orientation = UIApplication.shared.windows.first!.windowScene!.interfaceOrientation
         let rect = imageView.contentClippingRect
-        
-        var x: CGFloat = point.x
-        var y: CGFloat = point.y
-        
-        switch orientation {
-        case .portrait, .unknown:
-            x = point.y
-            y = point.x
-        case .landscapeLeft:
-            x = 1 - point.x
-            y = point.y
-        case .landscapeRight:
-            x = point.x
-            y = 1 - point.y
-        case .portraitUpsideDown:
-            x = 1 - point.y
-            y = 1 - point.x
-        @unknown default:
-            break
-        }
-        return CGPoint(x: x * rect.width + rect.minX, y: y * rect.height + rect.minY)
+        return CGPoint(x: point.y * rect.width + rect.minX, y: point.x * rect.height + rect.minY)
     }
     
     func convertToCamera(_ point: CGPoint) -> CGPoint {
-        let orientation = UIApplication.shared.windows.first!.windowScene!.interfaceOrientation
         let rect = imageView.contentClippingRect
-        
-        let point = CGPoint(x: (point.x - rect.minX) / rect.width, y: (point.y - rect.minY) / rect.height)
-        
-        var x: CGFloat = point.x
-        var y: CGFloat = point.y
-        
-        switch orientation {
-        case .portrait, .unknown:
-            x = point.y
-            y = point.x
-        case .landscapeLeft:
-            x = 1 - point.x
-            y = point.y
-        case .landscapeRight:
-            x = point.x
-            y = 1 - point.y
-        case .portraitUpsideDown:
-            x = 1 - point.y
-            y = 1 - point.x
-        @unknown default:
-            break
-        }
-        return CGPoint(x: x, y: y)
+        return CGPoint(x: (point.y - rect.minY) / rect.height, y: (point.x - rect.minX) / rect.width)
     }
 }
 

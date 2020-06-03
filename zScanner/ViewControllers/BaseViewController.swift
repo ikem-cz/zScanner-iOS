@@ -92,6 +92,8 @@ extension BaseViewController: BackButtonDelegate {
 
 extension BaseViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard navigationItem.leftBarButtonItems?.contains(where: { $0 is BackButton }) == true else { return false }
+        
         if coordinator.willPreventPop(for: self) {
             coordinator.backButtonPressed(sender: self)
             return false

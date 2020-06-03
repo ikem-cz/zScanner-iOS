@@ -26,8 +26,8 @@ class CameraViewController: BaseViewController {
     private let photoOutput = AVCapturePhotoOutput()
     private let scanOutput = AVCaptureVideoDataOutput()
     private let videoOutput = AVCaptureMovieFileOutput()
-    private let videoDevice = AVCaptureDevice.default(for: AVMediaType.video)
-    private let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
+    private let videoDevice = AVCaptureDevice.default(for: .video)
+    private let audioDevice = AVCaptureDevice.default(for: .audio)
     private var videoPreviewLayer: AVCaptureVideoPreviewLayer!
     
     private unowned let coordinator: CameraCoordinator
@@ -44,7 +44,7 @@ class CameraViewController: BaseViewController {
     private var flashMode: AVCaptureDevice.FlashMode = .off
     
     override var rightBarButtonItems: [UIBarButtonItem] {
-        return [flashButton]
+        return videoDevice?.hasFlash == true ? [] : [flashButton]
     }
     
     // Used to find current mode in collection view
@@ -84,10 +84,12 @@ class CameraViewController: BaseViewController {
             .subscribe(onNext: { [unowned self] mode in
                 switch mode {
                 case .photo:
+                    self.removeScanSession()
                     self.preparePhotoSession()
                     self.middleCaptureButton.isHidden = false
                     self.middleRecordButton.isHidden = true
                 case .video:
+                    self.removeScanSession()
                     self.prepareVideoSession()
                     self.middleCaptureButton.isHidden = true
                     self.middleRecordButton.isHidden = false
@@ -129,6 +131,8 @@ class CameraViewController: BaseViewController {
                 captureSession.addOutput(photoOutput)
             }
             
+            captureSession.sessionPreset = .photo
+            
             captureSession.commitConfiguration()
             captureSession.startRunning()
         } catch(let error) {
@@ -154,6 +158,8 @@ class CameraViewController: BaseViewController {
                 captureSession.addInput(audioInput)
                 captureSession.addOutput(videoOutput)
             }
+            
+            captureSession.sessionPreset = .high
             
             captureSession.commitConfiguration()
             captureSession.startRunning()
@@ -181,6 +187,8 @@ class CameraViewController: BaseViewController {
                 scanOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "queue"))
             }
             
+            captureSession.sessionPreset = .photo
+
             captureSession.commitConfiguration()
             captureSession.startRunning()
         } catch(let error) {
@@ -188,42 +196,62 @@ class CameraViewController: BaseViewController {
         }
     }
     
-    private var requests = [VNRequest]()
+    func removeScanSession() {
+        lastScanResult = nil
+        scannerResetTimer = nil
+    }
+    
+    private var visionRequests = [VNRequest]()
 
     func setupVision() {
         let rectangleDetectionRequest = VNDetectRectanglesRequest(completionHandler: handleRectangles)
         rectangleDetectionRequest.minimumSize = 0.2
         rectangleDetectionRequest.maximumObservations = 20
-        self.requests = [rectangleDetectionRequest]
+        self.visionRequests = [rectangleDetectionRequest]
     }
     
     func handleRectangles(request: VNRequest, error: Error?) {
         DispatchQueue.main.async {
-            if let results = request.results as? [VNObservation] {
-                self.drawVisionRequestResults(results)
+            if let result = request.results?.first as? VNRectangleObservation {
+                self.lastScanResult = result
             }
         }
     }
 
-    private var rectangleLayer: CAShapeLayer?
-    private var lastResult: VNRectangleObservation?
-    
-    func drawVisionRequestResults(_ results: [VNObservation]) {
-        guard let result = results.first as? VNRectangleObservation else { return }
-        
-        if let layer = self.rectangleLayer {
-            layer.removeFromSuperlayer()
-            self.rectangleLayer = nil
+    private var capturedScanResult: VNRectangleObservation?
+    private var lastScanResult: VNRectangleObservation? {
+        didSet {
+            if let result = lastScanResult {
+                let points = [result.topLeft, result.topRight, result.bottomRight, result.bottomLeft]
+                let convertedPoints = points.map { self.convertFromCamera($0) }
+                rectangleLayer = boundingBox(from: convertedPoints, color: #colorLiteral(red: 0.3328347607, green: 0.236689759, blue: 1, alpha: 1))
+                resetTimer()
+            } else {
+                rectangleLayer = nil
+            }
         }
-        
-        self.lastResult = result
-        let points = [result.topLeft, result.topRight, result.bottomRight, result.bottomLeft]
-        let convertedPoints = points.map { self.convertFromCamera($0) }
-        self.rectangleLayer = self.drawBoundingBox(convertedPoints, color: #colorLiteral(red: 0.3328347607, green: 0.236689759, blue: 1, alpha: 1))
-        self.cameraView.layer.addSublayer(self.rectangleLayer!)
     }
     
-    private func drawBoundingBox(_ points: [CGPoint], color: CGColor) -> CAShapeLayer {
+    private var rectangleLayer: CAShapeLayer? {
+        didSet {
+            oldValue?.removeFromSuperlayer()
+            rectangleLayer.flatMap({ cameraView.layer.addSublayer($0) })
+        }
+    }
+    
+    private var scannerResetTimer: Timer? {
+        didSet {
+            oldValue?.invalidate()
+        }
+    }
+    
+    private func resetTimer() {
+        scannerResetTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { [weak self] _ in
+            self?.lastScanResult = nil
+        }
+    }
+    
+    private func boundingBox(from points: [CGPoint], color: CGColor) -> CAShapeLayer {
         let layer = CAShapeLayer()
         layer.fillColor = #colorLiteral(red: 0.4506933627, green: 0.5190293554, blue: 0.9686274529, alpha: 0.2050513699)
         layer.strokeColor = color
@@ -238,33 +266,11 @@ class CameraViewController: BaseViewController {
     }
     
     func convertFromCamera(_ point: CGPoint) -> CGPoint {
-        let orientation = UIApplication.shared.windows.first!.windowScene!.interfaceOrientation
-        let rect = cameraView.frame
-        
-        var x: CGFloat = point.x
-        var y: CGFloat = point.y
-        
-        switch orientation {
-        case .portrait, .unknown:
-            x = point.y
-            y = point.x
-        case .landscapeLeft:
-            x = 1 - point.x
-            y = point.y
-        case .landscapeRight:
-            x = point.x
-            y = 1 - point.y
-        case .portraitUpsideDown:
-            x = 1 - point.y
-            y = 1 - point.x
-        @unknown default:
-            break
-        }
-        return CGPoint(x: x * rect.width + rect.minX, y: y * rect.height + rect.minY)
+        return videoPreviewLayer.layerPointConverted(fromCaptureDevicePoint: CGPoint(x: point.x, y: 1 - point.y))
     }
 
     // MARK: Helpers
-    @objc func mediaTypeSwipeHandler(gesture: UISwipeGestureRecognizer) {
+    @objc private func mediaTypeSwipeHandler(gesture: UISwipeGestureRecognizer) {
         guard let index = viewModel.mediaSourceTypes.firstIndex(of: viewModel.currentMode.value) else { return }
         let lastIndex = viewModel.mediaSourceTypes.count - 1
         if gesture.direction == .left {
@@ -303,74 +309,6 @@ class CameraViewController: BaseViewController {
         }
     }
     
-    private func setupView() {
-        view.backgroundColor = .black
-        title = viewModel.folderName
-        
-        view.addSubview(captureButton)
-        captureButton.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalTo(safeArea).inset(8)
-            make.height.width.equalTo(70)
-        }
-        
-        captureButton.addSubview(middleCaptureButton)
-        middleCaptureButton.snp.makeConstraints { make in
-            make.centerX.centerY.equalTo(captureButton)
-            make.height.width.equalTo(60)
-        }
-        
-        captureButton.addSubview(middleRecordButton)
-        middleRecordButton.snp.makeConstraints { make in
-            make.centerX.centerY.equalTo(captureButton)
-            make.height.width.equalTo(60)
-        }
-        
-        view.addSubview(mediaSourceTypeCollectionView)
-        mediaSourceTypeCollectionView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalTo(captureButton.snp.top).inset(-10)
-            make.height.equalTo(40)
-            make.width.equalToSuperview()
-        }
-        
-        let cameraViewContainer = UIView()
-        view.addSubview(cameraViewContainer)
-        cameraViewContainer.snp.makeConstraints { make in
-            make.top.equalTo(safeArea)
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
-        }
-        
-        let previewDimensions = CMVideoFormatDescriptionGetDimensions((captureSession.inputs.first as! AVCaptureDeviceInput).device.activeFormat.formatDescription)
-        let videoAspect = Double(previewDimensions.width)/Double(previewDimensions.height)
-        cameraViewContainer.addSubview(cameraView)
-        cameraView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.top.left.greaterThanOrEqualToSuperview()
-            make.top.left.equalToSuperview().priority(500)
-            make.height.equalTo(cameraView.snp.width).multipliedBy(videoAspect)
-        }
-        
-        view.addSubview(swipeMediaTypeView)
-        swipeMediaTypeView.snp.makeConstraints { make in
-            make.top.equalTo(safeArea)
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
-        }
-        
-        view.addSubview(galleryButton)
-        galleryButton.snp.makeConstraints { make in
-            make.bottom.left.equalTo(safeArea).inset(8)
-        }
-        
-        view.addSubview(timeLabel)
-        timeLabel.snp.makeConstraints { make in
-            make.top.equalTo(safeArea).inset(5)
-            make.trailing.leading.centerX.equalToSuperview()
-        }
-    }
-    
     func animateCaptureButton(toValue: CGFloat, duration: Double) {
         let animation:CABasicAnimation = CABasicAnimation(keyPath: "borderWidth")
         animation.fromValue = middleCaptureButton.layer.borderWidth
@@ -397,7 +335,7 @@ class CameraViewController: BaseViewController {
         }
     }
     
-    func takePictureFlash() {
+    private func takePictureFlash() {
         UIView.animate(withDuration: 0.1, animations: {
             self.swipeMediaTypeView.backgroundColor = .black
         }) { _ in
@@ -415,7 +353,12 @@ class CameraViewController: BaseViewController {
         return settings
     }
     
-    @objc func takePicture() {
+    @objc private func takePicture() {
+        
+        if viewModel.currentMode.value == .scan {
+            capturedScanResult = lastScanResult
+        }
+        
         animateCaptureButton(toValue: 4, duration: 0.3)
         takePictureFlash()
         animateCaptureButton(toValue: 2, duration: 0.3)
@@ -423,7 +366,7 @@ class CameraViewController: BaseViewController {
         photoOutput.capturePhoto(with: settings, delegate: self)
     }
     
-    @objc func openGallery() {
+    @objc private func openGallery() {
         let picker = UIImagePickerController()
         picker.delegate = self
         picker.mediaTypes = viewModel.currentMode.value == .photo ? [kUTTypeImage as String] : [kUTTypeMovie as String]
@@ -433,7 +376,7 @@ class CameraViewController: BaseViewController {
         present(picker, animated: true, completion: nil)
     }
     
-    @objc func recordVideo() {
+    @objc private func recordVideo() {
         guard let captureSession = self.captureSession, captureSession.isRunning else { return }
         if isRecording {
             videoOutput.stopRecording()
@@ -455,9 +398,9 @@ class CameraViewController: BaseViewController {
         
     }
     
-    var timerSubscription: Disposable?
+    private var timerSubscription: Disposable?
     
-    func count() {
+    private func count() {
         let timer = Observable<Int>.interval(RxTimeInterval.milliseconds(100), scheduler: MainScheduler.instance)
         timerSubscription = timer
             .map { [weak self] in
@@ -466,11 +409,68 @@ class CameraViewController: BaseViewController {
             .bind(to: timeLabel.rx.text)
     }
     
-    func stringFromTimeInterval(ms: Int) -> String {
-        return String(
+    private func stringFromTimeInterval(ms: Int) -> String {
+        String(
             format: "%0.2d:%0.2d",
             arguments: [(ms / 600) % 600, (ms % 600 ) / 10]
         )
+    }
+    
+    private func setupView() {
+        view.backgroundColor = .black
+        title = viewModel.folderName
+        
+        view.addSubview(captureButton)
+        captureButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(safeArea).inset(8)
+            make.height.width.equalTo(70)
+        }
+        
+        captureButton.addSubview(middleCaptureButton)
+        middleCaptureButton.snp.makeConstraints { make in
+            make.centerX.centerY.equalTo(captureButton)
+            make.height.width.equalTo(60)
+        }
+        
+        captureButton.addSubview(middleRecordButton)
+        middleRecordButton.snp.makeConstraints { make in
+            make.centerX.centerY.equalTo(captureButton)
+            make.height.width.equalTo(60)
+        }
+        
+        view.addSubview(cameraView)
+        cameraView.snp.makeConstraints { make in
+            make.top.equalTo(safeArea)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(captureButton.snp.top).offset(-10)
+        }
+    
+        view.addSubview(mediaSourceTypeCollectionView)
+        mediaSourceTypeCollectionView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(captureButton.snp.top).offset(-16)
+            make.height.equalTo(40)
+            make.width.equalToSuperview()
+        }
+        
+        view.addSubview(swipeMediaTypeView)
+        swipeMediaTypeView.snp.makeConstraints { make in
+            make.top.equalTo(safeArea)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(mediaSourceTypeCollectionView.snp.top)
+        }
+        
+        view.addSubview(galleryButton)
+        galleryButton.snp.makeConstraints { make in
+            make.bottom.left.equalTo(safeArea).inset(8)
+        }
+        
+        view.addSubview(timeLabel)
+        timeLabel.snp.makeConstraints { make in
+            make.top.equalTo(safeArea).inset(5)
+            make.trailing.leading.centerX.equalToSuperview()
+        }
     }
     
     // MARK: Lazy instance part
@@ -480,11 +480,13 @@ class CameraViewController: BaseViewController {
         let layout = UPCarouselFlowLayout()
         layout.itemSize = CGSize(width: 50, height: 20)
         layout.scrollDirection = .horizontal
-        let mediaSourceTypeCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        mediaSourceTypeCollectionView.register(MediaTypeCollectionViewCell.self, forCellWithReuseIdentifier: "CollectionCell")
-        mediaSourceTypeCollectionView.delegate = self
-        mediaSourceTypeCollectionView.dataSource = self
-        return mediaSourceTypeCollectionView
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.register(MediaTypeCollectionViewCell.self, forCellWithReuseIdentifier: "MediaTypeCollectionViewCell")
+        collectionView.backgroundColor = .clear
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        return collectionView
     }()
     
     private lazy var swipeMediaTypeView: UIView = {
@@ -556,18 +558,28 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         guard let imageData = photo.fileDataRepresentation() else { return }
         
         if let image = UIImage(data: imageData) {
+            
             if viewModel.currentMode.value == .scan {
-                if let rectangle = lastResult {
-                    viewModel.saveScan(image: image, rectangle: rectangle, fromGallery: false)
-                    coordinator.mediaCreated(viewModel.media!)
-                } else {
-                    print("No rectangle detected")
-                }
+                let rectangle = capturedScanResult ?? .default
+                viewModel.saveScan(image: image, rectangle: rectangle, fromGallery: false)
+                coordinator.mediaCreated(viewModel.media!)
             } else {
                 viewModel.saveImage(image: image, fromGallery: false)
                 coordinator.mediaCreated(viewModel.media!)
             }
         }
+    }
+}
+
+private extension VNRectangleObservation {
+    static var `default`: VNRectangleObservation {
+        VNRectangleObservation(
+            requestRevision: 1,
+            topLeft: CGPoint(x: 0.25, y: 0.25),
+            bottomLeft: CGPoint(x: 0.25, y: 0.75),
+            bottomRight: CGPoint(x: 0.75, y: 0.75),
+            topRight: CGPoint(x: 0.75, y: 0.25)
+        )
     }
 }
 
@@ -628,17 +640,16 @@ extension CameraViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = mediaSourceTypeCollectionView.dequeueReusableCell(withReuseIdentifier: "CollectionCell", for: indexPath) as! MediaTypeCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MediaTypeCollectionViewCell", for: indexPath) as! MediaTypeCollectionViewCell
         let item = viewModel.mediaSourceTypes[indexPath.row]
         cell.setup(with: item)
         return cell
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        let layout = self.mediaSourceTypeCollectionView.collectionViewLayout as! UPCarouselFlowLayout
-        let pageSide = (layout.scrollDirection == .horizontal) ? self.pageSize.width : self.pageSize.height
-        let offset = (layout.scrollDirection == .horizontal) ? scrollView.contentOffset.x : scrollView.contentOffset.y
-        let index = Int(floor((offset - pageSide / 2) / pageSide) + 1)
+        let pageSize = self.pageSize.width
+        let offset = scrollView.contentOffset.x
+        let index = Int(floor((offset - pageSize / 2) / pageSize) + 1)
         viewModel.newModeSelected(with: viewModel.mediaSourceTypes[index])
     }
 }
@@ -658,10 +669,10 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
             requestOptions[.cameraIntrinsics] = cameraInstrictData
         }
         
-        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: requestOptions)
+        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up, options: requestOptions)
         
         do {
-            try imageRequestHandler.perform(requests)
+            try imageRequestHandler.perform(visionRequests)
         } catch {
             print(error)
         }

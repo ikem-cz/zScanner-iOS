@@ -42,6 +42,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView(image: image)
         imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
         return imageView
     }()
 }

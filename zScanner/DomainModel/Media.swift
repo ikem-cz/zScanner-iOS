@@ -74,18 +74,26 @@ class ScanMedia: Media {
     }
     
     func extractPerspectiveRect(_ observation: VNRectangleObservation, from ciImage: CIImage) -> CIImage {
+        let top = observation.points.sorted(by: { $0.y < $1.y }).prefix(2)
+        let bottom = observation.points.sorted(by: { $0.y > $1.y }).prefix(2)
+        
+        let topLeft = top.sorted(by: { $0.x < $1.x }).first!
+        let topRight = top.sorted(by: { $0.x < $1.x }).last!
+        let bottomLeft = bottom.sorted(by: { $0.x < $1.x }).first!
+        let bottomRight = bottom.sorted(by: { $0.x < $1.x }).last!
+        
         // convert corners from normalized image coordinates to pixel coordinates
-        let topLeft = observation.topLeft.scaled(to: ciImage.extent.size)
-        let topRight = observation.topRight.scaled(to: ciImage.extent.size)
-        let bottomLeft = observation.bottomLeft.scaled(to: ciImage.extent.size)
-        let bottomRight = observation.bottomRight.scaled(to: ciImage.extent.size)
+        let scaledTopLeft = topLeft.scaled(to: ciImage.extent.size)
+        let scaledTopRight = topRight.scaled(to: ciImage.extent.size)
+        let scaledBottomLeft = bottomLeft.scaled(to: ciImage.extent.size)
+        let scaledBottomRight = bottomRight.scaled(to: ciImage.extent.size)
 
         // pass those to the filter to extract/rectify the image
         return ciImage.applyingFilter("CIPerspectiveCorrection", parameters: [
-            "inputTopLeft": CIVector(cgPoint: topLeft),
-            "inputTopRight": CIVector(cgPoint: topRight),
-            "inputBottomLeft": CIVector(cgPoint: bottomLeft),
-            "inputBottomRight": CIVector(cgPoint: bottomRight),
+            "inputTopLeft": CIVector(cgPoint: scaledTopLeft),
+            "inputTopRight": CIVector(cgPoint: scaledTopRight),
+            "inputBottomLeft": CIVector(cgPoint: scaledBottomLeft),
+            "inputBottomRight": CIVector(cgPoint: scaledBottomRight),
         ])
     }
 }

@@ -59,6 +59,11 @@ class MediaListViewController: BaseViewController {
         // Prevent back button on this screen
     }
     
+    override func setupNavBar() {
+        super.setupNavBar()
+        navigationController?.navigationBar.isTranslucent = false
+    }
+    
     // MARK: Helpers
     let disposeBag = DisposeBag()
     let bottomGradientOverlayHeight: CGFloat = 80
