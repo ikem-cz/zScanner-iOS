@@ -8,14 +8,20 @@
 
 import Foundation
 
+enum SearchType: String {
+    case search = "searchResult"
+    case suggested = "suggestedResult"
+}
+
 struct FolderDomainModel: Equatable {
     var externalId : String
     var id : String
     var name: String
+    var type: SearchType? = nil
 }
 
 extension FolderDomainModel {
-    static var notFound = FolderDomainModel(externalId: "", id: "", name: "folderResult.folderNotFound.title".localized)
+    static var notFound = FolderDomainModel(externalId: "", id: "", name: "folderResult.folderNotFound.title".localized, type: .search)
 }
 
 enum SearchMode: String {

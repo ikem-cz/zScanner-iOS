@@ -21,21 +21,21 @@ class NewDocumentFolderViewModel {
         self.database = database
         self.networkManager = networkManager
         self.tracker = tracker
-        
-        history = database
-            .loadObjects(FolderDatabaseModel.self)
-            .sorted(by: { $0.lastUsed > $1.lastUsed })
-            .prefix(Config.folderUsageHistoryCount)
-            .map({ $0.toDomainModel() })
     }
     
     // MARK: Interface
-    let history: [FolderDomainModel]
+    let suggestedResults = BehaviorRelay<[FolderDomainModel]>(value: [])
     let searchResults = BehaviorRelay<[FolderDomainModel]>(value: [])
     let isLoading = BehaviorRelay<Bool>(value: false)
     private(set) var lastUsedSearchMode: SearchMode = .history
     
     func search(query: String) {
+        if query.isEmpty {
+            searchResults.accept([])
+            suggestedResults.accept([])
+            return
+        }
+        
         lastUsedSearchMode = .search
         activeSearch = networkManager.searchFolders(with: query)
     }
@@ -43,6 +43,7 @@ class NewDocumentFolderViewModel {
     func getFolder(with id: String) {
         lastUsedSearchMode = .scan
         searchResults.accept([])
+        suggestedResults.accept([])
         let id = id.trimmingCharacters(in: CharacterSet.decimalDigits.inverted)
         activeSearch = networkManager.getFolder(with: id).map({ (result) -> RequestStatus<[FolderNetworkModel]> in
             switch result {
@@ -68,7 +69,8 @@ class NewDocumentFolderViewModel {
                         self?.tracker.track(.userNotFound)
                         folders.append(.notFound)
                     }
-                    self?.searchResults.accept(folders)
+                    self?.searchResults.accept(folders.filter({ $0.type != .suggested }))
+                    self?.suggestedResults.accept(folders.filter({ $0.type == .suggested }))
                 case .error:
                     self?.tracker.track(.userNotFound)
                     self?.isLoading.accept(false)

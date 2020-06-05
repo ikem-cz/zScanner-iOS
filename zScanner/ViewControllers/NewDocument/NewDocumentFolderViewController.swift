@@ -62,12 +62,12 @@ class NewDocumentFolderViewController: BaseViewController {
     // MARK: Helpers
     enum Section: String {
         case searchResults
-        case history
+        case suggestedResults
         
         var title: String {
             switch self {
                 case .searchResults: return "newDocumentFolder.searchResults.title".localized
-                case .history: return "newDocumentFolder.searchHistory.title".localized
+                case .suggestedResults: return "newDocumentFolder.suggestedResults.title".localized
             }
         }
     }
@@ -161,8 +161,8 @@ class NewDocumentFolderViewController: BaseViewController {
             make.right.bottom.left.equalToSuperview()
         }
         
-        if !viewModel.history.isEmpty {
-            sections.append(.history)
+        if !viewModel.suggestedResults.value.isEmpty {
+            sections.append(.suggestedResults)
         }
         
         tableView.backgroundView = emptyView
@@ -257,8 +257,8 @@ extension NewDocumentFolderViewController: UITableViewDataSource {
         switch section {
         case .searchResults:
             return viewModel.searchResults.value.count
-        case .history:
-            return viewModel.history.count
+        case .suggestedResults:
+            return viewModel.suggestedResults.value.count
         }
     }
     
@@ -270,8 +270,8 @@ extension NewDocumentFolderViewController: UITableViewDataSource {
         switch section {
         case .searchResults:
             folder = viewModel.searchResults.value[indexPath.row]
-        case .history:
-            folder = viewModel.history[indexPath.row]
+        case .suggestedResults:
+            folder = viewModel.suggestedResults.value[indexPath.row]
         }
         
         let cell = tableView.dequeueCell(FolderTableViewCell.self)
@@ -296,8 +296,8 @@ extension NewDocumentFolderViewController: UITableViewDelegate {
         case .searchResults:
             item = viewModel.searchResults.value[indexPath.row]
             searchMode = viewModel.lastUsedSearchMode
-        case .history:
-            item = viewModel.history[indexPath.row]
+        case .suggestedResults:
+            item = viewModel.suggestedResults.value[indexPath.row]
             searchMode = .history
         }
         
@@ -315,13 +315,8 @@ extension NewDocumentFolderViewController: UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        var searchText = searchText
-        
-        if searchText.length >= Config.minimumSearchLength {
-            viewModel.search(query: searchText)
-        } else {
-            searchText = ""
-        }
+        let searchText = searchText.length < Config.minimumSearchLength ? "" : searchText
+        viewModel.search(query: searchText)
         
         showSearchResult(!searchText.isEmpty)
     }

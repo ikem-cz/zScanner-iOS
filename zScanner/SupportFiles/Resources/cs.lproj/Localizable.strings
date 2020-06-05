@@ -40,8 +40,8 @@
 // MARK: - New Document
 "newDocumentFolder.screen.title" = "Výběr pacienta";
 "newDocumentFolder.searchBar.title" = "Rodné číslo, příjmení nebo jméno..";
-"newDocumentFolder.searchResults.title" = "Výsledky hledání";
-"newDocumentFolder.searchHistory.title" = "Historie hledání";
+"newDocumentFolder.suggestedResults.title" = "Již jste pracovali s";
+"newDocumentFolder.searchResults.title" = "Ostatní shody";
 "newDocumentFolder.scanFailedAlert.title" = "Chyba kamery";
 "newDocumentFolder.scanFailedAlert.message" = "Kamera není dostupná, zkontrolujte prosím nastavení.";
 "newDocumentFolder.emptyView.title" = "Zadejte alespoň tři znaky pro zahájení vyhledávání.";
