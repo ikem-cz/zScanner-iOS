@@ -9,7 +9,7 @@
 import UIKit
 
 protocol Presentable {
-    func willDismiss()
+    func willDismiss(afterCompleted: Bool)
     func willExpand()
 }
 
@@ -47,8 +47,8 @@ class BottomSheetPresenting: BaseViewController {
         presentedView.frame = expanded ? frameOfExpandedView : frameOfDismissedView
     }
     
-    func dismissBottomSheet() {
-        (sheetViewController as? Presentable)?.willDismiss()
+    func dismissBottomSheet(afterCompleted: Bool = false) {
+        (sheetViewController as? Presentable)?.willDismiss(afterCompleted: afterCompleted)
         self.expanded = false
         
         UIView.animate(withDuration: 0.25) {

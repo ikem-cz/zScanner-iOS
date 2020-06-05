@@ -75,6 +75,11 @@ class NewDocumentFolderViewController: BaseViewController {
     private var sections: [Section] = []
     private let disposeBag = DisposeBag()
     
+    private func clearSearchResults() {
+        searchBar.text = ""
+        viewModel.search(query: "")
+    }
+    
     private func setFocusToSearchBar() {
         searchBar.becomeFirstResponder()
     }
@@ -103,9 +108,12 @@ class NewDocumentFolderViewController: BaseViewController {
     private func setupBindings() {
         viewModel.searchResults
             .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] results in
                 guard let section = self?.sections.firstIndex(of: .searchResults) else { return }
                 self?.tableView.reloadSections([section], with: .fade)
+                if self?.viewModel.lastUsedSearchMode == .scan, let folder = results.first {
+                    self?.coordinator.folderSelected(FolderSelection(folder: folder, searchMode: .scan))
+                }
             }).disposed(by: disposeBag)
         
         viewModel.isLoading
@@ -235,8 +243,11 @@ class NewDocumentFolderViewController: BaseViewController {
 
 // MARK: - Presentable implementation
 extension NewDocumentFolderViewController: Presentable {
-    func willDismiss() {
+    func willDismiss(afterCompleted: Bool) {
         searchBar.resignFirstResponder()
+        if afterCompleted {
+            clearSearchResults()
+        }
     }
     
     func willExpand() {
@@ -325,8 +336,9 @@ extension NewDocumentFolderViewController: UISearchBarDelegate {
 // MARK: - ScannerDelegate implementation
 extension NewDocumentFolderViewController: ScannerDelegate {
     func close() {
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: false, completion: nil)
         if viewModel.lastUsedSearchMode == .scan {
+            (parent as? BottomSheetPresenting)?.expandBottomSheet()
             showSearchResult(true)
         }
     }

@@ -37,6 +37,7 @@ class CameraViewController: BaseViewController {
     private var isRecording: Bool = false
     private var isFlashing: Bool = false {
         didSet {
+            flashButton.image = isFlashing ? UIImage(systemName: "bolt.fill") : UIImage(systemName: "bolt.slash.fill")
             flashMode = isFlashing ? .on : .off
         }
     }
@@ -165,6 +166,24 @@ class CameraViewController: BaseViewController {
             captureSession.startRunning()
         } catch(let error) {
             print("Error Unable to initialize video with audio:  \(error.localizedDescription).")
+        }
+    }
+    
+    func setTorch(_ mode: Bool) {
+        guard let device = videoDevice, device.hasTorch else { return }
+
+        do {
+            try device.lockForConfiguration()
+
+            if mode {
+                try device.setTorchModeOn(level: 1.0)
+            } else {
+                device.torchMode = AVCaptureDevice.TorchMode.off
+            }
+
+            device.unlockForConfiguration()
+        } catch {
+            print(error)
         }
     }
     
@@ -298,7 +317,6 @@ class CameraViewController: BaseViewController {
                 try device.lockForConfiguration()
                 
                 isFlashing.toggle()
-                flashButton.image = isFlashing ? UIImage(systemName: "bolt.fill") : UIImage(systemName: "bolt.slash.fill")
 
                 device.unlockForConfiguration()
             } catch {

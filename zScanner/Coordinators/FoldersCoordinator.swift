@@ -123,7 +123,7 @@ extension FoldersCoordinator: NewDocumentFlowDelegate {
             return
         }
         
-        list.dismissBottomSheet()
+        list.dismissBottomSheet(afterCompleted: true)
         list.insertNewDocument(document: documentViewModel)
     }
 }
