@@ -55,6 +55,12 @@ class MediaListViewController: BaseViewController {
         }
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        tableView.visibleCells.compactMap({ $0 as? CollectionViewTableViewCell }).forEach({ $0.reloadCells() })
+    }
+    
     override func setupBackButton() {
         // Prevent back button on this screen
     }

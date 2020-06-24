@@ -16,7 +16,7 @@
 		16BF842C245C6631004CC132 /* MediaTypeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */; };
 		16BF842E245C7136004CC132 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BF842D245C7136004CC132 /* CameraView.swift */; };
 		16CBB2B1246A7FA5003E5D64 /* VideoPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16CBB2B0246A7FA5003E5D64 /* VideoPreviewViewController.swift */; };
-		16CBB2B9246AAC86003E5D64 /* MediumPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16CBB2B8246AAC86003E5D64 /* MediumPreviewViewController.swift */; };
+		16CBB2B9246AAC86003E5D64 /* MediaPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16CBB2B8246AAC86003E5D64 /* MediaPreviewViewController.swift */; };
 		16D371FC246419F600B845B0 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D371FB246419F600B845B0 /* CameraViewModel.swift */; };
 		16D371FE24645E7A00B845B0 /* PhotoPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D371FD24645E7A00B845B0 /* PhotoPreviewViewController.swift */; };
 		16EB77FF2472940100B1CCF8 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EB77FE2472940100B1CCF8 /* Media.swift */; };
@@ -126,6 +126,7 @@
 		BDBF4E21232EED4C0078BF53 /* LoginDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBF4E20232EED4C0078BF53 /* LoginDatabaseModel.swift */; };
 		BDC4A3E022E5004900D1CF6A /* FolderStatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC4A3DF22E5004900D1CF6A /* FolderStatusTableViewCell.swift */; };
 		BDC4A3E322E5008800D1CF6A /* DocumentDomainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC4A3E222E5008800D1CF6A /* DocumentDomainModel.swift */; };
+		BDD2BE1624A2A29200103BDF /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD2BE1524A2A29200103BDF /* Orientation.swift */; };
 		BDD316F62484E39F0065D16B /* QueryNetworkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD316F52484E39F0065D16B /* QueryNetworkModel.swift */; };
 		BDD3C0F122F8CBAF008406EA /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD3C0F022F8CBAF008406EA /* Date.swift */; };
 		BDDA1271231408C10029A7DF /* SubmitPasswordRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDDA1270231408C10029A7DF /* SubmitPasswordRequest.swift */; };
@@ -169,7 +170,7 @@
 		16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTypeCollectionViewCell.swift; sourceTree = "<group>"; };
 		16BF842D245C7136004CC132 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		16CBB2B0246A7FA5003E5D64 /* VideoPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewViewController.swift; sourceTree = "<group>"; };
-		16CBB2B8246AAC86003E5D64 /* MediumPreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediumPreviewViewController.swift; sourceTree = "<group>"; };
+		16CBB2B8246AAC86003E5D64 /* MediaPreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaPreviewViewController.swift; sourceTree = "<group>"; };
 		16D371FB246419F600B845B0 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
 		16D371FD24645E7A00B845B0 /* PhotoPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewViewController.swift; sourceTree = "<group>"; };
 		16EB77FE2472940100B1CCF8 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
@@ -281,6 +282,7 @@
 		BDBF4E20232EED4C0078BF53 /* LoginDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDatabaseModel.swift; sourceTree = "<group>"; };
 		BDC4A3DF22E5004900D1CF6A /* FolderStatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderStatusTableViewCell.swift; sourceTree = "<group>"; };
 		BDC4A3E222E5008800D1CF6A /* DocumentDomainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentDomainModel.swift; sourceTree = "<group>"; };
+		BDD2BE1524A2A29200103BDF /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
 		BDD316F52484E39F0065D16B /* QueryNetworkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryNetworkModel.swift; sourceTree = "<group>"; };
 		BDD3C0F022F8CBAF008406EA /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		BDDA1270231408C10029A7DF /* SubmitPasswordRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmitPasswordRequest.swift; sourceTree = "<group>"; };
@@ -396,7 +398,7 @@
 				BD2C5F8122F378A20023D097 /* NewDocumentTypeViewController.swift */,
 				BD80224822F880F8009B8B69 /* ListItemSelectionViewController.swift */,
 				1663AAA7245C0AD3004A3472 /* CameraViewController.swift */,
-				16CBB2B8246AAC86003E5D64 /* MediumPreviewViewController.swift */,
+				16CBB2B8246AAC86003E5D64 /* MediaPreviewViewController.swift */,
 				16D371FD24645E7A00B845B0 /* PhotoPreviewViewController.swift */,
 				16CBB2B0246A7FA5003E5D64 /* VideoPreviewViewController.swift */,
 				BD893802247EA4F60084FB5F /* ScanPreviewViewController.swift */,
@@ -579,6 +581,7 @@
 				BD000CAD22E3AA6F001EE38A /* UIViewController.swift */,
 				BD70566E23301D7E0074184A /* URL.swift */,
 				16908398246D9582009967A1 /* Themes.swift */,
+				BDD2BE1524A2A29200103BDF /* Orientation.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -976,7 +979,7 @@
 				BD2B9E8822EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift in Sources */,
 				BDA25B2022EF9C33006DA7E4 /* Event.swift in Sources */,
 				1656AAFB247FAA47008F20AF /* AddNewMediaCollectionViewCell.swift in Sources */,
-				16CBB2B9246AAC86003E5D64 /* MediumPreviewViewController.swift in Sources */,
+				16CBB2B9246AAC86003E5D64 /* MediaPreviewViewController.swift in Sources */,
 				BD59A0AD22E395AF00FA9CD0 /* UIColor.swift in Sources */,
 				BD59A09022E36EF900FA9CD0 /* RequestBehavior.swift in Sources */,
 				BD2F209222EBA7D300534916 /* RealmDatabase.swift in Sources */,
@@ -1012,6 +1015,7 @@
 				BD59A0A322E371E200FA9CD0 /* AppCoordinator.swift in Sources */,
 				BD000CE122E4FB5A001EE38A /* FoldersListViewModel.swift in Sources */,
 				BDBF4E21232EED4C0078BF53 /* LoginDatabaseModel.swift in Sources */,
+				BDD2BE1624A2A29200103BDF /* Orientation.swift in Sources */,
 				1656AAFF24800E4E008F20AF /* CollectionViewTableViewCell.swift in Sources */,
 				BD59A09822E36EF900FA9CD0 /* Request.swift in Sources */,
 				BD59A0AF22E3966700FA9CD0 /* UIFont.swift in Sources */,
@@ -1192,7 +1196,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = 3S5GF6G6NK;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1209,7 +1213,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 1.1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = cz.ikem.zScanner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "zScanner/SupportFiles/zScanner-Bridging-Header.h";
@@ -1224,7 +1228,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = 3S5GF6G6NK;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1241,7 +1245,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 1.1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = cz.ikem.zScanner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "zScanner/SupportFiles/zScanner-Bridging-Header.h";

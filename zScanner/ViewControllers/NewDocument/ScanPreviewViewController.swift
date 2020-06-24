@@ -156,12 +156,12 @@ class ScanPreviewViewController: MediaPreviewViewController {
     
     func convertFromCamera(_ point: CGPoint) -> CGPoint {
         let rect = imageView.contentClippingRect
-        return CGPoint(x: point.y * rect.width + rect.minX, y: point.x * rect.height + rect.minY)
+        return CGPoint(x: point.x * rect.width + rect.minX, y: (1 - point.y) * rect.height + rect.minY)
     }
     
     func convertToCamera(_ point: CGPoint) -> CGPoint {
         let rect = imageView.contentClippingRect
-        return CGPoint(x: (point.y - rect.minY) / rect.height, y: (point.x - rect.minX) / rect.width)
+        return CGPoint(x: (point.x - rect.minX) / rect.width, y: 1 - (point.y - rect.minY) / rect.height)
     }
 }
 
@@ -192,9 +192,14 @@ class RectangleCorner: UIView {
     
     @objc func move(_ recognizer: UIPanGestureRecognizer) {
         let translation = recognizer.translation(in: nil)
+        
+        
+        let x = min(max(frame.origin.x + translation.x, -radius), superview!.bounds.width - radius)
+        let y = min(max(frame.origin.y + translation.y, -radius), superview!.bounds.height - radius)
+        
         let newFrame = CGRect(
-            x: frame.origin.x + translation.x,
-            y: frame.origin.y + translation.y,
+            x: x,
+            y: y,
             width: frame.width,
             height: frame.height
         )

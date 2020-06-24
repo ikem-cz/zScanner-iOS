@@ -43,8 +43,6 @@ class CollectionViewTableViewCell: UITableViewCell {
     }
     
     // MARK: Interface
-    private var disposeBag = DisposeBag()
-    
     func setup(with field: CollectionViewField, viewModel: MediaListViewModel, delegate: CollectionViewCellDelegate) {
         self.viewModel = viewModel
         self.delegate = delegate
@@ -54,6 +52,14 @@ class CollectionViewTableViewCell: UITableViewCell {
         resetHeight()
         collectionView.reloadData()
     }
+    
+    func reloadCells() {
+        collectionView.reloadData()
+    }
+    
+    // MARK: Helpers
+    private var disposeBag = DisposeBag()
+    var heightConstraint: Constraint?
     
     private func setupView() {
         selectionStyle = .none
@@ -73,9 +79,6 @@ class CollectionViewTableViewCell: UITableViewCell {
             make.bottom.equalTo(deleteButton.snp.top).inset(-10)
         }
     }
-    
-    // MARK: Helpers
-    var heightConstraint: Constraint?
     
     private func resetHeight() {
         let count = viewModel!.mediaArray.value.count + 1

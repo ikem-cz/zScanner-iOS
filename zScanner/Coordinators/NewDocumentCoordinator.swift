@@ -64,7 +64,7 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func mediaScreen(for media: Media, editing: Bool) -> MediaPreviewViewController {
-        if mediaViewModel == nil {
+        if mediaViewModel == nil || mediaViewModel?.mediaArray.value.isEmpty == true {
             mediaViewModel = MediaListViewModel(database: database, folderName: folder.name, mediaType: media.type, tracker: tracker)
         }
         let viewModel = mediaViewModel!
@@ -182,7 +182,11 @@ extension NewDocumentCoordinator: CameraCoordinator {
 extension NewDocumentCoordinator: MediaPreviewCoordinator {
     func createNewMedia() {
         guard let mediaViewModel = mediaViewModel else { return }
-        showNewMediaScreen(mediaType: mediaViewModel.mediaType, mediaSourceTypes: [mediaViewModel.mediaType])
+        if mediaViewModel.mediaArray.value.isEmpty {
+            showNewMediaScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
+        } else {
+            showNewMediaScreen(mediaType: mediaViewModel.mediaType, mediaSourceTypes: [mediaViewModel.mediaType])
+        }
     }
     
     func finishEdit() {

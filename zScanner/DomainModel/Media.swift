@@ -67,29 +67,25 @@ class ScanMedia: Media {
     }
     
     override var thumbnail: UIImage? {
-        guard let ciImage = CIImage(contentsOf: url) else { return nil }
+        guard
+            let ciImage = CIImage(contentsOf: url),
+            let uiImage = UIImage(data: try! Data(contentsOf: url))
+        else { return nil }
+        let orientation = CGImagePropertyOrientation(uiOrientation: uiImage.imageOrientation)
         
-        let page = extractPerspectiveRect(rectangle, from: ciImage)
+        let page = extractPerspectiveRect(rectangle, from: ciImage.oriented(orientation))
         return UIImage(ciImage: page)
     }
     
     func extractPerspectiveRect(_ observation: VNRectangleObservation, from ciImage: CIImage) -> CIImage {
-        let top = observation.points.sorted(by: { $0.y < $1.y }).prefix(2)
-        let bottom = observation.points.sorted(by: { $0.y > $1.y }).prefix(2)
-        
-        let topLeft = top.sorted(by: { $0.x < $1.x }).first!
-        let topRight = top.sorted(by: { $0.x < $1.x }).last!
-        let bottomLeft = bottom.sorted(by: { $0.x < $1.x }).first!
-        let bottomRight = bottom.sorted(by: { $0.x < $1.x }).last!
-        
-        // convert corners from normalized image coordinates to pixel coordinates
-        let scaledTopLeft = topLeft.scaled(to: ciImage.extent.size)
-        let scaledTopRight = topRight.scaled(to: ciImage.extent.size)
-        let scaledBottomLeft = bottomLeft.scaled(to: ciImage.extent.size)
-        let scaledBottomRight = bottomRight.scaled(to: ciImage.extent.size)
+        let scaledTopLeft = observation.topLeft.scaled(to: ciImage.extent.size)
+        let scaledTopRight = observation.topRight.scaled(to: ciImage.extent.size)
+        let scaledBottomLeft = observation.bottomLeft.scaled(to: ciImage.extent.size)
+        let scaledBottomRight = observation.bottomRight.scaled(to: ciImage.extent.size)
 
         // pass those to the filter to extract/rectify the image
-        return ciImage.applyingFilter("CIPerspectiveCorrection", parameters: [
+        return ciImage
+            .applyingFilter("CIPerspectiveCorrection", parameters: [
             "inputTopLeft": CIVector(cgPoint: scaledTopLeft),
             "inputTopRight": CIVector(cgPoint: scaledTopRight),
             "inputBottomLeft": CIVector(cgPoint: scaledBottomLeft),
@@ -100,7 +96,6 @@ class ScanMedia: Media {
 
 private extension CGPoint {
    func scaled(to size: CGSize) -> CGPoint {
-       return CGPoint(x: self.x * size.width,
-                      y: self.y * size.height)
+       return CGPoint(x: x * size.width, y: y * size.height)
    }
 }

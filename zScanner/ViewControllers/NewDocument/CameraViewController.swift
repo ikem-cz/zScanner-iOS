@@ -104,7 +104,7 @@ class CameraViewController: BaseViewController {
     }
     
     // MARK: Setup media session
-    func setupCaptureSession() {
+    private func setupCaptureSession() {
         captureSession = AVCaptureSession()
         
         // Add temporary input to setup preview constraints
@@ -115,7 +115,7 @@ class CameraViewController: BaseViewController {
         videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
     }
     
-    func preparePhotoSession() {
+    private func preparePhotoSession() {
         guard let videoDevice = videoDevice else { return }
         
         if captureSession.isRunning { captureSession.stopRunning() }
@@ -141,7 +141,7 @@ class CameraViewController: BaseViewController {
         }
     }
     
-    func prepareVideoSession() {
+    private func prepareVideoSession() {
         guard let videoDevice = videoDevice, let audioDevice = audioDevice else { return }
         
         if captureSession.isRunning { captureSession.stopRunning() }
@@ -169,7 +169,7 @@ class CameraViewController: BaseViewController {
         }
     }
     
-    func setTorch(_ mode: Bool) {
+    private func setTorch(_ mode: Bool) {
         guard let device = videoDevice, device.hasTorch else { return }
 
         do {
@@ -187,7 +187,7 @@ class CameraViewController: BaseViewController {
         }
     }
     
-    func prepareScanSession() {
+    private func prepareScanSession() {
         guard let videoDevice = videoDevice else { return }
         
         if captureSession.isRunning { captureSession.stopRunning() }
@@ -215,21 +215,19 @@ class CameraViewController: BaseViewController {
         }
     }
     
-    func removeScanSession() {
+    private func removeScanSession() {
         lastScanResult = nil
         scannerResetTimer = nil
     }
     
     private var visionRequests = [VNRequest]()
 
-    func setupVision() {
+    private func setupVision() {
         let rectangleDetectionRequest = VNDetectRectanglesRequest(completionHandler: handleRectangles)
-        rectangleDetectionRequest.minimumSize = 0.2
-        rectangleDetectionRequest.maximumObservations = 20
         self.visionRequests = [rectangleDetectionRequest]
     }
     
-    func handleRectangles(request: VNRequest, error: Error?) {
+    private func handleRectangles(request: VNRequest, error: Error?) {
         DispatchQueue.main.async {
             if let result = request.results?.first as? VNRectangleObservation {
                 self.lastScanResult = result
@@ -237,11 +235,12 @@ class CameraViewController: BaseViewController {
         }
     }
 
+    private var galleryScanImage: UIImage?
     private var capturedScanResult: VNRectangleObservation?
     private var lastScanResult: VNRectangleObservation? {
         didSet {
             if let result = lastScanResult {
-                let points = [result.topLeft, result.topRight, result.bottomRight, result.bottomLeft]
+                let points = [result.topLeft, result.bottomLeft, result.bottomRight, result.topRight]
                 let convertedPoints = points.map { self.convertFromCamera($0) }
                 rectangleLayer = boundingBox(from: convertedPoints, color: #colorLiteral(red: 0.3328347607, green: 0.236689759, blue: 1, alpha: 1))
                 resetTimer()
@@ -284,8 +283,8 @@ class CameraViewController: BaseViewController {
         return layer
     }
     
-    func convertFromCamera(_ point: CGPoint) -> CGPoint {
-        return videoPreviewLayer.layerPointConverted(fromCaptureDevicePoint: CGPoint(x: point.x, y: 1 - point.y))
+    private func convertFromCamera(_ point: CGPoint) -> CGPoint {
+        return videoPreviewLayer.layerPointConverted(fromCaptureDevicePoint: CGPoint(x: (1-point.y), y:  (1-point.x)))
     }
 
     // MARK: Helpers
@@ -309,7 +308,7 @@ class CameraViewController: BaseViewController {
         }
     }
 
-    @objc func toggleTorch() {
+    @objc private func toggleTorch() {
         guard let device = AVCaptureDevice.default(for: .video) else { return }
 
         if device.hasTorch {
@@ -327,7 +326,7 @@ class CameraViewController: BaseViewController {
         }
     }
     
-    func animateCaptureButton(toValue: CGFloat, duration: Double) {
+    private func animateCaptureButton(toValue: CGFloat, duration: Double) {
         let animation:CABasicAnimation = CABasicAnimation(keyPath: "borderWidth")
         animation.fromValue = middleCaptureButton.layer.borderWidth
         animation.toValue = toValue
@@ -336,7 +335,7 @@ class CameraViewController: BaseViewController {
         middleCaptureButton.layer.borderWidth = toValue
     }
     
-    func animateRecordButton(duration: Double) {
+    private func animateRecordButton(duration: Double) {
         UIView.animate(withDuration: duration) {
             // scale button
             self.middleRecordButton.transform = self.isRecording ? CGAffineTransform(scaleX: 0.8, y: 0.8) : CGAffineTransform.identity
@@ -387,7 +386,7 @@ class CameraViewController: BaseViewController {
     @objc private func openGallery() {
         let picker = UIImagePickerController()
         picker.delegate = self
-        picker.mediaTypes = viewModel.currentMode.value == .photo ? [kUTTypeImage as String] : [kUTTypeMovie as String]
+        picker.mediaTypes = viewModel.currentMode.value == .video ? [kUTTypeMovie as String] : [kUTTypeImage as String] 
         picker.sourceType = .photoLibrary
         picker.videoMaximumDuration = Config.maximumSecondsOfVideoRecording
         picker.allowsEditing = viewModel.currentMode.value == .video ? true : false
@@ -593,10 +592,10 @@ private extension VNRectangleObservation {
     static var `default`: VNRectangleObservation {
         VNRectangleObservation(
             requestRevision: 1,
-            topLeft: CGPoint(x: 0.25, y: 0.25),
-            bottomLeft: CGPoint(x: 0.25, y: 0.75),
-            bottomRight: CGPoint(x: 0.75, y: 0.75),
-            topRight: CGPoint(x: 0.75, y: 0.25)
+            topLeft: CGPoint(x: 0.25, y: 0.75),
+            bottomLeft: CGPoint(x: 0.25, y: 0.25),
+            bottomRight: CGPoint(x: 0.75, y: 0.25),
+            topRight: CGPoint(x: 0.75, y: 0.75)
         )
     }
 }
@@ -604,20 +603,53 @@ private extension VNRectangleObservation {
 // MARK: - UIImagePickerControllerDelegate implementation
 extension CameraViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let pickedImage = info[.originalImage] as? UIImage {
-            viewModel.saveImage(image: pickedImage, fromGallery: true)
-            coordinator.mediaCreated(viewModel.media!)
-        }
-        if let videoURL = info[.mediaURL] as? URL {
-            viewModel.saveVideo(fromGallery: true, url: videoURL) { isSaved in
-                guard isSaved else { return }
-                
-                DispatchQueue.main.async {
-                    self.coordinator.mediaCreated(self.viewModel.media!)
+        switch viewModel.currentMode.value {
+        case .photo:
+            if let pickedImage = info[.originalImage] as? UIImage {
+                viewModel.saveImage(image: pickedImage, fromGallery: true)
+                coordinator.mediaCreated(viewModel.media!)
+            }
+        case .video:
+            if let videoURL = info[.mediaURL] as? URL {
+                viewModel.saveVideo(fromGallery: true, url: videoURL) { isSaved in
+                    guard isSaved else { return }
+                    
+                    DispatchQueue.main.async {
+                        self.coordinator.mediaCreated(self.viewModel.media!)
+                    }
                 }
             }
+        case .scan:
+            if let pickedImage = info[.originalImage] as? UIImage, let ciImage = CIImage(image: pickedImage) {
+                galleryScanImage = pickedImage
+                let orientation = CGImagePropertyOrientation(uiOrientation: pickedImage.imageOrientation)
+                
+                let handler = VNImageRequestHandler(ciImage: ciImage, orientation: orientation)
+                
+                let rectangleDetectionRequest = VNDetectRectanglesRequest(completionHandler: handleGalleryRectangles)
+                
+                DispatchQueue.global(qos: .userInteractive).async {
+                    do {
+                        try handler.perform([rectangleDetectionRequest])
+                    } catch {
+                        print(error)
+                    }
+                }
+            }
+            
         }
+        
+        
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    private func handleGalleryRectangles(request: VNRequest, error: Error?) {
+        DispatchQueue.main.async {
+            let result = request.results?.first as? VNRectangleObservation
+            self.viewModel.saveScan(image: self.galleryScanImage!, rectangle: result ?? .default, fromGallery: true)
+            self.coordinator.mediaCreated(self.viewModel.media!)
+            self.galleryScanImage = nil
+        }
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -687,7 +719,7 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
             requestOptions[.cameraIntrinsics] = cameraInstrictData
         }
         
-        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up, options: requestOptions)
+        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .right, options: requestOptions)
         
         do {
             try imageRequestHandler.perform(visionRequests)
