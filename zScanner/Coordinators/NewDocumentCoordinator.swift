@@ -211,7 +211,7 @@ extension NewDocumentCoordinator: MediaListCoordinator {
                 case let datePicker as DateTimePickerField:
                     datePicker.date.value.flatMap({ newDocument.date = $0 })
                 case let listPicker as ListPickerField<DocumentTypeDomainModel>:
-                    listPicker.selected.value.flatMap({newDocument.type = $0 })
+                    listPicker.selected.value.flatMap({ newDocument.type = $0 })
                 default:
                     break
                 }

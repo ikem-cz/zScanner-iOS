@@ -14,6 +14,7 @@ class PageDatabaseModel: Object {
     @objc dynamic var index = 0
     @objc dynamic var correlationId = ""
     @objc dynamic var relativePath = ""
+    @objc dynamic var cropRelativePath: String? = nil
     
     convenience init(media: MediaDomainModel) {
         self.init()
@@ -22,6 +23,7 @@ class PageDatabaseModel: Object {
         self.correlationId = media.correlationId
         self.index = media.index
         self.relativePath = media.relativePath
+        self.cropRelativePath = media.cropRelativePath
     }
     
     override class func primaryKey() -> String {
@@ -36,6 +38,7 @@ extension PageDatabaseModel {
             index: index,
             correlationId: correlationId,
             relativePath: relativePath,
+            cropRelativePath: cropRelativePath,
             type: .photo
         )
     }
@@ -44,5 +47,6 @@ extension PageDatabaseModel {
 extension PageDatabaseModel: RichDeleting {
     func deleteRichContent() {
         try? FileManager.default.removeItem(at: URL(documentsWith: relativePath))
+        cropRelativePath.flatMap { try? FileManager.default.removeItem(at: URL(documentsWith: $0)) }
     }
 }

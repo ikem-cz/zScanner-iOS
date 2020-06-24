@@ -50,6 +50,8 @@ class Media {
             return nil
         }
     }
+    
+    func save() {}
 }
 
 extension Media: Equatable {
@@ -59,11 +61,27 @@ extension Media: Equatable {
 }
 
 class ScanMedia: Media {
+    var cropRelativePath: String!
+    var cropUrl: URL { URL(documentsWith: cropRelativePath) }
+    
     var rectangle: VNRectangleObservation
     
     init(scanRectangle: VNRectangleObservation, correlationId: String, fromGallery: Bool) {
         self.rectangle = scanRectangle
         super.init(type: .scan, correlationId: correlationId, fromGallery: fromGallery)
+
+        self.cropRelativePath = correlationId + "/" + id + "-crop" + type.suffix
+    }
+    
+    override func save() {
+        super.save()
+        
+        guard let cropData = thumbnail?.jpegData(compressionQuality: 0.8) else { return }
+        do {
+            try cropData.write(to: cropUrl)
+        } catch let error {
+            print("error saving image crop with error", error)
+        }
     }
     
     override var thumbnail: UIImage? {

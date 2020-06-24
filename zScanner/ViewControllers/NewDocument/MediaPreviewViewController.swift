@@ -103,6 +103,7 @@ class MediaPreviewViewController: BaseViewController {
     
     @objc func showMediaSelection() {
         stopPlayingVideo()
+        media.save()
         viewModel.addMedia(media)
         coordinator.finishEdit()
     }

@@ -12,13 +12,13 @@ struct MediaDomainModel: Equatable {
     var index: Int
     var correlationId: String
     var relativePath: String
+    var cropRelativePath: String?
     var type: MediaType
-    var url: URL {
-        URL.init(documentsWith: relativePath)
-    }
+    var url: URL { URL(documentsWith: cropRelativePath ?? relativePath) }
     
     func deleteMedia() {
-        try? FileManager.default.removeItem(at: url)
+        try? FileManager.default.removeItem(at: URL(documentsWith: relativePath))
+        cropRelativePath.flatMap { try? FileManager.default.removeItem(at: URL(documentsWith: $0)) }
     }
 }
 
@@ -29,6 +29,7 @@ extension MediaDomainModel {
             index: index,
             correlationId: media.correlationId,
             relativePath: media.relativePath,
+            cropRelativePath: (media as? ScanMedia)?.cropRelativePath,
             type: media.type
         )
     }
