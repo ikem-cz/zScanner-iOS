@@ -138,8 +138,6 @@ class FoldersListViewModel {
                     let documents = networkModel.map({ $0.toDomainModel() })
 
                     self?.storeDocumentTypes(documents)
-                    self?.storeDocumentModes(from: documents)
-
                     self?.documentModesState.onNext(.success)
 
                 case .error(let error):
@@ -147,12 +145,6 @@ class FoldersListViewModel {
                 }
             })
             .disposed(by: disposeBag)
-    }
-    
-    private func storeDocumentModes(from documentTypes: [DocumentTypeDomainModel]) {
-        documentModes = Array(Set(documentTypes.map({ $0.mode })))
-        documentModes.append(.photo)
-        documentModes.append(.video)
     }
     
     private func storeDocumentTypes(_ types: [DocumentTypeDomainModel]) {

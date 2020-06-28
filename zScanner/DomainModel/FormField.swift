@@ -112,13 +112,13 @@ class DateTimePickerField: FormField {
    
     var title: String
     var value: Observable<String> {
-        return date.map({
+        date.map({
             $0?.dateTimeString ?? "form.listPicker.unselected".localized
         }).asObservable()
     }
     
     var isValid: Observable<Bool> {
-        return date.map({ self.validator($0) }).asObservable()
+        date.map({ self.validator($0) }).asObservable()
     }
     
     let date = BehaviorRelay<Date?>(value: nil)
@@ -128,7 +128,7 @@ class DateTimePickerField: FormField {
         self.title = title
         self.validator = validator
         
-        if setDate { self.date.accept(Date()) }
+        if setDate { date.accept(Date()) }
     }
 }
 
