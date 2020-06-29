@@ -12,15 +12,22 @@ protocol FlowDelegate: class {
     func coordinatorDidFinish(_ coordinator: Coordinator)
 }
 
+class EmptyFlowDelegate: FlowDelegate {
+    func coordinatorDidFinish(_ coordinator: Coordinator) {}
+}
+
 // MARK: -
 class Coordinator {
-    private var childCoordinators: [Coordinator] = []
+    private(set) var childCoordinators: [Coordinator] = []
     var viewControllers: [UIViewController] = []
     
+    unowned private let flowDelegate: FlowDelegate
     let window: UIWindow
     var navigationController: UINavigationController?
     
-    init(window: UIWindow, navigationController: UINavigationController? = nil) {
+    
+    init(flowDelegate: FlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
+        self.flowDelegate = flowDelegate
         self.window = window
         self.navigationController = navigationController
     }
@@ -52,6 +59,10 @@ class Coordinator {
     func pop(animated: Bool = true) {
         let _ = navigationController?.popViewController(animated: animated)
         let _ = viewControllers.popLast()
+        
+        if viewControllers.isEmpty {
+            flowDelegate.coordinatorDidFinish(self)
+        }
     }
     
     func pop(to viewController: BaseViewController, animated: Bool = true) {

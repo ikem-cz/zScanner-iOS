@@ -13,7 +13,7 @@ class AppCoordinator: Coordinator {
     //MARK: - Instance part
     init() {
         let window = UIWindow(frame: UIScreen.main.bounds)
-        super.init(window: window, navigationController: nil)
+        super.init(flowDelegate: EmptyFlowDelegate(), window: window, navigationController: nil)
     }
     
     // MARK: Inteface

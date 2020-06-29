@@ -27,7 +27,7 @@ class NewDocumentFolderViewModel {
     let suggestedResults = BehaviorRelay<[FolderDomainModel]>(value: [])
     let searchResults = BehaviorRelay<[FolderDomainModel]>(value: [])
     let isLoading = BehaviorRelay<Bool>(value: false)
-    private(set) var lastUsedSearchMode: SearchMode = .history
+    private(set) var lastUsedSearchMode: SearchMode = .search
     
     func search(query: String) {
         if query.isEmpty {

@@ -64,7 +64,7 @@
 "newDocumentPhotos.mediaType.scan" = "SKENOVÁNÍ";
 "newDocumentPhotos.againButton.title" = "Znovu";
 "newDocumentPhotos.continue.title" = "Pokračovat";
-"newDocumentPhotos.nextPhoto.title" = "Vyfotit další";
+"newDocumentPhotos.nextPhoto.title" = "Pořídit další";
 "newDocumentPhotos.deleteDocument.title" = "Zrušit záznam";
 
 "newDocumentPhotos.scanMode[edit].title" = "Upravit";

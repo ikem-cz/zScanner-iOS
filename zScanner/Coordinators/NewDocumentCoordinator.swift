@@ -32,7 +32,7 @@ class NewDocumentCoordinator: Coordinator {
         self.folder = folderSelection.folder
         newDocument.folderId = folderSelection.folder.id
         
-        super.init(window: window, navigationController: navigationController)
+        super.init(flowDelegate: flowDelegate, window: window, navigationController: navigationController)
         
         FolderDatabaseModel.updateLastUsage(of: folderSelection.folder)
         tracker.track(.userFoundBy(folderSelection.searchMode))
@@ -64,8 +64,11 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func mediaScreen(for media: Media, editing: Bool) -> MediaPreviewViewController {
-        if mediaViewModel == nil || mediaViewModel?.mediaArray.value.isEmpty == true {
+        if mediaViewModel == nil {
             mediaViewModel = MediaListViewModel(database: database, folderName: folder.name, mediaType: media.type, tracker: tracker)
+        }
+        if mediaViewModel?.mediaArray.value.isEmpty == true {
+            mediaViewModel?.updateMediaType(to: media.type)
         }
         let viewModel = mediaViewModel!
 

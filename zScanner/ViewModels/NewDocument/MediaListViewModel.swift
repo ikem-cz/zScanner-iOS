@@ -19,10 +19,10 @@ class MediaListViewModel {
     
     let allDocumentTypes: [DocumentTypeDomainModel]
     let scanModes: BehaviorRelay<[DocumentMode]>
-    let mediaType: MediaType
+    private(set) var mediaType: MediaType
     let folderName: String
     let mediaArray = BehaviorRelay<[Media]>(value: [])
-    var isValid = Observable<Bool>.just(false)
+    let isValid = BehaviorRelay<Bool>(value: false)
     
     private(set) var fields: [[FormField]] = [[]]
     
@@ -34,18 +34,8 @@ class MediaListViewModel {
         
         self.allDocumentTypes = database.loadObjects(DocumentTypeDatabaseModel.self).map({ $0.toDomainModel() })
         self.scanModes = BehaviorRelay(value: Array(Set(allDocumentTypes.map({ $0.mode }))))
-        self.fields = fields(for: mediaType)
         
-        let sectionsResults = fields
-            .map({ section in
-                Observable
-                    .combineLatest(section.map({ $0.isValid }))
-                    .map({ results in results.reduce(true, { $0 && $1 }) })
-            })
-        
-        self.isValid = Observable
-            .combineLatest(sectionsResults)
-            .map({ results in results.reduce(true, { $0 && $1 }) })
+        updateMediaType(to: mediaType)
     }
     
     // MARK: Interface
@@ -80,8 +70,29 @@ class MediaListViewModel {
         fields[section].removeAll(where: { $0 is DateTimePickerPlaceholder })
     }
     
+    func updateMediaType(to newMediaType: MediaType) {
+        mediaType = newMediaType
+        fields = fields(for: mediaType)
+        
+        let sectionsResults = fields
+            .map({ section in
+                Observable
+                    .combineLatest(section.map({ $0.isValid }))
+                    .map({ results in results.reduce(true, { $0 && $1 }) })
+            })
+        
+        subscription?.dispose()
+        subscription = Observable
+            .combineLatest(sectionsResults)
+            .map({ results in results.reduce(true, { $0 && $1 }) })
+            .subscribe(onNext: { [weak self] result in
+                self?.isValid.accept(result)
+            })
+    }
+    
     // MARK: Helpers
     private let disposeBag = DisposeBag()
+    private var subscription: Disposable?
     
     private func fields(for type: MediaType) -> [[FormField]] {
         switch type {

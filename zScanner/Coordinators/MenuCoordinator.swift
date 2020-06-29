@@ -23,7 +23,7 @@ class MenuCoordinator: Coordinator {
         self.login = login
         self.flowDelegate = flowDelegate
 
-        super.init(window: window, navigationController: navigationController)
+        super.init(flowDelegate: flowDelegate, window: window, navigationController: navigationController)
     }
     
     // MARK: Interface

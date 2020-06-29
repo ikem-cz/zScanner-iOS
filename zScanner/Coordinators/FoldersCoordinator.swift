@@ -25,7 +25,7 @@ class FoldersCoordinator: Coordinator {
         self.flowDelegate = flowDelegate
         self.networkManager = IkemNetworkManager(api: api)
         
-        super.init(window: window)
+        super.init(flowDelegate: flowDelegate, window: window)
         
         setupSessionHandler()
     }
@@ -64,6 +64,8 @@ class FoldersCoordinator: Coordinator {
     }
     
     private func runNewDocumentFlow(with folderSelection: FolderSelection) {
+        guard childCoordinators.first(where: { $0 is NewDocumentCoordinator }) == nil else { return }
+        
         // Tracking
         if documentCreatedInThisSession {
             tracker.track(.createDocumentAgain)

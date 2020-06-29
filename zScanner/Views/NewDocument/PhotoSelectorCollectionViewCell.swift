@@ -67,8 +67,8 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(deleteButton)
         deleteButton.snp.makeConstraints { make in
-            make.width.height.equalTo(25)
-            make.top.right.equalToSuperview().inset(4)
+            make.height.equalTo(26)
+            make.top.right.equalToSuperview().inset(6)
         }
         
         deleteButton.addTarget(self, action: #selector(deleteMedia), for: .touchUpInside)
@@ -87,10 +87,31 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     
     private var deleteButton: UIButton = {
         let button = UIButton()
-        button.setImage(#imageLiteral(resourceName: "delete").withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = .white
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 16, weight: .light, scale: .large)
+        button.setImage(UIImage(systemName: "xmark.circle.fill", withConfiguration: imageConfig)?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .gray
+
+        button.setTitle("Odstranit", for: .normal)
+        button.setTitleColor(.gray, for: .normal)
+        button.titleLabel?.font = .footnote
+
+        button.contentEdgeInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 16)
+        button.imageEdgeInsets = UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0)
+        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: -4)
+        button.backgroundColor = UIColor.white.withAlphaComponent(0.8)
+        button.layer.cornerRadius = 13
         button.dropShadow()
         return button
     }()
 }
-
+//
+//private var deleteButton: UIButton = {
+//    let button = UIButton()
+//    button.setImage(#imageLiteral(resourceName: "delete").withRenderingMode(.alwaysTemplate), for: .normal)
+//    button.setTitle("Odstranit", for: .normal)
+//    button.tintColor = .white
+//    button.backgroundColor = .red// UIColor.white.withAlphaComponent(0.3)
+//    button.roundCorners(radius: 12.5)
+//    button.dropShadow()
+//    return button
+//}()

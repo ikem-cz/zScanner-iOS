@@ -60,19 +60,26 @@ class NewDocumentFolderViewController: BaseViewController {
     }
     
     // MARK: Helpers
+    class NewFolderDataSource: UITableViewDiffableDataSource<Section, FolderDomainModel> {
+
+        override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+            let section = self.snapshot().sectionIdentifiers[section]
+            return section.title
+        }
+    }
+    
     enum Section: String {
         case searchResults
-        case suggestedResults
+        case suggestedResult
         
         var title: String {
             switch self {
                 case .searchResults: return "newDocumentFolder.searchResults.title".localized
-                case .suggestedResults: return "newDocumentFolder.suggestedResults.title".localized
+                case .suggestedResult: return "newDocumentFolder.suggestedResults.title".localized
             }
         }
     }
     
-    private var sections: [Section] = []
     private let disposeBag = DisposeBag()
     
     private func clearSearchResults() {
@@ -88,39 +95,42 @@ class NewDocumentFolderViewController: BaseViewController {
         presentScanner()
     }
     
-    private func showSearchResult(_ show: Bool) {
-        if show {
-            // Insert section if missing
-            if sections.contains(.searchResults) == false {
-                let index = 0
-                sections.insert(.searchResults, at: index)
-                tableView.insertSections([index], with: .fade)
-            }
-        } else {
-            // Remove section if present
-            if let index = sections.firstIndex(of: .searchResults) {
-                sections.remove(at: index)
-                tableView.deleteSections([index], with: .fade)
-            }
-        }
-    }
-    
     private func setupBindings() {
-        viewModel.searchResults
+        Observable
+            .combineLatest(viewModel.suggestedResults, viewModel.searchResults)
             .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] results in
-                guard let section = self?.sections.firstIndex(of: .searchResults) else { return }
-                self?.tableView.reloadSections([section], with: .fade)
-                if self?.viewModel.lastUsedSearchMode == .scan, let folder = results.first {
+            .subscribe(onNext: { [weak self] sugested, other in
+                self?.updateTableView(suggested: sugested, other: other)
+                
+                if self?.viewModel.lastUsedSearchMode == .scan, let folder = other.first {
                     self?.coordinator.folderSelected(FolderSelection(folder: folder, searchMode: .scan))
                 }
-            }).disposed(by: disposeBag)
+            })
+            .disposed(by: disposeBag)
         
         viewModel.isLoading
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] loading in
                 self?.searchBar.isLoading = loading
             }).disposed(by: disposeBag)
+    }
+    
+    private func updateTableView(suggested: [FolderDomainModel], other: [FolderDomainModel]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, FolderDomainModel>()
+        
+        tableView.backgroundView?.isHidden = !suggested.isEmpty || !other.isEmpty
+        
+        if !suggested.isEmpty {
+            snapshot.appendSections([.suggestedResult])
+            snapshot.appendItems(suggested, toSection: .suggestedResult)
+        }
+        
+        if !other.isEmpty {
+            snapshot.appendSections([.searchResults])
+            snapshot.appendItems(other, toSection: .searchResults)
+        }
+
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     private func presentScanner() {
@@ -169,10 +179,7 @@ class NewDocumentFolderViewController: BaseViewController {
             make.right.bottom.left.equalToSuperview()
         }
         
-        if !viewModel.suggestedResults.value.isEmpty {
-            sections.append(.suggestedResults)
-        }
-        
+        tableView.dataSource = dataSource
         tableView.backgroundView = emptyView
         
         emptyView.addSubview(emptyViewLabel)
@@ -186,7 +193,6 @@ class NewDocumentFolderViewController: BaseViewController {
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: CGRect.zero, style: .grouped)
-        tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44
@@ -194,6 +200,19 @@ class NewDocumentFolderViewController: BaseViewController {
         tableView.backgroundColor = .white
         tableView.registerCell(FolderTableViewCell.self)
         return tableView
+    }()
+    
+    private lazy var dataSource: NewFolderDataSource = {
+        let dataSource = NewFolderDataSource(
+            tableView: self.tableView,
+            cellProvider: { (tableView, indexPath, folder) in
+                let cell = tableView.dequeueCell(FolderTableViewCell.self)
+                cell.setup(with: folder)
+                return cell
+            }
+        )
+        dataSource.defaultRowAnimation = .fade
+        return dataSource
     }()
     
     private lazy var searchBar: UISearchBar = {
@@ -255,66 +274,12 @@ extension NewDocumentFolderViewController: Presentable {
     }
 }
 
-// MARK: - UITableViewDataSource implementation
-extension NewDocumentFolderViewController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        let count = sections.count
-        tableView.backgroundView?.isHidden = count > 0
-        return count
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let section = sections[section]
-        switch section {
-        case .searchResults:
-            return viewModel.searchResults.value.count
-        case .suggestedResults:
-            return viewModel.suggestedResults.value.count
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let section = sections[indexPath.section]
-        
-        let folder: FolderDomainModel
-        
-        switch section {
-        case .searchResults:
-            folder = viewModel.searchResults.value[indexPath.row]
-        case .suggestedResults:
-            folder = viewModel.suggestedResults.value[indexPath.row]
-        }
-        
-        let cell = tableView.dequeueCell(FolderTableViewCell.self)
-        cell.setup(with: folder)
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sections[section].title
-    }
-}
-
 // MARK: - UITableViewDelegate implementation
 extension NewDocumentFolderViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let section = sections[indexPath.section]
+        guard let item = dataSource.itemIdentifier(for: indexPath), item != .notFound else { return }
         
-        let item: FolderDomainModel
-        let searchMode: SearchMode
-        
-        switch section {
-        case .searchResults:
-            item = viewModel.searchResults.value[indexPath.row]
-            searchMode = viewModel.lastUsedSearchMode
-        case .suggestedResults:
-            item = viewModel.suggestedResults.value[indexPath.row]
-            searchMode = .history
-        }
-        
-        guard item != .notFound else { return }
-        
-        coordinator.folderSelected(FolderSelection(folder: item, searchMode: searchMode))
+        coordinator.folderSelected(FolderSelection(folder: item, searchMode: viewModel.lastUsedSearchMode))
         searchBar.endEditing(true)
     }
 }
@@ -329,7 +294,9 @@ extension NewDocumentFolderViewController: UISearchBarDelegate {
         let searchText = searchText.length < Config.minimumSearchLength ? "" : searchText
         viewModel.search(query: searchText)
         
-        showSearchResult(!searchText.isEmpty)
+        if searchText.isEmpty {
+            updateTableView(suggested: [], other: [])
+        }
     }
 }
 
@@ -339,7 +306,7 @@ extension NewDocumentFolderViewController: ScannerDelegate {
         dismiss(animated: false, completion: nil)
         if viewModel.lastUsedSearchMode == .scan {
             (parent as? BottomSheetPresenting)?.expandBottomSheet()
-            showSearchResult(true)
+            updateTableView(suggested: [], other: [])
         }
     }
     

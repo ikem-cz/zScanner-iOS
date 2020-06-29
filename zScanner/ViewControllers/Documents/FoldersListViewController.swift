@@ -176,7 +176,7 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     }()
     
     lazy var dataSource: UITableViewDiffableDataSource<Section, FolderViewModel> = {
-        UITableViewDiffableDataSource<Section, FolderViewModel>(
+        let dataSource = UITableViewDiffableDataSource<Section, FolderViewModel>(
             tableView: self.tableView,
             cellProvider: {  (tableView, indexPath, folder) in
                 let cell = tableView.dequeueCell(FolderStatusTableViewCell.self)
@@ -184,6 +184,8 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
                 return cell
             }
         )
+        dataSource.defaultRowAnimation = .fade
+        return dataSource
     }()
     
     private lazy var emptyView = UIView()
