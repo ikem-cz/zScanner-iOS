@@ -99,10 +99,10 @@ class MediaListViewController: BaseViewController {
     }
     
     @objc func deleteDocument() {
-        let alert = UIAlertController(title: "newDocument.popAlert.title".localized, message: "newDocument.popAlert.message".localized, preferredStyle: .alert)
+        let alert = UIAlertController(title: "newDocument.cancelAlert.title".localized, message: "newDocument.cancelAlert[\(viewModel.mediaType.rawValue)].message".localized, preferredStyle: .alert)
         
-        alert.addAction(UIAlertAction(title: "newDocument.popAlert.confirm".localized, style: .default, handler: { _ in self.coordinator.deleteDocument() }))
-        alert.addAction(UIAlertAction(title: "newDocument.popAlert.cancel".localized, style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "newDocument.cancelAlert.confirm".localized, style: .default, handler: { _ in self.coordinator.deleteDocument() }))
+        alert.addAction(UIAlertAction(title: "newDocument.cancelAlert.cancel".localized, style: .cancel, handler: nil))
         
         self.present(alert, animated: true)
     }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum MediaType: Equatable {
+enum MediaType: String, Equatable {
     case photo
     case video
     case scan
