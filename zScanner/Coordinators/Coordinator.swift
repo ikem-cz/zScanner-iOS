@@ -56,8 +56,10 @@ class Coordinator {
         }
     }
     
-    func pop(animated: Bool = true) {
-        let _ = navigationController?.popViewController(animated: animated)
+    func pop(animated: Bool = true, fromSwipe: Bool = false) {
+        if !fromSwipe {
+            let _ = navigationController?.popViewController(animated: animated)
+        }
         let _ = viewControllers.popLast()
         
         if viewControllers.isEmpty {
@@ -102,6 +104,10 @@ class Coordinator {
     
     func backButtonPressed(sender: BaseViewController) {
         pop()
+    }
+    
+    func didSwipeToPop() {
+        pop(fromSwipe: true)
     }
     
     func willPreventPop(for sender: BaseViewController) -> Bool {

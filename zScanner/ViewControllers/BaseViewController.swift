@@ -11,6 +11,7 @@ import UIKit
 protocol BaseCoordinator: class {
     func backButtonPressed(sender: BaseViewController)
     func willPreventPop(for sender: BaseViewController) -> Bool
+    func didSwipeToPop()
 }
 
 // MARK: -
@@ -56,7 +57,28 @@ class BaseViewController: PluggableViewController {
         configureNavigationBarButtons()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        swipeToPopBegin = false
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        if swipeToPopBegin {
+            coordinator.didSwipeToPop()
+        }
+        swipeToPopBegin = false
+    }
+    
     // MARK: Helpers
+    private enum SwipeState {
+        case enabled, begin, null
+    }
+    
+    private var swipeToPopBegin = false
+    
     private func configureNavigationBarButtons() {
         guard let navigationController = navigationController else { return }
         
@@ -86,6 +108,7 @@ class BaseViewController: PluggableViewController {
 // MARK: - BackButtonDelegate implementation
 extension BaseViewController: BackButtonDelegate {
     func didClickBack() {
+        swipeToPopBegin = false
         coordinator.backButtonPressed(sender: self)
     }
 }
@@ -98,6 +121,7 @@ extension BaseViewController: UIGestureRecognizerDelegate {
             coordinator.backButtonPressed(sender: self)
             return false
         }
+        swipeToPopBegin = true
         return true
     }
 }

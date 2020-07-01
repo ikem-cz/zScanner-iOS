@@ -35,17 +35,24 @@ class CameraViewController: BaseViewController {
     let disposeBag = DisposeBag()
     
     private var isRecording: Bool = false
+    
     private var isFlashing: Bool = false {
         didSet {
             flashButton.image = isFlashing ? UIImage(systemName: "bolt.fill") : UIImage(systemName: "bolt.slash.fill")
             flashMode = isFlashing ? .on : .off
         }
     }
-     
+    
+    private var isTorching: Bool = false {
+        didSet {
+            torchButton.image = isTorching ? UIImage(systemName: "lightbulb.fill") : UIImage(systemName: "lightbulb")
+        }
+    }
+    
     private var flashMode: AVCaptureDevice.FlashMode = .off
     
     override var rightBarButtonItems: [UIBarButtonItem] {
-        return videoDevice?.hasFlash == true ? [] : [flashButton]
+        return [flashButton]
     }
     
     // Used to find current mode in collection view
@@ -73,37 +80,55 @@ class CameraViewController: BaseViewController {
         setupBindings()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
-        captureSession.stopRunning()
+        if !captureSession.isRunning {
+            runCaptureSession(for: viewModel.currentMode.value)
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        stopCaptureSession()
     }
     
     // MARK: View setup
     private func setupBindings() {
         viewModel.currentMode
-            .subscribe(onNext: { [unowned self] mode in
-                switch mode {
-                case .photo:
-                    self.removeScanSession()
-                    self.preparePhotoSession()
-                    self.middleCaptureButton.isHidden = false
-                    self.middleRecordButton.isHidden = true
-                case .video:
-                    self.removeScanSession()
-                    self.prepareVideoSession()
-                    self.middleCaptureButton.isHidden = true
-                    self.middleRecordButton.isHidden = false
-                case .scan:
-                    self.prepareScanSession()
-                    self.middleCaptureButton.isHidden = false
-                    self.middleRecordButton.isHidden = true
-                }
+            .subscribe(onNext: { [unowned self] type in
+                self.runCaptureSession(for: type)
             })
             .disposed(by: disposeBag)
     }
     
     // MARK: Setup media session
+    private func runCaptureSession(for type: MediaType) {
+        switch type {
+        case .photo:
+            self.removeVideoSession()
+            self.removeScanSession()
+            self.preparePhotoSession()
+            self.middleCaptureButton.isHidden = false
+            self.middleRecordButton.isHidden = true
+        case .video:
+            self.removeScanSession()
+            self.prepareVideoSession()
+            self.middleCaptureButton.isHidden = true
+            self.middleRecordButton.isHidden = false
+        case .scan:
+            self.removeVideoSession()
+            self.prepareScanSession()
+            self.middleCaptureButton.isHidden = false
+            self.middleRecordButton.isHidden = true
+        }
+    }
+    
+    private func stopCaptureSession() {
+        captureSession.stopRunning()
+    }
+    
     private func setupCaptureSession() {
         captureSession = AVCaptureSession()
         
@@ -139,6 +164,8 @@ class CameraViewController: BaseViewController {
         } catch(let error) {
             print("Error Unable to initialize back camera:  \(error.localizedDescription).")
         }
+        
+        navigationItem.rightBarButtonItem = flashButton
     }
     
     private func prepareVideoSession() {
@@ -167,24 +194,8 @@ class CameraViewController: BaseViewController {
         } catch(let error) {
             print("Error Unable to initialize video with audio:  \(error.localizedDescription).")
         }
-    }
-    
-    private func setTorch(_ mode: Bool) {
-        guard let device = videoDevice, device.hasTorch else { return }
-
-        do {
-            try device.lockForConfiguration()
-
-            if mode {
-                try device.setTorchModeOn(level: 1.0)
-            } else {
-                device.torchMode = AVCaptureDevice.TorchMode.off
-            }
-
-            device.unlockForConfiguration()
-        } catch {
-            print(error)
-        }
+        
+        navigationItem.rightBarButtonItem = torchButton
     }
     
     private func prepareScanSession() {
@@ -213,11 +224,17 @@ class CameraViewController: BaseViewController {
         } catch(let error) {
             print("Error Unable to initialize back camera:  \(error.localizedDescription).")
         }
+        
+        navigationItem.rightBarButtonItem = flashButton
     }
     
     private func removeScanSession() {
         lastScanResult = nil
         scannerResetTimer = nil
+    }
+    
+    private func removeVideoSession() {
+        setTorch(false)
     }
     
     private var visionRequests = [VNRequest]()
@@ -307,22 +324,43 @@ class CameraViewController: BaseViewController {
             print("Undefined swipe direction.")
         }
     }
+    
+    @objc private func toggleFlash() {
+        guard let device = videoDevice, device.hasFlash else {
+            flashButton.isEnabled = false
+            return
+        }
+        flashButton.isEnabled = true
+
+        isFlashing = true
+    }
 
     @objc private func toggleTorch() {
-        guard let device = AVCaptureDevice.default(for: .video) else { return }
+        isTorching.toggle()
+        setTorch(isTorching)
+    }
+    
+    private func setTorch(_ on: Bool) {
+        guard let device = videoDevice, device.hasTorch else {
+            torchButton.isEnabled = false
+            return
+        }
+        torchButton.isEnabled = true
 
-        if device.hasTorch {
-            do {
-                try device.lockForConfiguration()
-                
-                isFlashing.toggle()
+        do {
+            try device.lockForConfiguration()
 
-                device.unlockForConfiguration()
-            } catch {
-                print("Torch could not be used.")
+            if on {
+                device.torchMode = .on
+                isTorching = true
+            } else {
+                device.torchMode = .off
+                isTorching = false
             }
-        } else {
-            print("Torch is not available.")
+
+            device.unlockForConfiguration()
+        } catch {
+            print("Torch could not be used")
         }
     }
     
@@ -566,7 +604,8 @@ class CameraViewController: BaseViewController {
         return timeLabel
     }()
     
-    private lazy var flashButton = UIBarButtonItem(image: UIImage(systemName: "bolt.slash.fill"), style: .plain, target: self, action: #selector(toggleTorch))
+    private lazy var flashButton = UIBarButtonItem(image: UIImage(systemName: "bolt.slash.fill"), style: .plain, target: self, action: #selector(toggleFlash))
+    private lazy var torchButton = UIBarButtonItem(image: UIImage(systemName: "lightbulb"), style: .plain, target: self, action: #selector(toggleTorch))
 }
 
 // MARK: - AVCapturePhotoCaptureDelegate implementation
