@@ -26,6 +26,12 @@ class PhotoPreviewViewController: MediaPreviewViewController {
             make.bottom.equalTo(buttonStackView.snp.top)
             make.top.leading.trailing.equalTo(safeArea)
         }
+        
+        view.addSubview(bodyButton)
+        bodyButton.snp.makeConstraints { make in
+            make.bottom.left.equalTo(imageView).inset(8)
+            make.width.height.equalTo(40)
+        }
     }
     
     // MARK: Helpers
@@ -38,11 +44,22 @@ class PhotoPreviewViewController: MediaPreviewViewController {
         }
     }
     
+    @objc private func selectBodyPart() {
+        coordinator.selectBodyPart()
+    }
+    
     // MARK: Lazy instance part
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView(image: image)
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         return imageView
+    }()
+    
+    private lazy var bodyButton: UIButton = {
+        let button = UIButton()
+        button.setImage(#imageLiteral(resourceName: "bodyIcon"), for: .normal)
+        button.addTarget(self, action: #selector(selectBodyPart), for: .touchUpInside)
+        return button
     }()
 }

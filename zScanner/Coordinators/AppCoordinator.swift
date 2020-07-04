@@ -19,6 +19,7 @@ class AppCoordinator: Coordinator {
     // MARK: Inteface
     func begin() {
         showSplashScreen()
+//        startDocumentsCoordinator(with: UserSession(login: LoginDomainModel(username: "Skorepaaak")))
     }
     
     // MARK: Navigation methods

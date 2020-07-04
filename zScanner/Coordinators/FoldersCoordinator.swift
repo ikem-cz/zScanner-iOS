@@ -38,8 +38,14 @@ class FoldersCoordinator: Coordinator {
     
     // MARK: Navigation methods
     private lazy var foldersListViewController: FoldersListViewController = {
+        let modesService = DocumentModesFetchService(database: database, networkManager: networkManager)
+        let bodyPartsService = BodyPartsFetchService(database: database, networkManager: networkManager)
         let viewModel = FoldersListViewModel(database: database, login: userSession.login, ikemNetworkManager: networkManager)
-        let viewController = FoldersListViewController(viewModel: viewModel, coordinator: self)
+        let viewController = FoldersListViewController(
+            viewModel: viewModel,
+            coordinator: self,
+            services: [modesService, bodyPartsService]
+        )
         return viewController
     }()
     

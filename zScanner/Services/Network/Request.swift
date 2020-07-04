@@ -6,7 +6,7 @@
 //  Copyright © 2019 Institut klinické a experimentální medicíny. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 protocol Request {
     associatedtype DataType: Any
@@ -44,6 +44,12 @@ extension ParametersURLEncoded where Self: Request {
 
 // MARK: -
 protocol ParametersJsonEncoded {}
+
+// MARK: -
+protocol ImageConverting {
+    init(image: UIImage)
+}
+
 
 // MARK: -
 protocol FileUploading {

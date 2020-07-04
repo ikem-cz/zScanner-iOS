@@ -51,4 +51,15 @@ protocol NetworkManager {
     /// - Parameter token: token used when submitting password
     /// - Returns: Observable request status
     func getStatus(_ token: TokenNetworkModel) -> Observable<RequestStatus<StatusResponseNetworkModel>>
+    
+    /// Get Body Parts for visual selector
+    ///
+    /// - Returns: Observable request status
+    func getBodyParts() -> Observable<RequestStatus<[BodyViewNetworkModel]>>
+    
+    /// Get Image of body parts for visual selector
+    ///
+    /// - Parameter id: id of the body part the image is representing
+    /// - Returns: Observable request status
+    func getBodyImage(id: String) -> Observable<RequestStatus<BodyImageNetworkModel>>
 }

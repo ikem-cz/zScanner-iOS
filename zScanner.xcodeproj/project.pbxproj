@@ -90,6 +90,17 @@
 		BD59A0AB22E3819600FA9CD0 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A0AA22E3819600FA9CD0 /* LoginViewModel.swift */; };
 		BD59A0AD22E395AF00FA9CD0 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A0AC22E395AF00FA9CD0 /* UIColor.swift */; };
 		BD59A0AF22E3966700FA9CD0 /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59A0AE22E3966700FA9CD0 /* UIFont.swift */; };
+		BD59BBD824B0E086004951EA /* GetBodyPartsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59BBD724B0E086004951EA /* GetBodyPartsRequest.swift */; };
+		BD59BBDA24B0E0C8004951EA /* BodyViewNetworkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59BBD924B0E0C8004951EA /* BodyViewNetworkModel.swift */; };
+		BD59BBDC24B1010E004951EA /* BodyPartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59BBDB24B1010E004951EA /* BodyPartViewController.swift */; };
+		BD59BBDE24B1017F004951EA /* BodyPartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59BBDD24B1017F004951EA /* BodyPartViewModel.swift */; };
+		BD59BBE024B102AA004951EA /* BodyViewDomainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59BBDF24B102AA004951EA /* BodyViewDomainModel.swift */; };
+		BD59BBE324B10778004951EA /* DocumentModesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59BBE224B10778004951EA /* DocumentModesService.swift */; };
+		BD59BBE524B10B27004951EA /* BodyPartsFetchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59BBE424B10B27004951EA /* BodyPartsFetchService.swift */; };
+		BD59BBE724B10BDF004951EA /* BodyViewDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59BBE624B10BDF004951EA /* BodyViewDatabaseModel.swift */; };
+		BD59BBE924B10CA7004951EA /* BodyPartDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59BBE824B10CA7004951EA /* BodyPartDatabaseModel.swift */; };
+		BD59BBEB24B11826004951EA /* GetBodyViewImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59BBEA24B11826004951EA /* GetBodyViewImage.swift */; };
+		BD59BBED24B11AA7004951EA /* BodyImageNetworkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD59BBEC24B11AA7004951EA /* BodyImageNetworkModel.swift */; };
 		BD65C0CE24790ECB002A0A13 /* BottomSheetPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD65C0CD24790ECB002A0A13 /* BottomSheetPresenting.swift */; };
 		BD678DA523048A3A00AE5B15 /* MediaListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD678DA423048A3A00AE5B15 /* MediaListViewModel.swift */; };
 		BD678DA7230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD678DA6230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift */; };
@@ -245,6 +256,17 @@
 		BD59A0AA22E3819600FA9CD0 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		BD59A0AC22E395AF00FA9CD0 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		BD59A0AE22E3966700FA9CD0 /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
+		BD59BBD724B0E086004951EA /* GetBodyPartsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetBodyPartsRequest.swift; sourceTree = "<group>"; };
+		BD59BBD924B0E0C8004951EA /* BodyViewNetworkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyViewNetworkModel.swift; sourceTree = "<group>"; };
+		BD59BBDB24B1010E004951EA /* BodyPartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyPartViewController.swift; sourceTree = "<group>"; };
+		BD59BBDD24B1017F004951EA /* BodyPartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyPartViewModel.swift; sourceTree = "<group>"; };
+		BD59BBDF24B102AA004951EA /* BodyViewDomainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyViewDomainModel.swift; sourceTree = "<group>"; };
+		BD59BBE224B10778004951EA /* DocumentModesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentModesService.swift; sourceTree = "<group>"; };
+		BD59BBE424B10B27004951EA /* BodyPartsFetchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyPartsFetchService.swift; sourceTree = "<group>"; };
+		BD59BBE624B10BDF004951EA /* BodyViewDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyViewDatabaseModel.swift; sourceTree = "<group>"; };
+		BD59BBE824B10CA7004951EA /* BodyPartDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyPartDatabaseModel.swift; sourceTree = "<group>"; };
+		BD59BBEA24B11826004951EA /* GetBodyViewImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetBodyViewImage.swift; sourceTree = "<group>"; };
+		BD59BBEC24B11AA7004951EA /* BodyImageNetworkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyImageNetworkModel.swift; sourceTree = "<group>"; };
 		BD65C0CD24790ECB002A0A13 /* BottomSheetPresenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetPresenting.swift; sourceTree = "<group>"; };
 		BD678DA423048A3A00AE5B15 /* MediaListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaListViewModel.swift; sourceTree = "<group>"; };
 		BD678DA6230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSelectorCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -358,6 +380,7 @@
 				BD7EAC3B232583C3002C225A /* MediaDomainModel.swift */,
 				BD389A2922F7093B002F935F /* FolderDomainModel.swift */,
 				16EB77FE2472940100B1CCF8 /* Media.swift */,
+				BD59BBDF24B102AA004951EA /* BodyViewDomainModel.swift */,
 			);
 			path = DomainModel;
 			sourceTree = "<group>";
@@ -375,6 +398,7 @@
 			isa = PBXGroup;
 			children = (
 				BD000CDD22E4CE6C001EE38A /* FoldersListViewController.swift */,
+				BD59BBE124B10758004951EA /* Services */,
 			);
 			path = Documents;
 			sourceTree = "<group>";
@@ -403,6 +427,7 @@
 				16CBB2B0246A7FA5003E5D64 /* VideoPreviewViewController.swift */,
 				BD893802247EA4F60084FB5F /* ScanPreviewViewController.swift */,
 				16EC85FA246AF77200C525B9 /* MediaListViewController.swift */,
+				BD59BBDB24B1010E004951EA /* BodyPartViewController.swift */,
 			);
 			path = NewDocument;
 			sourceTree = "<group>";
@@ -428,6 +453,8 @@
 				BDDA1272231409120029A7DF /* AuthNetworkModel.swift */,
 				BD94413C231F19F10085BB4D /* StatusNetworkModel.swift */,
 				BDD316F52484E39F0065D16B /* QueryNetworkModel.swift */,
+				BD59BBD924B0E0C8004951EA /* BodyViewNetworkModel.swift */,
+				BD59BBEC24B11AA7004951EA /* BodyImageNetworkModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -438,6 +465,8 @@
 				BDDA1270231408C10029A7DF /* SubmitPasswordRequest.swift */,
 				BD94413E231F1A540085BB4D /* GetStatusRequest.swift */,
 				BD2B9E8322EDCC2500FFCD3B /* DocumentTypesRequest.swift */,
+				BD59BBD724B0E086004951EA /* GetBodyPartsRequest.swift */,
+				BD59BBEA24B11826004951EA /* GetBodyViewImage.swift */,
 				BD406FDD22FF15260096693D /* FolderSearchRequest.swift */,
 				BD402E762300B99100049DF9 /* GetFolderRequest.swift */,
 				BDEA570A22FA2828004C48F0 /* SubmitRequest.swift */,
@@ -463,6 +492,7 @@
 				BD389A2422F70170002F935F /* NewDocumentTypeViewModel.swift */,
 				BD678DA423048A3A00AE5B15 /* MediaListViewModel.swift */,
 				16D371FB246419F600B845B0 /* CameraViewModel.swift */,
+				BD59BBDD24B1017F004951EA /* BodyPartViewModel.swift */,
 			);
 			path = NewDocument;
 			sourceTree = "<group>";
@@ -646,6 +676,15 @@
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
+		BD59BBE124B10758004951EA /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				BD59BBE224B10778004951EA /* DocumentModesService.swift */,
+				BD59BBE424B10B27004951EA /* BodyPartsFetchService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		BD80224322F825B5009B8B69 /* NewDocument */ = {
 			isa = PBXGroup;
 			children = (
@@ -673,6 +712,8 @@
 				BD7EAC3D23258A1A002C225A /* MediaDatabaseModel.swift */,
 				BD14268F2328351D0079465F /* PageUploadStatusDatabaseModel.swift */,
 				BD2B9E8722EDF0C900FFCD3B /* DcumentTypeDatabaseModel.swift */,
+				BD59BBE624B10BDF004951EA /* BodyViewDatabaseModel.swift */,
+				BD59BBE824B10CA7004951EA /* BodyPartDatabaseModel.swift */,
 				BD8AA80E23003D530082441F /* FolderDatabaseModel.swift */,
 			);
 			path = Model;
@@ -927,12 +968,16 @@
 				BD2B9E7B22EDC15000FFCD3B /* NetworkManager.swift in Sources */,
 				43CD63F923061E110086033C /* PasswordTextField.swift in Sources */,
 				BDA428CE2309960900EFBAC2 /* Data.swift in Sources */,
+				BD59BBE324B10778004951EA /* DocumentModesService.swift in Sources */,
 				BD2C5F8222F378A20023D097 /* NewDocumentTypeViewController.swift in Sources */,
 				BD88F1522308990300569D71 /* GradientView.swift in Sources */,
 				16D371FC246419F600B845B0 /* CameraViewModel.swift in Sources */,
 				BDD3C0F122F8CBAF008406EA /* Date.swift in Sources */,
+				BD59BBED24B11AA7004951EA /* BodyImageNetworkModel.swift in Sources */,
 				BD80224722F82C03009B8B69 /* TextInputTableViewCell.swift in Sources */,
+				BD59BBE924B10CA7004951EA /* BodyPartDatabaseModel.swift in Sources */,
 				BD000CD122E497B9001EE38A /* LoginDomainModel.swift in Sources */,
+				BD59BBD824B0E086004951EA /* GetBodyPartsRequest.swift in Sources */,
 				BD59A06422E36CB200FA9CD0 /* BackButton.swift in Sources */,
 				BD893803247EA4F60084FB5F /* ScanPreviewViewController.swift in Sources */,
 				16BF842E245C7136004CC132 /* CameraView.swift in Sources */,
@@ -960,11 +1005,14 @@
 				BD59A09B22E36EF900FA9CD0 /* RequestStatus.swift in Sources */,
 				16D371FE24645E7A00B845B0 /* PhotoPreviewViewController.swift in Sources */,
 				BDBDF4DD22C8016700183BBF /* AppDelegate.swift in Sources */,
+				BD59BBDC24B1010E004951EA /* BodyPartViewController.swift in Sources */,
 				BD72DB3D2337E5A80016C2E0 /* Bundle.swift in Sources */,
 				BD59A07122E36D8800FA9CD0 /* Array.swift in Sources */,
 				BD59A0A522E378BC00FA9CD0 /* LoginCoordinator.swift in Sources */,
 				43C14A102300F07800F7C24E /* AboutViewController.swift in Sources */,
+				BD59BBE724B10BDF004951EA /* BodyViewDatabaseModel.swift in Sources */,
 				BD59A0A822E380C400FA9CD0 /* LoginViewController.swift in Sources */,
+				BD59BBE024B102AA004951EA /* BodyViewDomainModel.swift in Sources */,
 				16EB78012472A30D00B1CCF8 /* MediumViewModel.swift in Sources */,
 				16EB78052472EBFA00B1CCF8 /* HambugerButton.swift in Sources */,
 				BD88F1592309537F00569D71 /* UploadPageRequest.swift in Sources */,
@@ -987,6 +1035,7 @@
 				16908399246D9582009967A1 /* Themes.swift in Sources */,
 				BDDA1271231408C10029A7DF /* SubmitPasswordRequest.swift in Sources */,
 				BD8F753E23241F660086B097 /* SplashViewController.swift in Sources */,
+				BD59BBE524B10B27004951EA /* BodyPartsFetchService.swift in Sources */,
 				BDFC478522E907F200F312F0 /* DocumentDatabaseModel.swift in Sources */,
 				16FA31BF2476659D0052C3DC /* FolderViewModel.swift in Sources */,
 				4386045E230626B7009ED8D5 /* BehaviorRelay.swift in Sources */,
@@ -997,6 +1046,7 @@
 				BD44E27A232703BC00A0B9E5 /* DocumentUploadStatusDatabaseModel.swift in Sources */,
 				BD59A09A22E36EF900FA9CD0 /* API.swift in Sources */,
 				BD389A2522F70170002F935F /* NewDocumentTypeViewModel.swift in Sources */,
+				BD59BBDA24B0E0C8004951EA /* BodyViewNetworkModel.swift in Sources */,
 				BD85C93822E502A3004DC76E /* DocumentViewModel.swift in Sources */,
 				BD000CDE22E4CE6C001EE38A /* FoldersListViewController.swift in Sources */,
 				BD389A2722F70596002F935F /* FormField.swift in Sources */,
@@ -1006,6 +1056,7 @@
 				BD678DA523048A3A00AE5B15 /* MediaListViewModel.swift in Sources */,
 				BD2F209022EBA33600534916 /* Database.swift in Sources */,
 				BD678DA7230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift in Sources */,
+				BD59BBEB24B11826004951EA /* GetBodyViewImage.swift in Sources */,
 				BD80224522F82604009B8B69 /* FormFieldTableViewCell.swift in Sources */,
 				BD406FE022FF156D0096693D /* FolderNetworkModel.swift in Sources */,
 				BD406FDC22FF045A0096693D /* NewDocumentFolderViewController.swift in Sources */,
@@ -1020,6 +1071,7 @@
 				BD59A09822E36EF900FA9CD0 /* Request.swift in Sources */,
 				BD59A0AF22E3966700FA9CD0 /* UIFont.swift in Sources */,
 				16CBB2B1246A7FA5003E5D64 /* VideoPreviewViewController.swift in Sources */,
+				BD59BBDE24B1017F004951EA /* BodyPartViewModel.swift in Sources */,
 				BD59A07622E36DEE00FA9CD0 /* UITableView.swift in Sources */,
 				434027612302212C0038A40C /* MenuCoordinator.swift in Sources */,
 				BD000CAE22E3AA6F001EE38A /* UIViewController.swift in Sources */,

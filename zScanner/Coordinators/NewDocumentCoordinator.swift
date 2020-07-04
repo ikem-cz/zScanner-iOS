@@ -20,7 +20,6 @@ class NewDocumentCoordinator: Coordinator {
     private var folder: FolderDomainModel
     private var mediaViewModel: MediaListViewModel?
     private let defaultMediaType = MediaType.photo
-    #warning("Should depend on document modes?")
     private let mediaSourceTypes = [
         MediaType.photo,
         MediaType.video,
@@ -94,6 +93,13 @@ class NewDocumentCoordinator: Coordinator {
     
     private func showListItemSelectionScreen<T: ListItem>(for list: ListPickerField<T>) {
         let viewController = ListItemSelectionViewController(viewModel: list, coordinator: self)
+        push(viewController)
+    }
+    
+    
+    private func showBodyPartSelectionScreen() {
+        let viewModel = BodyPartViewModel(database: database, networkManager: networkManager)
+        let viewController = BodyPartViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
     
@@ -195,6 +201,10 @@ extension NewDocumentCoordinator: MediaPreviewCoordinator {
     func finishEdit() {
         showMediaListScreen()
     }
+    
+    func selectBodyPart() {
+        showBodyPartSelectionScreen()
+    }
 }
 
 // MARK: - NewDocumentMediaCoordinator implementation
@@ -238,3 +248,7 @@ extension NewDocumentCoordinator: MediaListCoordinator {
 
 // MARK: - ListItemSelectionCoordinator implementation
 extension NewDocumentCoordinator: ListItemSelectionCoordinator {}
+
+extension NewDocumentCoordinator: BodyPartCoordinator {
+    
+}

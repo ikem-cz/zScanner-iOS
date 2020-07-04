@@ -11,12 +11,6 @@ import RxSwift
 import RxRelay
 
 class FoldersListViewModel {
-    enum DocumentModesState {
-        case awaitingInteraction
-        case loading
-        case success
-        case error(RequestError)
-    }
     
     //MARK: Instance part
     private let database: Database
@@ -36,12 +30,9 @@ class FoldersListViewModel {
         
         updateFolders()
         setupBindings()
-        fetchDocumentTypes()
     }
     
     //MARK: Interface
-    let documentModesState = BehaviorSubject<DocumentModesState>(value: .awaitingInteraction)
-    
     func insertNewDocument(_ documentViewModel: DocumentViewModel) {
         if let folder = activeFolders.value.first(where: { return $0.folder.id == documentViewModel.document.folderId }) {
             folder.insertNewDocument(documentViewModel)
@@ -82,7 +73,7 @@ class FoldersListViewModel {
     }
     
     //MARK: Helpers
-    let disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
     
     private func loadFolders() {
         folders = database
@@ -124,35 +115,5 @@ class FoldersListViewModel {
                     self?.updateFolders()
             })
             .disposed(by: disposeBag)
-    }
-    
-    func fetchDocumentTypes() {
-        networkManager
-            .getDocumentTypes()
-            .subscribe(onNext: { [weak self] requestStatus in
-                switch requestStatus {
-                case .progress:
-                    self?.documentModesState.onNext(.loading)
-
-                case .success(data: let networkModel):
-                    let documents = networkModel.map({ $0.toDomainModel() })
-
-                    self?.storeDocumentTypes(documents)
-                    self?.documentModesState.onNext(.success)
-
-                case .error(let error):
-                    self?.documentModesState.onNext(.error(error))
-                }
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    private func storeDocumentTypes(_ types: [DocumentTypeDomainModel]) {
-        DispatchQueue.main.async {
-            self.database.deleteAll(of: DocumentTypeDatabaseModel.self)
-            types
-                .map({ DocumentTypeDatabaseModel(documentType: $0) })
-                .forEach({ self.database.saveObject($0) })
-        }
     }
 }

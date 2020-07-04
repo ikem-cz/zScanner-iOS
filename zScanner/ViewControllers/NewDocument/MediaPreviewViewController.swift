@@ -11,6 +11,7 @@ import UIKit
 protocol MediaPreviewCoordinator: BaseCoordinator {
     func createNewMedia()
     func finishEdit()
+    func selectBodyPart()
 }
 
 class MediaPreviewViewController: BaseViewController {

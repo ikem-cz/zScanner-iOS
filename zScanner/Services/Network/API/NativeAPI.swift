@@ -74,6 +74,16 @@ struct NativeAPI: API {
                 return
             }
             
+            if let I = D.self as? ImageConverting.Type {
+                guard let image = UIImage(data: data) else {
+                    callback(.error(RequestError(.dataCorruptedError)))
+                    return
+                }
+                
+                let result = I.init(image: image)
+                callback(.success(data: result as! D))
+            }
+            
             do {
                 let decoder = JSONDecoder()
                 let objects = try decoder.decode(D.self, from: data)
