@@ -107,6 +107,8 @@
 		BD65C0CE24790ECB002A0A13 /* BottomSheetPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD65C0CD24790ECB002A0A13 /* BottomSheetPresenting.swift */; };
 		BD678DA523048A3A00AE5B15 /* MediaListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD678DA423048A3A00AE5B15 /* MediaListViewModel.swift */; };
 		BD678DA7230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD678DA6230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift */; };
+		BD6A74FB24B26E85002F6722 /* BodyDefectCreationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD6A74FA24B26E85002F6722 /* BodyDefectCreationViewController.swift */; };
+		BD6A74FD24B27CA4002F6722 /* BodyPartDefectCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD6A74FC24B27CA4002F6722 /* BodyPartDefectCoordinator.swift */; };
 		BD70566F23301D7E0074184A /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD70566E23301D7E0074184A /* URL.swift */; };
 		BD72DB3D2337E5A80016C2E0 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD72DB3C2337E5A80016C2E0 /* Bundle.swift */; };
 		BD7EAC3E23258A1A002C225A /* MediaDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7EAC3D23258A1A002C225A /* MediaDatabaseModel.swift */; };
@@ -275,6 +277,8 @@
 		BD65C0CD24790ECB002A0A13 /* BottomSheetPresenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetPresenting.swift; sourceTree = "<group>"; };
 		BD678DA423048A3A00AE5B15 /* MediaListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaListViewModel.swift; sourceTree = "<group>"; };
 		BD678DA6230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSelectorCollectionViewCell.swift; sourceTree = "<group>"; };
+		BD6A74FA24B26E85002F6722 /* BodyDefectCreationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyDefectCreationViewController.swift; sourceTree = "<group>"; };
+		BD6A74FC24B27CA4002F6722 /* BodyPartDefectCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyPartDefectCoordinator.swift; sourceTree = "<group>"; };
 		BD70566E23301D7E0074184A /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		BD72DB3C2337E5A80016C2E0 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		BD7EAC3D23258A1A002C225A /* MediaDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDatabaseModel.swift; sourceTree = "<group>"; };
@@ -425,6 +429,7 @@
 				BD402E70230084FD00049DF9 /* ScannerViewController.swift */,
 				BD2C5F8122F378A20023D097 /* NewDocumentTypeViewController.swift */,
 				BD80224822F880F8009B8B69 /* ListItemSelectionViewController.swift */,
+				BD6A74FA24B26E85002F6722 /* BodyDefectCreationViewController.swift */,
 				1663AAA7245C0AD3004A3472 /* CameraViewController.swift */,
 				16CBB2B8246AAC86003E5D64 /* MediaPreviewViewController.swift */,
 				16D371FD24645E7A00B845B0 /* PhotoPreviewViewController.swift */,
@@ -511,6 +516,7 @@
 				BD59A0A422E378BB00FA9CD0 /* LoginCoordinator.swift */,
 				BD2F209322EBB49000534916 /* FoldersCoordinator.swift */,
 				BD2B9E7522EDBFF400FFCD3B /* NewDocumentCoordinator.swift */,
+				BD6A74FC24B27CA4002F6722 /* BodyPartDefectCoordinator.swift */,
 				434027602302212C0038A40C /* MenuCoordinator.swift */,
 			);
 			path = Coordinators;
@@ -967,6 +973,7 @@
 			files = (
 				BDDA128523149BED0029A7DF /* zScanner-Bridging-Header.h in Sources */,
 				BD88F15023087F1300569D71 /* UIView.swift in Sources */,
+				BD6A74FB24B26E85002F6722 /* BodyDefectCreationViewController.swift in Sources */,
 				BD59A0AB22E3819600FA9CD0 /* LoginViewModel.swift in Sources */,
 				BDEA570B22FA2828004C48F0 /* SubmitRequest.swift in Sources */,
 				BDC4A3E022E5004900D1CF6A /* FolderStatusTableViewCell.swift in Sources */,
@@ -994,6 +1001,7 @@
 				BD2B9E8622EDCD0900FFCD3B /* IkemEndpoint.swift in Sources */,
 				BD59A06D22E36D2A00FA9CD0 /* PluggableViewController.swift in Sources */,
 				BD406FDE22FF15260096693D /* FolderSearchRequest.swift in Sources */,
+				BD6A74FD24B27CA4002F6722 /* BodyPartDefectCoordinator.swift in Sources */,
 				43C14A0C2300EF5A00F7C24E /* DrawerMenuButton.swift in Sources */,
 				BD65C0CE24790ECB002A0A13 /* BottomSheetPresenting.swift in Sources */,
 				BD59A06022E36AD100FA9CD0 /* BaseViewController.swift in Sources */,

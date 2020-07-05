@@ -10,7 +10,8 @@ import UIKit
 import RxSwift
 
 protocol BodyPartCoordinator: BaseCoordinator {
-    func showSelector<T: ListItem>(for list: ListPickerField<T>)
+    func showDefectSelector(for bodyPartId: String, list: ListPickerField<BodyDefectDomainModel>)
+    func selected(_ defect: BodyDefectDomainModel)
 }
 
 class BodyPartViewController: BaseViewController, ErrorHandling {
@@ -34,8 +35,19 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
         setupBindings()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let defect = defectSelection.selected.value {
+            coordinator.selected(defect)
+        } else {
+            segmentChanged(partSelector)
+        }
+    }
+    
     // MARK: Helpers
     private let disposeBag = DisposeBag()
+    private var selectedBodyPart: BodyPartDomainModel?
     
     private func setupBindings() {
         viewModel
@@ -68,25 +80,34 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
             .defects
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] result in
+                guard let self = self else { return }
+                
                 switch result {
                 case .awaitingInteraction:
                     break
                 case .loading:
                     break
                 case .success(let defects):
-                    self?.defectSelection = ListPickerField(title: "Neco title", list: defects)
-                    self?.coordinator.showSelector(for: self!.defectSelection)
+                    self.defectSelection = ListPickerField(title: self.selectorTitle ?? "newDocument.defectList.title".localized, list: defects)
+                    if let bodyPartId = self.selectedBodyPart?.id {
+                        self.coordinator.showDefectSelector(for: bodyPartId, list: self.defectSelection)
+                    }
                     
                 case .error(let error):
-                    self?.handleError(error)
+                    self.handleError(error)
                 }
             })
             .disposed(by: disposeBag)
     }
     
+    private var selectorTitle: String {
+        "\(viewModel.folder.name) - \("newDocument.defectList.title".localized) \(selectedBodyPart?.name ?? "")"
+    }
+    
     private func clearBodyView() {
         imageView.image = nil
         imageView.subviews.forEach { $0.removeFromSuperview() }
+        selectedBodyPart = nil
     }
     
     private func placePoints() {
@@ -140,6 +161,7 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        imageView.isUserInteractionEnabled = true
         return imageView
     }()
     
@@ -153,6 +175,7 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
 
 extension BodyPartViewController: BodyPointDelegate {
     func bodyPartSelected(_ bodyPart: BodyPartDomainModel) {
+        selectedBodyPart = bodyPart
         viewModel.getDefects(for: bodyPart.id)
     }
 }
@@ -165,7 +188,7 @@ class BodyPoint: UIView {
     
     private unowned let delegate: BodyPointDelegate
     private let bodyPart: BodyPartDomainModel
-    private var radius: CGFloat = 10
+    private var radius: CGFloat = 30
     
     
     init(_ bodyPart: BodyPartDomainModel, at location: CGPoint, delegate: BodyPointDelegate) {
@@ -181,30 +204,52 @@ class BodyPoint: UIView {
     }
     
     private func setupView() {
-        backgroundColor = .white
-        layer.cornerRadius = 4
+        let tap = UITapGestureRecognizer(target: self, action: #selector(BodyPoint.didTap))
+        addGestureRecognizer(tap)
         
-        let image = UIImageView(image: UIImage(systemName: "plus.square"))
-        image.tintColor = .primary
-        addSubview(image)
-        image.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(-4)
+        addSubview(background)
+        addSubview(imageView)
+
+        background.snp.makeConstraints { make in
+            make.edges.equalTo(imageView).inset(4)
         }
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(BodyPoint.didTap))
-        tap.delegate = self
-        image.addGestureRecognizer(tap)
-        image.isUserInteractionEnabled = true
+        imageView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(32)
+        }
+
+        addSubview(loading)
+        loading.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
     }
     
+    private lazy var imageView: UIImageView = {
+        let image = UIImageView(image: UIImage(systemName: "plus.square"))
+        image.tintColor = .primary
+        return image
+    }()
+    
+    private lazy var background: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 4
+        view.layer.masksToBounds = true
+        return view
+    }()
+    
+    private lazy var loading: UIActivityIndicatorView = {
+        let loading = UIActivityIndicatorView(style: .medium)
+        loading.tintColor = .gray
+        loading.hidesWhenStopped = true
+        return loading
+    }()
+    
     @objc private func didTap() {
+        loading.startAnimating()
+        imageView.isHidden = true
         delegate.bodyPartSelected(bodyPart)
+        isUserInteractionEnabled = false
     }
 }
-
-extension BodyPoint: UIGestureRecognizerDelegate {
-    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
-    }
-}
-

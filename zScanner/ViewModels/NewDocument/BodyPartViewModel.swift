@@ -28,8 +28,8 @@ class BodyPartViewModel {
     // MARK: Instance part
     private let database: Database
     private let networkManager: NetworkManager
-    private let folder: FolderDomainModel
     private(set) var bodyViews: [BodyViewDomainModel] = []
+    let folder: FolderDomainModel
     var bodyImage = BehaviorRelay<ImageState>(value: .awaitingInteraction)
     var defects = BehaviorRelay<DefectsState>(value: .awaitingInteraction)
     

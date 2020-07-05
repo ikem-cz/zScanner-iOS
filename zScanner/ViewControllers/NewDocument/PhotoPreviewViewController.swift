@@ -45,7 +45,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     }
     
     @objc private func selectBodyPart() {
-        coordinator.selectBodyPart()
+        coordinator.selectBodyPart(media: media)
     }
     
     // MARK: Lazy instance part

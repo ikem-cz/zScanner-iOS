@@ -132,6 +132,7 @@ class DateTimePickerField: FormField {
     }
 }
 
+// MARK: -
 class DateTimePickerPlaceholder: FormField {
     var title = ""
     var value = Observable<String>.empty()
@@ -142,4 +143,14 @@ class DateTimePickerPlaceholder: FormField {
     init(for date: DateTimePickerField) {
         self.date = date
     }
+}
+
+// MARK: -
+class ConfirmButton: FormField {
+    
+    var title: String = "ConfirmButton - title"
+    
+    var value: Observable<String> = .just("ConfirmButton - value")
+    
+    var isValid: Observable<Bool> = .just(true)
 }

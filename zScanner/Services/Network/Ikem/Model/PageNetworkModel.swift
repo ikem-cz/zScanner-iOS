@@ -13,11 +13,24 @@ struct PageNetworkModel: Encodable {
     var filetype = "image/jpg"
     var correlation: String
     var pageIndex: Int
+    var defectId: String? = nil
+    var defectName: String? = nil
+    var bodyPartId: String? = nil
+    
     var pageUrl: URL
     
     init(from domainModel: Media) {
         self.pageUrl = domainModel.url
         self.pageIndex = domainModel.index!
         self.correlation = domainModel.correlationId
+        
+        if let defect = domainModel.defect {
+            self.defectId = defect.id
+            
+            if defect.isNew {
+                self.defectName = defect.title
+                self.bodyPartId = defect.bodyPartId
+            }
+        }
     }
 }

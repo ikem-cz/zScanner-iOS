@@ -21,6 +21,9 @@ class Media {
     var url: URL { URL(documentsWith: relativePath) }
     var cropUrl: URL? { cropRelativePath.flatMap({URL(documentsWith: $0) }) }
     
+    #warning("TODO: Save defect to database")
+    var defect: BodyDefectDomainModel?
+    
     var thumbnail: UIImage? {
         switch type {
         case .photo, .scan:

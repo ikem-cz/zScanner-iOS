@@ -96,11 +96,16 @@ class NewDocumentCoordinator: Coordinator {
         push(viewController)
     }
     
-    
-    private func showBodyPartSelectionScreen() {
-        let viewModel = BodyPartViewModel(database: database, networkManager: networkManager, folder: folder)
-        let viewController = BodyPartViewController(viewModel: viewModel, coordinator: self)
-        push(viewController)
+    private func runBodyPartSelectionFlow(media: Media) {
+        let coordinator = BodyPartDefectCoordinator(
+            media: media,
+            folder: folder,
+            flowDelegate: self,
+            window: window,
+            navigationController: navigationController
+        )
+        addChildCoordinator(coordinator)
+        coordinator.begin()
     }
     
     private func finish() {
@@ -202,8 +207,8 @@ extension NewDocumentCoordinator: MediaPreviewCoordinator {
         showMediaListScreen()
     }
     
-    func selectBodyPart() {
-        showBodyPartSelectionScreen()
+    func selectBodyPart(media: Media) {
+        runBodyPartSelectionFlow(media: media)
     }
 }
 
@@ -247,8 +252,14 @@ extension NewDocumentCoordinator: MediaListCoordinator {
 }
 
 // MARK: - ListItemSelectionCoordinator implementation
-extension NewDocumentCoordinator: ListItemSelectionCoordinator {}
+extension NewDocumentCoordinator: ListItemSelectionCoordinator {
+    func selected() {
+        pop()
+    }
+}
 
-extension NewDocumentCoordinator: BodyPartCoordinator {
-    
+extension NewDocumentCoordinator: BodyPartDefectFlowDelegate {
+    func defectSelected() {
+        #warning("TODO")
+    }
 }

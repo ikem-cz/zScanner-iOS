@@ -8,7 +8,9 @@
 
 import UIKit
 
-protocol ListItemSelectionCoordinator: BaseCoordinator {}
+protocol ListItemSelectionCoordinator: BaseCoordinator {
+    func selected()
+}
 
 // MARK: -
 class ListItemSelectionViewController<T: ListItem>: BaseViewController, UITableViewDataSource, UITableViewDelegate {
@@ -41,7 +43,7 @@ class ListItemSelectionViewController<T: ListItem>: BaseViewController, UITableV
         }
     }
     
-    private lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
@@ -50,6 +52,10 @@ class ListItemSelectionViewController<T: ListItem>: BaseViewController, UITableV
     }()
 
     // MARK: - UITableViewDataSource implementation
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.list.count
     }
@@ -61,10 +67,14 @@ class ListItemSelectionViewController<T: ListItem>: BaseViewController, UITableV
         return cell
     }
     
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return nil
+    }
+    
     // MARK: - UITableViewDelegate implementation
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = viewModel.list[indexPath.row]
         viewModel.selected.accept(item)
-        coordinator.backButtonPressed(sender: self)
+        coordinator.selected()
     }
 }

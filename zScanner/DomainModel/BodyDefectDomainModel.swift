@@ -12,6 +12,7 @@ struct BodyDefectDomainModel: ListItem {
     let id: String
     let title: String
     let bodyPartId: String
+    private(set) var isNew = false
 }
 
 extension BodyDefectDomainModel {
@@ -19,5 +20,6 @@ extension BodyDefectDomainModel {
         self.id = UUID().uuidString
         self.title = title
         self.bodyPartId = bodyPartId
+        self.isNew = true
     }
 }

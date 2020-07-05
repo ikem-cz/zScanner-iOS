@@ -75,6 +75,9 @@
 "newDocument.popAlert.confirm" = "Ano";
 "newDocument.popAlert.cancel" = "Zrušit";
 
+"newDocument.defectList.title" = "Defekty";
+"newDocument.defectList.newDefectPlaceholder" = "Jméno defektu";
+
 "newDocument.cancelAlert.title" = "Opravdu chcete smazat obsah záznamu?";
 "newDocument.cancelAlert[ photo].message" = "Dojde ke smazání všech pořízených fotografii a aplikace přejde na obrazovku pro výběr pacienta.";
 "newDocument.cancelAlert[ video].message" = "Dojde ke smazání všech nahraných videozáznamů a aplikace přejde na obrazovku pro výběr pacienta.";
