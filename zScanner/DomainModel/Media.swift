@@ -12,11 +12,14 @@ import Vision
 
 class Media {
     let id: String
+    var index: Int?
     let type: MediaType
     let correlationId: String
     let relativePath: String
+    var cropRelativePath: String?
     let fromGallery: Bool
     var url: URL { URL(documentsWith: relativePath) }
+    var cropUrl: URL? { cropRelativePath.flatMap({URL(documentsWith: $0) }) }
     
     var thumbnail: UIImage? {
         switch type {
@@ -33,6 +36,16 @@ class Media {
         self.correlationId = correlationId
         self.relativePath = correlationId + "/" + id + type.suffix
         self.fromGallery = fromGallery
+    }
+    
+    init(id: String, index: Int?, type: MediaType, correlationId: String, relativePath: String, cropRelativePath: String?) {
+        self.id = id
+        self.index = index
+        self.type = type
+        self.correlationId = correlationId
+        self.relativePath = relativePath
+        self.cropRelativePath = cropRelativePath
+        self.fromGallery = false
     }
     
     func makeVideoThumbnail() -> UIImage? {
@@ -52,6 +65,11 @@ class Media {
     }
     
     func save() {}
+    
+    func deleteMedia() {
+        try? FileManager.default.removeItem(at: URL(documentsWith: relativePath))
+        cropRelativePath.flatMap { try? FileManager.default.removeItem(at: URL(documentsWith: $0)) }
+    }
 }
 
 extension Media: Equatable {
@@ -61,9 +79,6 @@ extension Media: Equatable {
 }
 
 class ScanMedia: Media {
-    var cropRelativePath: String!
-    var cropUrl: URL { URL(documentsWith: cropRelativePath) }
-    
     var rectangle: VNRectangleObservation
     
     init(scanRectangle: VNRectangleObservation, correlationId: String, fromGallery: Bool) {
@@ -76,7 +91,7 @@ class ScanMedia: Media {
     override func save() {
         super.save()
         
-        guard let cropData = thumbnail?.jpegData(compressionQuality: 0.8) else { return }
+        guard let cropUrl = cropUrl, let cropData = thumbnail?.jpegData(compressionQuality: 0.8) else { return }
         do {
             try cropData.write(to: cropUrl)
         } catch let error {

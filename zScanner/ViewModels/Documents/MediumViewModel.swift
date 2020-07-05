@@ -14,11 +14,11 @@ class MediaViewModel {
     // MARK: Instance part
     private var networkManager: NetworkManager
     private var database: Database
-    let page: MediaDomainModel
+    let page: Media
     let pageUploadStatus = BehaviorSubject<DocumentViewModel.UploadStatus>(value: .awaitingInteraction)
     
     
-    init(page: MediaDomainModel, networkManager: NetworkManager, database: Database) {
+    init(page: Media, networkManager: NetworkManager, database: Database) {
         self.page = page
         
         self.networkManager = networkManager

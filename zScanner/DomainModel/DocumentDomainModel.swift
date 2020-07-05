@@ -15,7 +15,7 @@ struct DocumentDomainModel {
     var date: Date
     var name: String
     var notes: String
-    var pages: [MediaDomainModel]
+    var pages: [Media]
 }
 
 extension DocumentDomainModel: Hashable {

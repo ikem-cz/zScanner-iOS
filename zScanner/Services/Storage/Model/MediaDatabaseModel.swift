@@ -16,12 +16,12 @@ class PageDatabaseModel: Object {
     @objc dynamic var relativePath = ""
     @objc dynamic var cropRelativePath: String? = nil
     
-    convenience init(media: MediaDomainModel) {
+    convenience init(media: Media) {
         self.init()
         
         self.id = media.id
         self.correlationId = media.correlationId
-        self.index = media.index
+        self.index = media.index!
         self.relativePath = media.relativePath
         self.cropRelativePath = media.cropRelativePath
     }
@@ -32,14 +32,14 @@ class PageDatabaseModel: Object {
 }
 
 extension PageDatabaseModel {
-    func toDomainModel() -> MediaDomainModel {
-        return MediaDomainModel(
+    func toDomainModel() -> Media {
+        return Media(
             id: id,
             index: index,
+            type: .photo,
             correlationId: correlationId,
             relativePath: relativePath,
-            cropRelativePath: cropRelativePath,
-            type: .photo
+            cropRelativePath: cropRelativePath
         )
     }
 }

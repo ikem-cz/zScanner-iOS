@@ -18,6 +18,7 @@ enum IkemEndpoint: Endpoint {
     case seaCatStatus
     case bodyViews
     case bodyViewImage(String)
+    case folderDefects(String)
     
     var rawValue: String {
         switch self {
@@ -29,7 +30,8 @@ enum IkemEndpoint: Endpoint {
             case .submitPassword: return "/password"
             case .seaCatStatus: return "/status"
             case .bodyViews: return "/bodyparts/views"
-            case .bodyViewImage(let id): return "/bodyparts/views/\(id)/image"
+            case .bodyViewImage(let viewId): return "/bodyparts/views/\(viewId)/image"
+            case .folderDefects(let folderId): return "/folders/\(folderId)/defects"
         }
     }
     

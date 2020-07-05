@@ -62,4 +62,10 @@ protocol NetworkManager {
     /// - Parameter id: id of the body part the image is representing
     /// - Returns: Observable request status
     func getBodyImage(id: String) -> Observable<RequestStatus<BodyImageNetworkModel>>
+    
+    
+    /// Get body defects for specific folder
+    ///
+    /// - Parameter folderId: id of the folder to get defects for
+    func getFolderDefects(folderId: String) -> Observable<RequestStatus<[BodyDefectNetworkModel]>>
 }

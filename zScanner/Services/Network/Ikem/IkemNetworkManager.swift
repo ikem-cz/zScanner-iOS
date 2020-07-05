@@ -62,7 +62,12 @@ class IkemNetworkManager: NetworkManager {
     }
     
     func getBodyImage(id: String) -> Observable<RequestStatus<BodyImageNetworkModel>> {
-        let request = GetBodyViewImage(id: id)
+        let request = GetBodyViewImageRequest(id: id)
+        return observe(request)
+    }
+    
+    func getFolderDefects(folderId: String) -> Observable<RequestStatus<[BodyDefectNetworkModel]>> {
+        let request = GetFolderDefectsRequest(folderId: folderId)
         return observe(request)
     }
     

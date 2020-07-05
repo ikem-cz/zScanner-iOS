@@ -98,7 +98,7 @@ class NewDocumentCoordinator: Coordinator {
     
     
     private func showBodyPartSelectionScreen() {
-        let viewModel = BodyPartViewModel(database: database, networkManager: networkManager)
+        let viewModel = BodyPartViewModel(database: database, networkManager: networkManager, folder: folder)
         let viewController = BodyPartViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
@@ -132,7 +132,7 @@ class NewDocumentCoordinator: Coordinator {
         media
             .enumerated()
             .forEach({ (index, media) in
-                let media = MediaDomainModel(media: media, index: index)
+                media.index = index
                 newDocument.pages.append(media)
             })
     }
