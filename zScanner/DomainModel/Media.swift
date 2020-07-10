@@ -16,18 +16,31 @@ class Media {
     let type: MediaType
     let correlationId: String
     let relativePath: String
-    var cropRelativePath: String?
+    var cropRelativePath: String
     let fromGallery: Bool
+    var desription: String?
+    var cropRectangle: VNRectangleObservation?
     var url: URL { URL(documentsWith: relativePath) }
-    var cropUrl: URL? { cropRelativePath.flatMap({URL(documentsWith: $0) }) }
+    var cropUrl: URL? { cropRectangle == nil ? nil : URL(documentsWith: cropRelativePath) }
     
-    #warning("TODO: Save defect to database")
+    #warning("TODO: Save defect and description to database")
     var defect: BodyDefectDomainModel?
     
     var thumbnail: UIImage? {
         switch type {
         case .photo, .scan:
-            return UIImage(data: try! Data(contentsOf: url))!
+            guard let uiImage = UIImage(data: try! Data(contentsOf: url)) else { return nil }
+            guard
+                let rectangle = cropRectangle,
+                let ciImage = CIImage(contentsOf: url)
+            else {
+                return uiImage
+            }
+            let orientation = CGImagePropertyOrientation(uiOrientation: uiImage.imageOrientation)
+            
+            let page = extractPerspectiveRect(rectangle, from: ciImage.oriented(orientation))
+            return UIImage(ciImage: page)
+
         case .video:
             return makeVideoThumbnail()
         }
@@ -38,10 +51,17 @@ class Media {
         self.type = type
         self.correlationId = correlationId
         self.relativePath = correlationId + "/" + id + type.suffix
+        self.cropRelativePath = correlationId + "/" + id + "-crop" + type.suffix
         self.fromGallery = fromGallery
     }
     
-    init(id: String, index: Int?, type: MediaType, correlationId: String, relativePath: String, cropRelativePath: String?) {
+    convenience init(scanRectangle: VNRectangleObservation, correlationId: String, fromGallery: Bool) {
+        self.init(type: .scan, correlationId: correlationId, fromGallery: fromGallery)
+
+        self.cropRectangle = scanRectangle
+    }
+    
+    init(id: String, index: Int?, type: MediaType, correlationId: String, relativePath: String, cropRelativePath: String) {
         self.id = id
         self.index = index
         self.type = type
@@ -51,7 +71,21 @@ class Media {
         self.fromGallery = false
     }
     
-    func makeVideoThumbnail() -> UIImage? {
+    func saveCrop() {
+        guard let cropUrl = cropUrl, let cropData = thumbnail?.jpegData(compressionQuality: 0.8) else { return }
+        do {
+            try cropData.write(to: cropUrl)
+        } catch let error {
+            print("error saving image crop with error", error)
+        }
+    }
+    
+    func deleteMedia() {
+        try? FileManager.default.removeItem(at: url)
+        cropUrl.flatMap { try? FileManager.default.removeItem(at: $0) }
+    }
+    
+    private func makeVideoThumbnail() -> UIImage? {
         let asset = AVURLAsset(url: url)
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
@@ -67,53 +101,7 @@ class Media {
         }
     }
     
-    func save() {}
-    
-    func deleteMedia() {
-        try? FileManager.default.removeItem(at: URL(documentsWith: relativePath))
-        cropRelativePath.flatMap { try? FileManager.default.removeItem(at: URL(documentsWith: $0)) }
-    }
-}
-
-extension Media: Equatable {
-    static func == (lhs: Media, rhs: Media) -> Bool {
-        return lhs.id == rhs.id
-    }
-}
-
-class ScanMedia: Media {
-    var rectangle: VNRectangleObservation
-    
-    init(scanRectangle: VNRectangleObservation, correlationId: String, fromGallery: Bool) {
-        self.rectangle = scanRectangle
-        super.init(type: .scan, correlationId: correlationId, fromGallery: fromGallery)
-
-        self.cropRelativePath = correlationId + "/" + id + "-crop" + type.suffix
-    }
-    
-    override func save() {
-        super.save()
-        
-        guard let cropUrl = cropUrl, let cropData = thumbnail?.jpegData(compressionQuality: 0.8) else { return }
-        do {
-            try cropData.write(to: cropUrl)
-        } catch let error {
-            print("error saving image crop with error", error)
-        }
-    }
-    
-    override var thumbnail: UIImage? {
-        guard
-            let ciImage = CIImage(contentsOf: url),
-            let uiImage = UIImage(data: try! Data(contentsOf: url))
-        else { return nil }
-        let orientation = CGImagePropertyOrientation(uiOrientation: uiImage.imageOrientation)
-        
-        let page = extractPerspectiveRect(rectangle, from: ciImage.oriented(orientation))
-        return UIImage(ciImage: page)
-    }
-    
-    func extractPerspectiveRect(_ observation: VNRectangleObservation, from ciImage: CIImage) -> CIImage {
+    private func extractPerspectiveRect(_ observation: VNRectangleObservation, from ciImage: CIImage) -> CIImage {
         let scaledTopLeft = observation.topLeft.scaled(to: ciImage.extent.size)
         let scaledTopRight = observation.topRight.scaled(to: ciImage.extent.size)
         let scaledBottomLeft = observation.bottomLeft.scaled(to: ciImage.extent.size)
@@ -127,6 +115,12 @@ class ScanMedia: Media {
             "inputBottomLeft": CIVector(cgPoint: scaledBottomLeft),
             "inputBottomRight": CIVector(cgPoint: scaledBottomRight),
         ])
+    }
+}
+
+extension Media: Equatable {
+    static func == (lhs: Media, rhs: Media) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 

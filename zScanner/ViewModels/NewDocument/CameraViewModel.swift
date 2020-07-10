@@ -76,7 +76,7 @@ class CameraViewModel {
         guard let data = image.jpegData(compressionQuality: 0.8) else { return }
         
         do {
-            media = ScanMedia(scanRectangle: rectangle, correlationId: correlationId, fromGallery: fromGallery)
+            media = Media(scanRectangle: rectangle, correlationId: correlationId, fromGallery: fromGallery)
             createDocumentDirectory()
             try data.write(to: media!.url)
         } catch let error {

@@ -77,7 +77,7 @@ class NewDocumentCoordinator: Coordinator {
         case .video:
             return VideoPreviewViewController(media: media, viewModel: viewModel, coordinator: self, editing: editing)
         case .scan:
-            return ScanPreviewViewController(media: media as! ScanMedia, viewModel: viewModel, coordinator: self, editing: editing)
+            return ScanPreviewViewController(media: media, viewModel: viewModel, coordinator: self, editing: editing)
         }
     }
     

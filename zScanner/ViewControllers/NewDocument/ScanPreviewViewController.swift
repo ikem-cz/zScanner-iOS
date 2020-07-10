@@ -22,10 +22,9 @@ class ScanPreviewViewController: MediaPreviewViewController {
 
     // MARK: Instance part
     private var image: UIImage?
-    private var scan: ScanMedia { media as! ScanMedia }
     
     // MARK: Lifecycle
-    init(media: ScanMedia, viewModel: MediaListViewModel, coordinator: MediaPreviewCoordinator, editing: Bool) {
+    init(media: Media, viewModel: MediaListViewModel, coordinator: MediaPreviewCoordinator, editing: Bool) {
         
         super.init(viewModel: viewModel, media: media, coordinator: coordinator, editing: editing)
     }
@@ -55,23 +54,25 @@ class ScanPreviewViewController: MediaPreviewViewController {
     var corners: [UIView] = []
     
     func setupSelection() {
+        guard let rectangle = media.cropRectangle else { return }
+        
         rectangleLayer = newRectangleLayer()
         imageView.layer.addSublayer(rectangleLayer!)
         corners = [
             RectangleCorner(
-                point: convertFromCamera(scan.rectangle.topLeft),
+                point: convertFromCamera(rectangle.topLeft),
                 didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .topLeft, newCorner: newValue)
             }),
             RectangleCorner(
-                point: convertFromCamera(scan.rectangle.topRight),
+                point: convertFromCamera(rectangle.topRight),
                 didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .topRight, newCorner: newValue)
             }),
             RectangleCorner(
-                point: convertFromCamera(scan.rectangle.bottomLeft),
+                point: convertFromCamera(rectangle.bottomLeft),
                 didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .bottomLeft, newCorner: newValue)
             }),
             RectangleCorner(
-                point: convertFromCamera(scan.rectangle.bottomRight),
+                point: convertFromCamera(rectangle.bottomRight),
                 didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .bottomRight, newCorner: newValue)
             })
         ]
@@ -80,7 +81,7 @@ class ScanPreviewViewController: MediaPreviewViewController {
     }
     
     func updateRectangle(corner: UIRectCorner, newCorner: CGPoint) {
-        scan.rectangle = scan.rectangle.updatingCorner(corner, newCorner: convertToCamera(newCorner))
+        media.cropRectangle = media.cropRectangle?.updatingCorner(corner, newCorner: convertToCamera(newCorner))
         rectangleLayer?.removeFromSuperlayer()
         rectangleLayer = newRectangleLayer()
         imageView.layer.addSublayer(rectangleLayer!)
@@ -112,7 +113,7 @@ class ScanPreviewViewController: MediaPreviewViewController {
             rectangleLayer?.removeFromSuperlayer()
             rectangleLayer = nil
             corners.forEach({ $0.removeFromSuperview() })
-            imageView.image = scan.thumbnail
+            imageView.image = media.thumbnail
         }
     }
     
@@ -137,7 +138,7 @@ class ScanPreviewViewController: MediaPreviewViewController {
     private var rectangleLayer: CAShapeLayer?
     
     func newRectangleLayer() -> CAShapeLayer {
-        let points = scan.rectangle.points.map { convertFromCamera($0) }
+        let points = media.cropRectangle?.points.map { convertFromCamera($0) } ?? []
         
         let layer = CAShapeLayer()
         layer.fillColor = #colorLiteral(red: 0.4506933627, green: 0.5190293554, blue: 0.9686274529, alpha: 0.2050513699)

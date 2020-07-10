@@ -627,7 +627,7 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
     }
 }
 
-private extension VNRectangleObservation {
+extension VNRectangleObservation {
     static var `default`: VNRectangleObservation {
         VNRectangleObservation(
             requestRevision: 1,
@@ -713,7 +713,8 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
             coordinator.mediaCreated(viewModel.media!)
         default:
             // TODO: Handle this error
-            print(error)
+            // print(error)
+            #warning("TODO")
         }
     }
 }

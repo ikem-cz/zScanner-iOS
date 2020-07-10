@@ -88,7 +88,7 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
                 case .loading:
                     break
                 case .success(let defects):
-                    self.defectSelection = ListPickerField(title: self.selectorTitle ?? "newDocument.defectList.title".localized, list: defects)
+                    self.defectSelection = ListPickerField(title: self.selectorTitle, list: defects)
                     if let bodyPartId = self.selectedBodyPart?.id {
                         self.coordinator.showDefectSelector(for: bodyPartId, list: self.defectSelection)
                     }
@@ -101,7 +101,7 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
     }
     
     private var selectorTitle: String {
-        "\(viewModel.folder.name) - \("newDocument.defectList.title".localized) \(selectedBodyPart?.name ?? "")"
+        "\("newDocument.defectList.title".localized) \(selectedBodyPart?.name ?? "")"
     }
     
     private func clearBodyView() {

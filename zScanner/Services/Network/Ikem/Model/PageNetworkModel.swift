@@ -9,10 +9,11 @@
 import Foundation
 
 struct PageNetworkModel: Encodable {
-    var uploadType = "page"
+    var uploadType = "pageWithDefect"
     var filetype = "image/jpg"
     var correlation: String
     var pageIndex: Int
+    var decription: String? = nil
     var defectId: String? = nil
     var defectName: String? = nil
     var bodyPartId: String? = nil
@@ -23,6 +24,7 @@ struct PageNetworkModel: Encodable {
         self.pageUrl = domainModel.url
         self.pageIndex = domainModel.index!
         self.correlation = domainModel.correlationId
+        self.decription = domainModel.desription
         
         if let defect = domainModel.defect {
             self.defectId = defect.id
