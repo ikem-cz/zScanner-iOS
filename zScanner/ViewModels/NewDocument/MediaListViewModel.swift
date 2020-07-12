@@ -102,9 +102,16 @@ class MediaListViewModel {
                 [typePicker, titlePicker, timePicker],
                 [collectionView]
             ]
-        case .photo, .video:
+            
+        case .photo:
             return [
                 [timePicker],
+                [collectionView]
+            ]
+        
+        case .video:
+            return [
+                [timePicker, titlePicker],
                 [collectionView]
             ]
         }
@@ -113,6 +120,7 @@ class MediaListViewModel {
     private lazy var modePicker: SegmentPickerField<DocumentMode> = {
         let picker = SegmentPickerField(values: [DocumentMode.document, .examination])
         picker.selected
+            .distinctUntilChanged()
             .subscribe(onNext: { [weak self] selectedMode in
                 self?.typePicker.list = self?.allDocumentTypes
                     .filter({ $0.mode == selectedMode })

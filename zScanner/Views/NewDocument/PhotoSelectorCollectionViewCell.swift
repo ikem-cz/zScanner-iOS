@@ -20,6 +20,7 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     private(set) var element: Media? {
         didSet {
             imageView.image = element?.thumbnail
+            bodyIcon.isHidden = element?.defect == nil
         }
     }
     
@@ -71,6 +72,12 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
             make.top.right.equalToSuperview().inset(6)
         }
         
+        contentView.addSubview(bodyIcon)
+        bodyIcon.snp.makeConstraints { make in
+            make.height.width.equalTo(28)
+            make.bottom.left.equalToSuperview().inset(6)
+        }
+        
         deleteButton.addTarget(self, action: #selector(deleteMedia), for: .touchUpInside)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(editMedia))
@@ -83,6 +90,13 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
         return image
+    }()
+    
+    private var bodyIcon: UIImageView = {
+        let imageView = UIImageView(image: #imageLiteral(resourceName: "bodyIcon"))
+        imageView.tintColor = .white
+        imageView.dropShadow()
+        return imageView
     }()
     
     private var deleteButton: UIButton = {
@@ -104,14 +118,3 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
         return button
     }()
 }
-//
-//private var deleteButton: UIButton = {
-//    let button = UIButton()
-//    button.setImage(#imageLiteral(resourceName: "delete").withRenderingMode(.alwaysTemplate), for: .normal)
-//    button.setTitle("Odstranit", for: .normal)
-//    button.tintColor = .white
-//    button.backgroundColor = .red// UIColor.white.withAlphaComponent(0.3)
-//    button.roundCorners(radius: 12.5)
-//    button.dropShadow()
-//    return button
-//}()

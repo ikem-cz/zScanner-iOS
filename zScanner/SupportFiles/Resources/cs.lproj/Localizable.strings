@@ -35,7 +35,7 @@
 "document.screen.title" = "zScanner";
 "document.modeSelector.cancel" = "Zrušit";
 "document.modeSelector.title" = "Zvolte typ záznamu";
-"document.emptyView.title" = "Nemáte žádné nahrané dokumenty, dokument vytvoříte klepnutím na tlačítko plus.";
+"document.emptyView.title" = "Historie nahrávání je prázdná. Přejděte prosím na vytvoření nového záznamu";
 
 // MARK: - New Document
 "newDocumentFolder.screen.title" = "Výběr pacienta";
@@ -79,9 +79,9 @@
 "newDocument.defectList.newDefectPlaceholder" = "Jméno defektu";
 
 "newDocument.cancelAlert.title" = "Opravdu chcete smazat obsah záznamu?";
-"newDocument.cancelAlert[ photo].message" = "Dojde ke smazání všech pořízených fotografii a aplikace přejde na obrazovku pro výběr pacienta.";
-"newDocument.cancelAlert[ video].message" = "Dojde ke smazání všech nahraných videozáznamů a aplikace přejde na obrazovku pro výběr pacienta.";
-"newDocument.cancelAlert[ scan].message" = "Dojde ke smazání všech naskenovaných stránek a aplikace přejde na obrazovku pro výběr pacienta.";
+"newDocument.cancelAlert[photo].message" = "Dojde ke smazání všech pořízených fotografii a aplikace přejde na obrazovku pro výběr pacienta.";
+"newDocument.cancelAlert[video].message" = "Dojde ke smazání všech nahraných videozáznamů a aplikace přejde na obrazovku pro výběr pacienta.";
+"newDocument.cancelAlert[scan].message" = "Dojde ke smazání všech naskenovaných stránek a aplikace přejde na obrazovku pro výběr pacienta.";
 "newDocument.cancelAlert.confirm" = "Ano";
 "newDocument.cancelAlert.cancel" = "Zrušit";
 
@@ -89,7 +89,7 @@
 "form.listPicker.title" = "Typ dokumentu";
 "form.listPicker.unselected" = "Vybrat";
 "form.documentDecription.title" = "Název (nepovinný)";
-"form.dateTimePicker.title" = "Platnost";
+"form.dateTimePicker.title" = "Datum vytvoření";
 "form.dateTimePicker.unselected" = "Vybrat";
 "form.segmentControl.unselected" = "Vybrat";
 

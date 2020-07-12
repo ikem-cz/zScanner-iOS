@@ -38,16 +38,26 @@ class CroppingImageView: UIImageView {
         contentMode = .scaleAspectFit
         clipsToBounds = true
         isUserInteractionEnabled = true
-        generateCorners()
+        setMode(mode)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private var oldBounds: CGRect = .zero
+    
     override func layoutSubviews() {
         super.layoutSubviews()
-        refreshCorners()
+        
+        if media.cropRectangle != nil, oldBounds != bounds {
+            oldBounds = bounds
+    
+            rectangleLayer?.removeFromSuperlayer()
+            rectangleLayer = newRectangleLayer()
+            layer.addSublayer(rectangleLayer!)
+            refreshCorners()
+        }
     }
     
     func setMode(_ mode: CropMode) {

@@ -186,7 +186,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     
     private lazy var bodyButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "person"), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "bodyIcon"), for: .normal)
         button.addTarget(self, action: #selector(selectBodyPart), for: .touchUpInside)
         return button
     }()

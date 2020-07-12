@@ -34,7 +34,8 @@ class SegmentControlTableViewCell: UITableViewCell {
         segmentPicker.values.enumerated().forEach({
             segmentedControl.insertSegment(withTitle: $0.element.title, at: $0.offset, animated: false)
         })
-        segmentedControl.selectedSegmentIndex = 0
+        let index = segmentPicker.values.firstIndex(where: { $0.title == segmentPicker.selected.value?.title  })
+        segmentedControl.selectedSegmentIndex = index ?? 0
         segmentedControl
             .rx
             .selectedSegmentIndex
