@@ -33,7 +33,7 @@ class BodyPartDefectCoordinator: Coordinator {
     }
     
     private func showBodyPartSelectionScreen() {
-        let viewModel = BodyPartViewModel(database: database, networkManager: networkManager, folder: folder)
+        let viewModel = BodyPartViewModel(database: database, networkManager: networkManager, folder: folder, selectedBodyPart: media.defect?.bodyPartId)
         let viewController = BodyPartViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }

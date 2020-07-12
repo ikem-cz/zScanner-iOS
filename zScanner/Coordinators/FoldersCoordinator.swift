@@ -134,6 +134,15 @@ extension FoldersCoordinator: NewDocumentFlowDelegate {
         list.dismissBottomSheet(afterCompleted: true)
         list.insertNewDocument(document: documentViewModel)
     }
+    
+    func documentDeleted() {
+        guard let list = viewControllers.last as? FoldersListViewController else {
+            assertionFailure()
+            return
+        }
+        
+        list.dismissBottomSheet(afterCompleted: true)
+    }
 }
 
 // MARK: - MenuFlowDelegate implementation

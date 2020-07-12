@@ -10,6 +10,7 @@ import UIKit
 
 protocol NewDocumentFlowDelegate: FlowDelegate {
     func newDocumentCreated(_ documentViewModel: DocumentViewModel)
+    func documentDeleted()
 }
 
 class NewDocumentCoordinator: Coordinator {
@@ -247,6 +248,7 @@ extension NewDocumentCoordinator: MediaListCoordinator {
     func deleteDocument() {
         deleteMedia()
         popAll()
+        flowDelegate.documentDeleted()
         flowDelegate.coordinatorDidFinish(self)
     }
 }

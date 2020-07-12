@@ -39,6 +39,7 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
         super.viewWillAppear(animated)
         
         if let defect = defectSelection.selected.value {
+            updatePoints()
             coordinator.selected(defect)
         } else {
             segmentChanged(partSelector)
@@ -48,6 +49,7 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
     // MARK: Helpers
     private let disposeBag = DisposeBag()
     private var selectedBodyPart: BodyPartDomainModel?
+    private var bodyPoints: [BodyPoint] = []
     
     private func setupBindings() {
         viewModel
@@ -66,6 +68,7 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
                     self?.loadingView.stopAnimating()
                     self?.imageView.image = image
                     self?.placePoints()
+                    self?.updatePoints()
                     
                 case .error(let error):
                     self?.clearBodyView()
@@ -88,6 +91,7 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
                 case .loading:
                     break
                 case .success(let defects):
+                    self.updatePoints()
                     self.defectSelection = ListPickerField(title: self.selectorTitle, list: defects)
                     if let bodyPartId = self.selectedBodyPart?.id {
                         self.coordinator.showDefectSelector(for: bodyPartId, list: self.defectSelection)
@@ -111,15 +115,20 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
     }
     
     private func placePoints() {
-        viewModel
+        bodyPoints = viewModel
             .bodyViews[partSelector.selectedSegmentIndex]
             .bodyParts
             .map({
                 BodyPoint($0, at: convert($0.location), delegate: self)
             })
-            .forEach {
-                imageView.addSubview($0)
-            }
+        
+        bodyPoints.forEach { imageView.addSubview($0) }
+    }
+    
+    private func updatePoints() {
+        for point in bodyPoints {
+            point.state = point.bodyPart.id == viewModel.selectedBodyPartId ? .selected : .normal
+        }
     }
     
     private func convert(_ point: CGPoint) -> CGPoint {
@@ -185,12 +194,35 @@ protocol BodyPointDelegate: class {
 }
 
 class BodyPoint: UIView {
+    enum State {
+        case normal, selected, loading
+    }
     
     private unowned let delegate: BodyPointDelegate
-    private let bodyPart: BodyPartDomainModel
     private var radius: CGFloat = 30
-    
-    
+    var state: State = .normal {
+        didSet {
+            switch state {
+            case .normal:
+                imageView.image = UIImage(systemName: "plus.app")
+                imageView.isHidden = false
+                loading.stopAnimating()
+                isUserInteractionEnabled = true
+            case .loading:
+                loading.startAnimating()
+                imageView.isHidden = true
+                isUserInteractionEnabled = false
+            case .selected:
+                imageView.image = UIImage(systemName: "plus.app.fill")
+                imageView.isHidden = false
+                loading.stopAnimating()
+                isUserInteractionEnabled = true
+            }
+        }
+    }
+
+    let bodyPart: BodyPartDomainModel
+
     init(_ bodyPart: BodyPartDomainModel, at location: CGPoint, delegate: BodyPointDelegate) {
         self.bodyPart = bodyPart
         self.delegate = delegate
@@ -226,7 +258,7 @@ class BodyPoint: UIView {
     }
     
     private lazy var imageView: UIImageView = {
-        let image = UIImageView(image: UIImage(systemName: "plus.square"))
+        let image = UIImageView(image: UIImage(systemName: "plus.app"))
         image.tintColor = .primary
         return image
     }()
@@ -247,9 +279,7 @@ class BodyPoint: UIView {
     }()
     
     @objc private func didTap() {
-        loading.startAnimating()
-        imageView.isHidden = true
+        state = .loading
         delegate.bodyPartSelected(bodyPart)
-        isUserInteractionEnabled = false
     }
 }

@@ -10,15 +10,30 @@ import UIKit
 import SnapKit
 
 class PhotoPreviewViewController: MediaPreviewViewController {
+    
+    enum State {
+        case normal
+        case cropping
+        case decrptionEditting
+    }
 
     // MARK: Instance part
     private var image: UIImage?
+    private var state: State = .normal {
+        didSet {
+            toolbar.arrangedSubviews.forEach({ $0.removeFromSuperview() })
+            switch state {
+            case .normal:
+                [textButton, bodyButton, cropButton, rotateButton].forEach({ toolbar.addArrangedSubview($0) })
+            case .cropping:
+                [removeCropButton, confirmCropButton].forEach({ toolbar.addArrangedSubview($0) })
+            case .decrptionEditting:
+                [].forEach({ toolbar.addArrangedSubview($0) })
+            }
+        }
+    }
     
     // MARK: Lifecycle
-    init(media: Media, viewModel: MediaListViewModel, coordinator: MediaPreviewCoordinator, editing: Bool) {
-        
-        super.init(viewModel: viewModel, media: media, coordinator: coordinator, editing: editing)
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,8 +97,8 @@ class PhotoPreviewViewController: MediaPreviewViewController {
             make.height.equalTo(30)
         }
         
-        textbox.addSubview(confirmButton)
-        confirmButton.snp.makeConstraints { make in
+        textbox.addSubview(confirmDescriptionButton)
+        confirmDescriptionButton.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalTo(textInput.snp.trailing).offset(8)
             make.trailing.equalToSuperview().inset(8)
@@ -92,15 +107,6 @@ class PhotoPreviewViewController: MediaPreviewViewController {
         
         [textButton, bodyButton, cropButton, rotateButton]
             .forEach({ toolbar.addArrangedSubview($0) })
-    }
-    
-    override func loadMedia() {
-        do {
-            let data = try Data(contentsOf: media.url)
-            image = UIImage(data: data)
-        } catch(let error) {
-            print("Could not load data from url: ", error)
-        }
     }
     
     // MARK: Helpers
@@ -114,6 +120,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
         toolbar.isHidden = true
         textbox.isHidden = false
         textInput.becomeFirstResponder()
+        state = .decrptionEditting
     }
     
     @objc private func hideTextInput() {
@@ -121,6 +128,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
         textbox.isHidden = true
         textInput.resignFirstResponder()
         media.desription = textInput.text
+        state = .normal
     }
     
     @objc private func rotateImage() {
@@ -133,16 +141,25 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     }
     
     @objc private func cropImage() {
-        media.cropRectangle = .default
+        media.cropRectangle = media.cropRectangle ?? .default
+        imageView.setMode(.edit)
+        state = .cropping
+    }
+    
+    @objc private func saveCrop() {
+        media.saveCrop()
+        imageView.setMode(.preview)
+        state = .normal
+    }
+    
+    @objc private func removeCrop() {
+        media.cropRectangle = nil
+        imageView.setMode(.preview)
+        state = .normal
     }
     
     // MARK: Lazy instance part
-    private lazy var imageView: UIImageView = {
-        let imageView = UIImageView(image: image)
-        imageView.contentMode = .scaleAspectFit
-        imageView.clipsToBounds = true
-        return imageView
-    }()
+    private lazy var imageView = CroppingImageView(media: media)!
     
     private lazy var toolbar: UIStackView = {
         let stackView = UIStackView()
@@ -195,10 +212,24 @@ class PhotoPreviewViewController: MediaPreviewViewController {
         return text
     }()
     
-    private lazy var confirmButton: UIButton = {
+    private lazy var confirmDescriptionButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
         button.addTarget(self, action: #selector(hideTextInput), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var confirmCropButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
+        button.addTarget(self, action: #selector(saveCrop), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var removeCropButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "trash"), for: .normal)
+        button.addTarget(self, action: #selector(removeCrop), for: .touchUpInside)
         return button
     }()
 }

@@ -24,7 +24,7 @@ class MediaPreviewViewController: BaseViewController {
     unowned let coordinator: MediaPreviewCoordinator
     
     // MARK: Lifecycle
-    init(viewModel: MediaListViewModel, media: Media, coordinator: MediaPreviewCoordinator, editing: Bool = false) {
+    init(media: Media, viewModel: MediaListViewModel, coordinator: MediaPreviewCoordinator, editing: Bool = false) {
         self.viewModel = viewModel
         self.media = media
         self.coordinator = coordinator
@@ -33,10 +33,9 @@ class MediaPreviewViewController: BaseViewController {
         super.init(coordinator: coordinator, theme: .dark)
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        loadMedia()
+    override func loadView() {
+        super.loadView()
+        
         setupButtons()
         setupView()
     }
@@ -83,9 +82,6 @@ class MediaPreviewViewController: BaseViewController {
     }
     
     // MARK: Helpers
-    func loadMedia() {
-        fatalError("loadMedia function needs to override")
-    }
     
     func stopPlayingVideo() {
         // When user will click on a button the video should stop playing, so in Video Preview ViewController should be this function is overridden and properly handle it

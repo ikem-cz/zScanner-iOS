@@ -32,13 +32,15 @@ class BodyPartViewModel {
     let folder: FolderDomainModel
     var bodyImage = BehaviorRelay<ImageState>(value: .awaitingInteraction)
     var defects = BehaviorRelay<DefectsState>(value: .awaitingInteraction)
+    var selectedBodyPartId: String?
     
-    init(database: Database, networkManager: NetworkManager, folder: FolderDomainModel) {
+    init(database: Database, networkManager: NetworkManager, folder: FolderDomainModel, selectedBodyPart: String?) {
         self.database = database
         self.networkManager = networkManager
         self.folder = folder
         self.bodyViews = database.loadObjects(BodyViewDatabaseModel.self)
             .map({ $0.toDomainModel() })
+        self.selectedBodyPartId = selectedBodyPart
         
         bodyViews.first.flatMap { getImage(for: $0) }
     }
@@ -60,6 +62,7 @@ class BodyPartViewModel {
     }
     
     func getDefects(for bodyPart: String) {
+        selectedBodyPartId = bodyPart
         networkManager
             .getFolderDefects(folderId: folder.id)
             .subscribe(onNext: { [weak self] result in

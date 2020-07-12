@@ -22,8 +22,6 @@ class Media {
     var cropRectangle: VNRectangleObservation?
     var url: URL { URL(documentsWith: relativePath) }
     var cropUrl: URL? { cropRectangle == nil ? nil : URL(documentsWith: cropRelativePath) }
-    
-    #warning("TODO: Save defect and description to database")
     var defect: BodyDefectDomainModel?
     
     var thumbnail: UIImage? {
@@ -61,7 +59,7 @@ class Media {
         self.cropRectangle = scanRectangle
     }
     
-    init(id: String, index: Int?, type: MediaType, correlationId: String, relativePath: String, cropRelativePath: String) {
+    init(id: String, index: Int?, type: MediaType, correlationId: String, relativePath: String, cropRelativePath: String, description: String?, defect: BodyDefectDomainModel?) {
         self.id = id
         self.index = index
         self.type = type
@@ -69,6 +67,8 @@ class Media {
         self.relativePath = relativePath
         self.cropRelativePath = cropRelativePath
         self.fromGallery = false
+        self.desription = description
+        self.defect = defect
     }
     
     func saveCrop() {

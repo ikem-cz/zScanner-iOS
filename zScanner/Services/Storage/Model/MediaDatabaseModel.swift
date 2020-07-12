@@ -16,6 +16,7 @@ class PageDatabaseModel: Object {
     @objc dynamic var relativePath = ""
     @objc dynamic var cropRelativePath = ""
     @objc dynamic var imageDescription: String? = nil
+    @objc dynamic var defect: BodyDefectDatabaseModel?
     
     convenience init(media: Media) {
         self.init()
@@ -25,6 +26,8 @@ class PageDatabaseModel: Object {
         self.index = media.index!
         self.relativePath = media.relativePath
         self.cropRelativePath = media.cropRelativePath
+        self.imageDescription = media.desription
+        self.defect = media.defect.flatMap({ BodyDefectDatabaseModel(bodyDefect: $0) })
     }
     
     override class func primaryKey() -> String {
@@ -40,7 +43,9 @@ extension PageDatabaseModel {
             type: .photo,
             correlationId: correlationId,
             relativePath: relativePath,
-            cropRelativePath: cropRelativePath
+            cropRelativePath: cropRelativePath,
+            description: imageDescription,
+            defect: defect?.toDomainModel()
         )
     }
 }
