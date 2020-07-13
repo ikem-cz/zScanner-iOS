@@ -11,12 +11,14 @@ import RealmSwift
 
 class BodyViewDatabaseModel: Object {
     @objc dynamic var id = ""
+    @objc dynamic var name = ""
     let bodyParts = List<BodyPartDatabaseModel>()
     
     convenience init(bodyView: BodyViewDomainModel) {
         self.init()
         
         self.id = bodyView.id
+        self.name = bodyView.name
         self.bodyParts.append(objectsIn:
             bodyView
                 .bodyParts
@@ -30,6 +32,7 @@ extension BodyViewDatabaseModel {
     func toDomainModel() -> BodyViewDomainModel {
         return BodyViewDomainModel(
             id: id,
+            name: name,
             bodyParts: bodyParts.map { $0.toDomainModel() }
         )
     }

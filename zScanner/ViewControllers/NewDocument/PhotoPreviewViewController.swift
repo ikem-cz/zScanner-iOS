@@ -84,6 +84,13 @@ class PhotoPreviewViewController: MediaPreviewViewController {
             make.height.equalTo(44)
         }
         
+        let background = GradientView()
+        background.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        toolbar.addSubview(background)
+        background.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
         view.addSubview(textbox)
         textbox.snp.makeConstraints { make in
             make.leading.trailing.equalTo(imageView)
@@ -166,12 +173,12 @@ class PhotoPreviewViewController: MediaPreviewViewController {
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.distribution = .fillProportionally
+        stackView.tintColor = .white
         return stackView
     }()
     
     private lazy var textbox: UIView = {
         let view = UIView()
-        view.backgroundColor = .clear
         view.isHidden = true
         view.backgroundColor = UIColor.white.withAlphaComponent(0.8)
         return view
@@ -209,6 +216,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
         let text = UITextField()
         text.placeholder = "Popisek"
         text.delegate = self
+        text.text = media.desription
         return text
     }()
     

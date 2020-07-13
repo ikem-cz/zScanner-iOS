@@ -62,7 +62,6 @@ class BodyPartViewModel {
     }
     
     func getDefects(for bodyPart: String) {
-        selectedBodyPartId = bodyPart
         networkManager
             .getFolderDefects(folderId: folder.id)
             .subscribe(onNext: { [weak self] result in

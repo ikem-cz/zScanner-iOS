@@ -44,7 +44,7 @@ class ListItemSelectionViewController<T: ListItem>: BaseViewController, UITableV
     }
     
     lazy var tableView: UITableView = {
-        let tableView = UITableView()
+        let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.registerCell(UITableViewCell.self)

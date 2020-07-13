@@ -147,10 +147,7 @@ class DateTimePickerPlaceholder: FormField {
 
 // MARK: -
 class ConfirmButton: FormField {
-    
-    var title: String = "ConfirmButton - title"
-    
-    var value: Observable<String> = .just("ConfirmButton - value")
-    
+    var title: String = "form.confirmButton.title".localized
+    var value: Observable<String> = .just("")
     var isValid: Observable<Bool> = .just(true)
 }

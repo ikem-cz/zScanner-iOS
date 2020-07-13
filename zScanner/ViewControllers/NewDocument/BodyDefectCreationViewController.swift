@@ -33,6 +33,10 @@ class BodyDefectCreationViewController: ListItemSelectionViewController<BodyDefe
         super.viewDidLoad()
         
         tableView.registerCell(TextInputTableViewCell.self)
+        tableView.registerCell(ConfirmButtonTableViewCell.self)
+        
+        let estimatedKeyboardHeight: CGFloat = 250
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: estimatedKeyboardHeight, right: 0)
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -62,8 +66,8 @@ class BodyDefectCreationViewController: ListItemSelectionViewController<BodyDefe
                 return cell
                 
             case let button as ConfirmButton:
-                let cell = UITableViewCell()
-                cell.textLabel?.text = button.title
+                let cell = tableView.dequeueCell(ConfirmButtonTableViewCell.self)
+                cell.setup(with: button)
                 return cell
                 
             default:

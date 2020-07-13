@@ -92,6 +92,7 @@
 "form.dateTimePicker.title" = "Datum vytvoření";
 "form.dateTimePicker.unselected" = "Vybrat";
 "form.segmentControl.unselected" = "Vybrat";
+"form.confirmButton.title" = "Potvrdit";
 
 // MARK: - Drawer Menu
 "drawer.header.title" = "zScanner";

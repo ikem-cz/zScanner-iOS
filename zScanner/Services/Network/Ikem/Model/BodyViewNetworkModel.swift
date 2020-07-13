@@ -11,6 +11,7 @@ import CoreGraphics
 
 struct BodyViewNetworkModel: Decodable {
     let id: String
+    let name: String
     let bodyParts: [BodyPartNetworkModel]
 }
 
@@ -18,6 +19,7 @@ extension BodyViewNetworkModel {
     func toDomainModel() -> BodyViewDomainModel {
         BodyViewDomainModel(
             id: id,
+            name: name,
             bodyParts: bodyParts.map { $0.toDomainModel() }
         )
     }

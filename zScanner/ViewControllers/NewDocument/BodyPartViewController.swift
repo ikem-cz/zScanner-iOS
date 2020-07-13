@@ -39,9 +39,11 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
         super.viewWillAppear(animated)
         
         if let defect = defectSelection.selected.value {
+            viewModel.selectedBodyPartId = defect.bodyPartId
             updatePoints()
             coordinator.selected(defect)
         } else {
+            selectedBodyPart = nil
             segmentChanged(partSelector)
         }
     }
@@ -92,7 +94,8 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
                     break
                 case .success(let defects):
                     self.updatePoints()
-                    self.defectSelection = ListPickerField(title: self.selectorTitle, list: defects)
+                    let bodypartDefects = defects.filter({ $0.bodyPartId == self.selectedBodyPart?.id })
+                    self.defectSelection = ListPickerField(title: self.selectorTitle, list: bodypartDefects)
                     if let bodyPartId = self.selectedBodyPart?.id {
                         self.coordinator.showDefectSelector(for: bodyPartId, list: self.defectSelection)
                     }
@@ -161,7 +164,7 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
     }
     
     private lazy var partSelector: UISegmentedControl = {
-        let selector = UISegmentedControl(items: viewModel.bodyViews.map({ $0.id }))
+        let selector = UISegmentedControl(items: viewModel.bodyViews.map({ $0.name }))
         selector.selectedSegmentIndex = 0
         selector.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
         return selector

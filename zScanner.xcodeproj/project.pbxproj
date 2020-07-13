@@ -126,6 +126,7 @@
 		BD893803247EA4F60084FB5F /* ScanPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD893802247EA4F60084FB5F /* ScanPreviewViewController.swift */; };
 		BD893805247EA9610084FB5F /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD893804247EA9610084FB5F /* UIImageView.swift */; };
 		BD8AA80F23003D530082441F /* FolderDatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8AA80E23003D530082441F /* FolderDatabaseModel.swift */; };
+		BD8EA26424BD09D2002270D5 /* ConfirmButtonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8EA26324BD09D2002270D5 /* ConfirmButtonTableViewCell.swift */; };
 		BD8F753B232407620086B097 /* ErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8F753A232407620086B097 /* ErrorHandling.swift */; };
 		BD8F753E23241F660086B097 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8F753D23241F660086B097 /* SplashViewController.swift */; };
 		BD94413D231F19F10085BB4D /* StatusNetworkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD94413C231F19F10085BB4D /* StatusNetworkModel.swift */; };
@@ -299,6 +300,7 @@
 		BD893802247EA4F60084FB5F /* ScanPreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanPreviewViewController.swift; sourceTree = "<group>"; };
 		BD893804247EA9610084FB5F /* UIImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
 		BD8AA80E23003D530082441F /* FolderDatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderDatabaseModel.swift; sourceTree = "<group>"; };
+		BD8EA26324BD09D2002270D5 /* ConfirmButtonTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmButtonTableViewCell.swift; sourceTree = "<group>"; };
 		BD8F753A232407620086B097 /* ErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
 		BD8F753D23241F660086B097 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		BD94413C231F19F10085BB4D /* StatusNetworkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusNetworkModel.swift; sourceTree = "<group>"; };
@@ -711,6 +713,7 @@
 				BD80224422F82604009B8B69 /* FormFieldTableViewCell.swift */,
 				BD402E7A2300D60B00049DF9 /* FolderTableViewCell.swift */,
 				BD80224622F82C03009B8B69 /* TextInputTableViewCell.swift */,
+				BD8EA26324BD09D2002270D5 /* ConfirmButtonTableViewCell.swift */,
 				BD80224C22F8B9E8009B8B69 /* DateTimePickerTableViewCell.swift */,
 				BD678DA6230496AE00AE5B15 /* PhotoSelectorCollectionViewCell.swift */,
 				16BF842B245C6631004CC132 /* MediaTypeCollectionViewCell.swift */,
@@ -960,6 +963,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD8EA26424BD09D2002270D5 /* ConfirmButtonTableViewCell.swift in Sources */,
 				BDDA128523149BED0029A7DF /* zScanner-Bridging-Header.h in Sources */,
 				BD88F15023087F1300569D71 /* UIView.swift in Sources */,
 				BD6A74FB24B26E85002F6722 /* BodyDefectCreationViewController.swift in Sources */,
