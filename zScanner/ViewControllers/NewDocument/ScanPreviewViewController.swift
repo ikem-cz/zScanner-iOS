@@ -9,45 +9,177 @@
 import UIKit
 import Vision
 
-class ScanPreviewViewController: MediaPreviewViewController {    
+class ScanPreviewViewController: MediaPreviewViewController {
+    
+    enum State {
+        case normal
+        case cropping
+        case coloring
+    }
+
+    // MARK: Instance part
+    private var state: State = .normal {
+        didSet {
+            let buttons: [UIView]
+            toolbar.arrangedSubviews.forEach({ $0.removeFromSuperview() })
+            
+            switch state {
+            case .normal:
+                buttons = [colorButton, cropButton, rotateButton]
+            case .cropping:
+                buttons = [removeCropButton, confirmCropButton]
+            case .coloring:
+                buttons = [noFilterButton, grayscaleFilterButton, monoFilterButton, confirmFilterButton]
+            }
+            
+            buttons.forEach({ toolbar.addArrangedSubview($0) })
+        }
+    }
     
     // MARK: View setup
     override func setupView() {
         view.addSubview(imageView)
-        view.addSubview(modeSwich)
-        
-        modeSwich.snp.makeConstraints { make in
-            make.top.leading.trailing.equalTo(safeArea).inset(8)
-            make.height.equalTo(32)
-        }
         
         imageView.snp.makeConstraints { make in
-            make.top.equalTo(modeSwich.snp.bottom).offset(8)
-            make.leading.trailing.equalTo(safeArea)
+            make.top.leading.trailing.equalTo(safeArea)
             make.bottom.equalTo(buttonStackView.snp.top)
         }
+        
+        view.addSubview(toolbar)
+        toolbar.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalTo(imageView)
+            make.height.equalTo(44)
+        }
+        
+        let background = GradientView()
+        background.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        toolbar.addSubview(background)
+        background.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        state = .normal
     }
-
-    @objc private func switchMode(_ segmentedControl: UISegmentedControl) {
-        let mode = modes[segmentedControl.selectedSegmentIndex]
-        imageView.setMode(mode)
-    }
-
+    
     // MARK: Helpers
-    private let modes = [CropMode.edit, .preview]
+    @objc private func showColoring() {
+        state = .coloring
+    }
+    
+    @objc private func hideColoring() {
+        media.saveCrop()
+        state = .normal
+    }
+    
+    @objc private func removeFilter() {
+        imageView.setFilter(.full)
+    }
+    
+    @objc private func grayscaleFilter() {
+        imageView.setFilter(.grayscale)
+    }
+    
+    @objc private func monoFilter() {
+        imageView.setFilter(.mono)
+    }
+    
+    @objc private func rotateImage() {
+        media.rotateImage()
+        imageView.setMode(imageView.mode)
+    }
+    
+    @objc private func cropImage() {
+        media.cropRectangle = media.cropRectangle ?? .default
+        imageView.setMode(.edit)
+        state = .cropping
+    }
+    
+    @objc private func saveCrop() {
+        media.saveCrop()
+        imageView.setMode(.preview)
+        state = .normal
+    }
+    
+    @objc private func removeCrop() {
+        media.cropRectangle = nil
+        imageView.setMode(.preview)
+        state = .normal
+    }
     
     // MARK: Lazy instance part
-    private lazy var modeSwich: UISegmentedControl = {
-        let modeSwitch = UISegmentedControl(items: modes.map({ $0.title }))
-        modeSwitch.selectedSegmentIndex = 0
-        modeSwitch.addTarget(self, action: #selector(switchMode(_:)), for: .valueChanged)
-        modeSwitch.backgroundColor = .lightGray
-        modeSwitch.selectedSegmentTintColor = .black
-        modeSwitch.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
-        return modeSwitch
+    private lazy var imageView = CroppingImageView(media: media)!
+    
+    private lazy var toolbar: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .fillEqually
+        stackView.tintColor = .white
+        return stackView
     }()
     
-    private lazy var imageView = CroppingImageView(media: media)!
+    private lazy var colorButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "circle.lefthalf.fill"), for: .normal)
+        button.addTarget(self, action: #selector(showColoring), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var noFilterButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Barva", for: .normal)
+        button.addTarget(self, action: #selector(removeFilter), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var grayscaleFilterButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("St. šedi", for: .normal)
+        button.addTarget(self, action: #selector(grayscaleFilter), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var monoFilterButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Černobíle", for: .normal)
+        button.addTarget(self, action: #selector(monoFilter), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var confirmFilterButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
+        button.addTarget(self, action: #selector(hideColoring), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var cropButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "skew"), for: .normal)
+        button.addTarget(self, action: #selector(cropImage), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var rotateButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "rotate.right"), for: .normal)
+        button.addTarget(self, action: #selector(rotateImage), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var confirmCropButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
+        button.addTarget(self, action: #selector(saveCrop), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var removeCropButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "trash"), for: .normal)
+        button.addTarget(self, action: #selector(removeCrop), for: .touchUpInside)
+        return button
+    }()
 }
 
 

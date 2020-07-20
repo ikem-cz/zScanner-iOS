@@ -39,7 +39,7 @@ class CameraViewModel {
     
     // MARK: Interface
     func saveImage(image: UIImage, fromGallery: Bool) {
-        guard let data = image.jpegData(compressionQuality: 0.8) else { return }
+        guard let data = image.jpegData(compressionQuality: 1) else { return }
         
         do {
             media = Media(type: .photo, correlationId: correlationId, fromGallery: fromGallery)
@@ -73,7 +73,7 @@ class CameraViewModel {
     }
     
     func saveScan(image: UIImage, rectangle: VNRectangleObservation, fromGallery: Bool) {
-        guard let data = image.jpegData(compressionQuality: 0.8) else { return }
+        guard let data = image.jpegData(compressionQuality: 1) else { return }
         
         do {
             media = Media(scanRectangle: rectangle, correlationId: correlationId, fromGallery: fromGallery)

@@ -8,13 +8,21 @@
 
 import UIKit
 import Vision
+import CoreImage
 
 enum CropMode: String {
-    case edit
-    case preview
+    case edit, preview
     
     var title: String {
         return "newDocumentPhotos.scanMode[\(self.rawValue)].title".localized
+    }
+}
+
+enum ColorFilter: String {
+    case full, grayscale, mono
+    
+    var title: String {
+        "newDocumentPhotos.filter.\(self.rawValue)".localized
     }
 }
 
@@ -26,7 +34,7 @@ class CroppingImageView: UIImageView {
     init?(media: Media) {
         switch media.type {
             case .photo: self.mode = .preview
-            case .scan: self.mode = .edit
+            case .scan: self.mode = .preview
             case .video: return nil
         }
         
@@ -50,7 +58,7 @@ class CroppingImageView: UIImageView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        if media.cropRectangle != nil, oldBounds != bounds {
+        if media.cropRectangle != nil, oldBounds != bounds, mode == .edit {
             oldBounds = bounds
     
             rectangleLayer?.removeFromSuperlayer()
@@ -61,6 +69,7 @@ class CroppingImageView: UIImageView {
     }
     
     func setMode(_ mode: CropMode) {
+        self.mode = mode
         switch mode {
         case .edit:
             self.image = imageFromUrl
@@ -78,12 +87,18 @@ class CroppingImageView: UIImageView {
         }
     }
     
+    func setFilter(_ filter: ColorFilter) {
+        media.colorFilter = filter
+        setMode(mode)
+    }
+    
     // MARK: Helpers
     private var rectangleLayer: CAShapeLayer?
     private var corners: [RectangleCorner] = []
     
     private var imageFromUrl: UIImage? {
-        (try? Data(contentsOf: media.url)).flatMap({ UIImage(data: $0) })
+        guard let ciImage = CIImage.load(from: media.url, applyingFilter: media.colorFilter) else { return nil }
+        return UIImage(ciImage: ciImage)
     }
     
     private func generateCorners() {
@@ -93,20 +108,20 @@ class CroppingImageView: UIImageView {
         corners = [
             RectangleCorner(
                 point: convertFromCamera(rectangle.topLeft),
-                didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .topLeft, newCorner: newValue)
-            }),
+                didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .topLeft, newCorner: newValue)}
+            ),
             RectangleCorner(
                 point: convertFromCamera(rectangle.topRight),
-                didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .topRight, newCorner: newValue)
-            }),
+                didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .topRight, newCorner: newValue)}
+            ),
             RectangleCorner(
                 point: convertFromCamera(rectangle.bottomLeft),
-                didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .bottomLeft, newCorner: newValue)
-            }),
+                didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .bottomLeft, newCorner: newValue)}
+            ),
             RectangleCorner(
                 point: convertFromCamera(rectangle.bottomRight),
-                didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .bottomRight, newCorner: newValue)
-            })
+                didMovedTo: { [weak self] newValue in self?.updateRectangle(corner: .bottomRight, newCorner: newValue)}
+            ),
         ]
     }
     
@@ -162,15 +177,15 @@ class RectangleCorner: UIView {
     let callback: (CGPoint) -> Void
     lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(move(_:)))
     
-    init(point: CGPoint, didMovedTo: @escaping (CGPoint) -> Void) {
+    init(point: CGPoint, didMovedTo: @escaping (CGPoint) -> Void, color: UIColor = #colorLiteral(red: 0.3328347607, green: 0.236689759, blue: 1, alpha: 1)) {
         self.callback = didMovedTo
         
         super.init(frame: CGRect(x: point.x - radius, y: point.y - radius, width: radius * 2, height: radius * 2))
         
         let layer = CAShapeLayer()
         layer.path = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: 2.0 * radius, height: 2.0 * radius), cornerRadius: radius).cgPath
-        layer.fillColor = #colorLiteral(red: 0.4506933627, green: 0.5190293554, blue: 0.9686274529, alpha: 0.2050513699)
-        layer.strokeColor = #colorLiteral(red: 0.3328347607, green: 0.236689759, blue: 1, alpha: 1)
+        layer.fillColor = color.withAlphaComponent(0.25).cgColor
+        layer.strokeColor = color.cgColor
         self.layer.addSublayer(layer)
         self.isUserInteractionEnabled = true
         
@@ -258,6 +273,35 @@ extension VNRectangleObservation {
                 topRight: corner.contains(.topRight) ? newCorner : topRight
             )
         }
+    }
+}
+
+extension CIImage {
+    
+    static func load(from url: URL, applyingFilter filter: ColorFilter) -> CIImage? {
+        guard let uiImage = UIImage(data: try! Data(contentsOf: url)) else { return nil }
+
+        let orientation = CGImagePropertyOrientation(uiOrientation: uiImage.imageOrientation)
+        guard var ciImage = CIImage(contentsOf: url)?.oriented(orientation) else { return nil }
         
+        if filter == .grayscale || filter == .mono {
+            let grayImage = CIFilter(name: "CIPhotoEffectNoir", parameters: [kCIInputImageKey: ciImage])?.outputImage
+            ciImage = grayImage ?? ciImage
+        }
+        
+        if filter == .mono {
+            let bAndWParams: [String: Any] = [
+                kCIInputImageKey: ciImage,
+                kCIInputContrastKey: 50,
+                kCIInputBrightnessKey: 10
+            ]
+            if let bAndWImage = CIFilter(name: "CIColorControls", parameters: bAndWParams)?.outputImage {
+                if let cgImage = CIContext(options: nil).createCGImage(bAndWImage, from: bAndWImage.extent) {
+                    ciImage = CIImage(cgImage: cgImage)
+                }
+            }
+        }
+        
+        return ciImage
     }
 }

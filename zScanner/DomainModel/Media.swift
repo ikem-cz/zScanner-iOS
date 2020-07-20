@@ -20,24 +20,21 @@ class Media {
     let fromGallery: Bool
     var desription: String?
     var cropRectangle: VNRectangleObservation?
+    var colorFilter: ColorFilter = .full
     var url: URL { URL(documentsWith: relativePath) }
-    var cropUrl: URL? { cropRectangle == nil ? nil : URL(documentsWith: cropRelativePath) }
+    var cropUrl: URL? { cropRectangle == nil && colorFilter == .full ? nil : URL(documentsWith: cropRelativePath) }
     var defect: BodyDefectDomainModel?
     
     var thumbnail: UIImage? {
         switch type {
         case .photo, .scan:
-            guard let uiImage = UIImage(data: try! Data(contentsOf: url)) else { return nil }
-            guard
-                let rectangle = cropRectangle,
-                let ciImage = CIImage(contentsOf: url)
-            else {
-                return uiImage
-            }
-            let orientation = CGImagePropertyOrientation(uiOrientation: uiImage.imageOrientation)
+            guard var ciImage = CIImage.load(from: url, applyingFilter: colorFilter) else { return nil }
             
-            let page = extractPerspectiveRect(rectangle, from: ciImage.oriented(orientation))
-            return UIImage(ciImage: page)
+            if let rectangle = cropRectangle {
+                ciImage = extractPerspectiveRect(rectangle, from: ciImage)
+            }
+            
+            return UIImage(ciImage: ciImage)
 
         case .video:
             return makeVideoThumbnail()
@@ -72,11 +69,24 @@ class Media {
     }
     
     func saveCrop() {
-        guard let cropUrl = cropUrl, let cropData = thumbnail?.jpegData(compressionQuality: 0.8) else { return }
+        guard let cropUrl = cropUrl, let cropData = thumbnail?.jpegData(compressionQuality: 1) else { return }
         do {
             try cropData.write(to: cropUrl)
         } catch let error {
             print("error saving image crop with error", error)
+        }
+    }
+    
+    func rotateImage() {
+        guard let data = try? Data(contentsOf: url) else { return }
+        var image = UIImage(data: data)
+        image = image?.rotate(radians: .pi/2)
+        
+        do {
+            try image?.jpegData(compressionQuality: 1)?.write(to: url)
+            cropRectangle = cropRectangle?.rotate()
+        } catch {
+            print(error)
         }
     }
     

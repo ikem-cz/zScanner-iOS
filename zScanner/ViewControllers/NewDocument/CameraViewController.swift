@@ -637,6 +637,16 @@ extension VNRectangleObservation {
             topRight: CGPoint(x: 0.75, y: 0.75)
         )
     }
+    
+    func rotate() -> VNRectangleObservation {
+        VNRectangleObservation(
+            requestRevision: 1,
+            topLeft: CGPoint(x: bottomLeft.y, y: 1 - bottomLeft.x),
+            bottomLeft: CGPoint(x: bottomRight.y, y: 1 - bottomRight.x),
+            bottomRight: CGPoint(x: topRight.y, y: 1 - topRight.x),
+            topRight: CGPoint(x: topLeft.y, y: 1 - topLeft.x)
+        )
+    }
 }
 
 // MARK: - UIImagePickerControllerDelegate implementation
@@ -648,6 +658,7 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
                 viewModel.saveImage(image: pickedImage, fromGallery: true)
                 coordinator.mediaCreated(viewModel.media!)
             }
+            
         case .video:
             if let videoURL = info[.mediaURL] as? URL {
                 viewModel.saveVideo(fromGallery: true, url: videoURL) { isSaved in
@@ -658,6 +669,7 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
                     }
                 }
             }
+            
         case .scan:
             if let pickedImage = info[.originalImage] as? UIImage, let ciImage = CIImage(image: pickedImage) {
                 galleryScanImage = pickedImage
@@ -675,9 +687,7 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
                     }
                 }
             }
-            
         }
-        
         
         self.dismiss(animated: true, completion: nil)
     }

@@ -18,18 +18,23 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     }
 
     // MARK: Instance part
-    private var image: UIImage?
     private var state: State = .normal {
         didSet {
+            let buttons: [UIView]
             toolbar.arrangedSubviews.forEach({ $0.removeFromSuperview() })
+            
             switch state {
             case .normal:
-                [textButton, bodyButton, cropButton, rotateButton].forEach({ toolbar.addArrangedSubview($0) })
+                buttons = [textButton, bodyButton, cropButton, rotateButton]
+                
             case .cropping:
-                [removeCropButton, confirmCropButton].forEach({ toolbar.addArrangedSubview($0) })
+                buttons = [removeCropButton, confirmCropButton]
+                
             case .decrptionEditting:
-                [].forEach({ toolbar.addArrangedSubview($0) })
+                buttons = []
             }
+            
+            buttons.forEach({ toolbar.addArrangedSubview($0) })
         }
     }
     
@@ -74,8 +79,8 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     override func setupView() {
         view.addSubview(imageView)
         imageView.snp.makeConstraints { make in
-            make.bottom.equalTo(buttonStackView.snp.top)
             make.top.leading.trailing.equalTo(safeArea)
+            make.bottom.equalTo(buttonStackView.snp.top)
         }
         
         view.addSubview(toolbar)
@@ -112,8 +117,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
             make.width.height.equalTo(30)
         }
         
-        [textButton, bodyButton, cropButton, rotateButton]
-            .forEach({ toolbar.addArrangedSubview($0) })
+        state = .normal
     }
     
     // MARK: Helpers
@@ -139,12 +143,8 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     }
     
     @objc private func rotateImage() {
-        guard let data = try? Data(contentsOf: media.url) else { return }
-        var image = UIImage(data: data)
-        image = image?.rotate(radians: .pi/2)
-        try? image?.jpegData(compressionQuality: 0.8)?.write(to: media.url)
-        self.image = image
-        imageView.image = image
+        media.rotateImage()
+        imageView.setMode(imageView.mode)
     }
     
     @objc private func cropImage() {
@@ -172,7 +172,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.distribution = .fillProportionally
+        stackView.distribution = .fillEqually
         stackView.tintColor = .white
         return stackView
     }()

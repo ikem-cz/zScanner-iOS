@@ -66,9 +66,10 @@
 "newDocumentPhotos.continue.title" = "Pokračovat";
 "newDocumentPhotos.nextPhoto.title" = "Pořídit další";
 "newDocumentPhotos.deleteDocument.title" = "Zrušit záznam";
-
-"newDocumentPhotos.scanMode[edit].title" = "Upravit";
-"newDocumentPhotos.scanMode[preview].title" = "Náhled";
+"newDocumentPhotos.description.placeholder" = "Popisek";
+"newDocumentPhotos.filter.full" = "Barva";
+"newDocumentPhotos.filter.grayscale" = "St. šedi";
+"newDocumentPhotos.filter.mono" = "Černobíle";
 
 "newDocument.popAlert.title" = "Opravdu chcete jít o krok zpět?";
 "newDocument.popAlert.message" = "Změny provedené na této obrazovce nebudou uloženy.";
