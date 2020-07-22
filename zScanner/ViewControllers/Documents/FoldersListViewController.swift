@@ -66,8 +66,6 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     }
     
     private func setupBindings() {
-        
-        
         Observable.combineLatest([
                 viewModel.activeFolders,
                 viewModel.sentFolders
@@ -86,7 +84,7 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     
     private func setupView() {
         // Remove bottom line of navbar
-        navigationController?.navigationBar.setBackgroundImage(UIImage(), for:.default)
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.layoutIfNeeded()
         

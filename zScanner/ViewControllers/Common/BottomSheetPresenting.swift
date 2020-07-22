@@ -102,7 +102,7 @@ class BottomSheetPresenting: BaseViewController {
     private var frameOfExpandedView: CGRect {
         return CGRect(
             x: 0,
-            y: gapAboveExpandedSheet,
+            y: max(view.safeAreaInsets.top - 10, 54),
             width: view.frame.width,
             height: view.frame.height - gapAboveExpandedSheet
         )

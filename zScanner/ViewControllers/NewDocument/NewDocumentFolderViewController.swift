@@ -199,6 +199,9 @@ class NewDocumentFolderViewController: BaseViewController {
         tableView.tableFooterView = UIView()
         tableView.backgroundColor = .white
         tableView.registerCell(FolderTableViewCell.self)
+        
+        let estimatedKeyboardHeight: CGFloat = 250
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: estimatedKeyboardHeight, right: 0)
         return tableView
     }()
     
