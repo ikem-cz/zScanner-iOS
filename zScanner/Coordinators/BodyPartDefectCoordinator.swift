@@ -8,9 +8,7 @@
 
 import UIKit
 
-protocol BodyPartDefectFlowDelegate: FlowDelegate {
-    func defectSelected()
-}
+protocol BodyPartDefectFlowDelegate: FlowDelegate {}
 
 class BodyPartDefectCoordinator: Coordinator {
 
@@ -18,13 +16,17 @@ class BodyPartDefectCoordinator: Coordinator {
     unowned private let flowDelegate: BodyPartDefectFlowDelegate
     private let folder: FolderDomainModel
     private var media: Media
+    private var newDefects: [BodyDefectDomainModel]
     
-    init(media: Media, folder: FolderDomainModel, flowDelegate: BodyPartDefectFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
+    init(media: Media, folder: FolderDomainModel, newDefects: [BodyDefectDomainModel], flowDelegate: BodyPartDefectFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
         self.flowDelegate = flowDelegate
         self.media = media
         self.folder = folder
+        self.newDefects = newDefects
         
         super.init(flowDelegate: flowDelegate, window: window, navigationController: navigationController)
+        
+        media.defect.flatMap({ self.newDefects.append($0) })
     }
     
     // MARK: Interface
@@ -33,7 +35,7 @@ class BodyPartDefectCoordinator: Coordinator {
     }
     
     private func showBodyPartSelectionScreen() {
-        let viewModel = BodyPartViewModel(database: database, networkManager: networkManager, folder: folder, selectedBodyPart: media.defect?.bodyPartId)
+        let viewModel = BodyPartViewModel(database: database, networkManager: networkManager, folder: folder, selectedBodyPart: media.defect?.bodyPartId, newDefetcs: newDefects)
         let viewController = BodyPartViewController(viewModel: viewModel, coordinator: self)
         push(viewController)
     }
@@ -46,22 +48,25 @@ class BodyPartDefectCoordinator: Coordinator {
     // MARK: Helepers
     private let database: Database = try! RealmDatabase()
     private let networkManager: NetworkManager = IkemNetworkManager(api: NativeAPI())
+    private var defectSelection: ListPickerField<BodyDefectDomainModel>?
 }
 
 extension BodyPartDefectCoordinator: ListItemSelectionCoordinator {
     func selected() {
-        pop()
+        guard let defect = defectSelection?.selected.value else { return }
+        media.defect = defect
+        popAll()
+        flowDelegate.coordinatorDidFinish(self)
     }
 }
 
 extension BodyPartDefectCoordinator: BodyPartCoordinator {
-    func showDefectSelector(for bodyPartId: String, list: ListPickerField<BodyDefectDomainModel>) {
-        showBodyDefectSelectionScreen(for: bodyPartId, list: list)
-    }
-    
-    func selected(_ defect: BodyDefectDomainModel) {
-        media.defect = defect
-        popAll()
-        flowDelegate.coordinatorDidFinish(self)
+    func showDefectSelector(for bodyPart: BodyPartDomainModel, defects: [BodyDefectDomainModel]) {
+        
+        let bodypartDefects = defects.filter({ $0.bodyPartId == bodyPart.id })
+        let selectorTitle = "\("newDocument.defectList.title".localized) \(bodyPart.name)"
+        self.defectSelection = ListPickerField(title: selectorTitle, list: bodypartDefects)
+        
+        showBodyDefectSelectionScreen(for: bodyPart.id, list: defectSelection!)
     }
 }

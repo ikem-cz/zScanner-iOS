@@ -98,9 +98,11 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func runBodyPartSelectionFlow(media: Media) {
+        let newDefects = mediaViewModel?.mediaArray.value.compactMap({ $0.defect }).filter({ $0.isNew }) ?? []
         let coordinator = BodyPartDefectCoordinator(
             media: media,
             folder: folder,
+            newDefects: newDefects,
             flowDelegate: self,
             window: window,
             navigationController: navigationController
@@ -260,8 +262,4 @@ extension NewDocumentCoordinator: ListItemSelectionCoordinator {
     }
 }
 
-extension NewDocumentCoordinator: BodyPartDefectFlowDelegate {
-    func defectSelected() {
-        #warning("TODO")
-    }
-}
+extension NewDocumentCoordinator: BodyPartDefectFlowDelegate {}

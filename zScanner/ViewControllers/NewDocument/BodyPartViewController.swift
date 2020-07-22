@@ -10,8 +10,7 @@ import UIKit
 import RxSwift
 
 protocol BodyPartCoordinator: BaseCoordinator {
-    func showDefectSelector(for bodyPartId: String, list: ListPickerField<BodyDefectDomainModel>)
-    func selected(_ defect: BodyDefectDomainModel)
+    func showDefectSelector(for bodyPart: BodyPartDomainModel, defects: [BodyDefectDomainModel])
 }
 
 class BodyPartViewController: BaseViewController, ErrorHandling {
@@ -38,14 +37,8 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if let defect = defectSelection.selected.value {
-            viewModel.selectedBodyPartId = defect.bodyPartId
-            updatePoints()
-            coordinator.selected(defect)
-        } else {
-            selectedBodyPart = nil
-            segmentChanged(partSelector)
-        }
+        selectedBodyPart = nil
+        segmentChanged(partSelector)
     }
     
     // MARK: Helpers
@@ -90,25 +83,19 @@ class BodyPartViewController: BaseViewController, ErrorHandling {
                 switch result {
                 case .awaitingInteraction:
                     break
+                    
                 case .loading:
                     break
+                    
                 case .success(let defects):
                     self.updatePoints()
-                    let bodypartDefects = defects.filter({ $0.bodyPartId == self.selectedBodyPart?.id })
-                    self.defectSelection = ListPickerField(title: self.selectorTitle, list: bodypartDefects)
-                    if let bodyPartId = self.selectedBodyPart?.id {
-                        self.coordinator.showDefectSelector(for: bodyPartId, list: self.defectSelection)
-                    }
-                    
+                    self.selectedBodyPart.flatMap({ self.coordinator.showDefectSelector(for: $0, defects: defects) })
+                        
                 case .error(let error):
                     self.handleError(error)
                 }
             })
             .disposed(by: disposeBag)
-    }
-    
-    private var selectorTitle: String {
-        "\("newDocument.defectList.title".localized) \(selectedBodyPart?.name ?? "")"
     }
     
     private func clearBodyView() {

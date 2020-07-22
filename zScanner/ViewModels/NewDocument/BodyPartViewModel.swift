@@ -33,14 +33,16 @@ class BodyPartViewModel {
     var bodyImage = BehaviorRelay<ImageState>(value: .awaitingInteraction)
     var defects = BehaviorRelay<DefectsState>(value: .awaitingInteraction)
     var selectedBodyPartId: String?
+    let newDefetcs: [BodyDefectDomainModel]
     
-    init(database: Database, networkManager: NetworkManager, folder: FolderDomainModel, selectedBodyPart: String?) {
+    init(database: Database, networkManager: NetworkManager, folder: FolderDomainModel, selectedBodyPart: String?, newDefetcs: [BodyDefectDomainModel]) {
         self.database = database
         self.networkManager = networkManager
         self.folder = folder
         self.bodyViews = database.loadObjects(BodyViewDatabaseModel.self)
             .map({ $0.toDomainModel() })
         self.selectedBodyPartId = selectedBodyPart
+        self.newDefetcs = newDefetcs
         
         bodyViews.first.flatMap { getImage(for: $0) }
     }
@@ -69,7 +71,7 @@ class BodyPartViewModel {
                 case .progress:
                     self?.defects.accept(.loading)
                 case .success(data: let defects):
-                    self?.defects.accept(.success(defects.map({ $0.toDomainModel() })))
+                    self?.defects.accept(.success(defects.map({ $0.toDomainModel() }) + (self?.newDefetcs ?? []) ))
                 case .error(let error):
                     self?.defects.accept(.error(error))
                 }

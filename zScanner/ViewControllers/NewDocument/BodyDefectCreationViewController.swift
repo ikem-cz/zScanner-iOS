@@ -107,8 +107,8 @@ class BodyDefectCreationViewController: ListItemSelectionViewController<BodyDefe
                 let name = (fields[0] as! TextInputField).text.value
                 let item = BodyDefectDomainModel(title: name, bodyPartId: bodyPartId)
                 viewModel.selected.accept(item)
-                coordinator.backButtonPressed(sender: self)
                 
+                coordinator.selected()
             default:
                 break
             }
