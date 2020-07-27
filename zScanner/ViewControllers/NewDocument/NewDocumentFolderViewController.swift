@@ -122,13 +122,21 @@ class NewDocumentFolderViewController: BaseViewController {
         
         if !suggested.isEmpty {
             snapshot.appendSections([.suggestedResult])
-            snapshot.appendItems(suggested, toSection: .suggestedResult)
         }
         
         if !other.isEmpty {
             snapshot.appendSections([.searchResults])
             snapshot.appendItems(other, toSection: .searchResults)
         }
+        
+        // TODO: temporarily append items to suggested section later.
+        // SOmetimes items are coming doubled from BE and we want to prioritise suggested results in the filter.
+        // And DIffableDatasrouce is allowing only one appearance which is the later inserted.
+        // Merge with the first condition when fixed on BE
+        if !suggested.isEmpty {
+            snapshot.appendItems(suggested, toSection: .suggestedResult)
+        }
+
 
         dataSource.apply(snapshot, animatingDifferences: true)
     }

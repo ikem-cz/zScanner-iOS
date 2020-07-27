@@ -69,8 +69,8 @@ class NewDocumentFolderViewModel {
                         self?.tracker.track(.userNotFound)
                         folders.append(.notFound)
                     }
-                    self?.searchResults.accept(folders.filter({ $0.type != .suggested }))
-                    self?.suggestedResults.accept(folders.filter({ $0.type == .suggested }))
+                    self?.searchResults.accept(folders.filter({ $0.type != .suggested }).unique())
+                    self?.suggestedResults.accept(folders.filter({ $0.type == .suggested }).unique())
                 case .error:
                     self?.tracker.track(.userNotFound)
                     self?.isLoading.accept(false)
@@ -85,5 +85,20 @@ class NewDocumentFolderViewModel {
             oldValue?.dispose()
             activeSearchDisposable?.disposed(by: disposeBag)
         }
+    }
+}
+
+extension Array where Element: Hashable {
+    func unique() -> [Element] {
+        var set = Set<Element>() //the unique list kept in a Set for fast retrieval
+        var arrayOrdered = [Element]() //keeping the unique list of elements but ordered
+        for value in self {
+            if !set.contains(value) {
+                set.insert(value)
+                arrayOrdered.append(value)
+            }
+        }
+
+        return arrayOrdered
     }
 }
