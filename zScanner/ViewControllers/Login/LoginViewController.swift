@@ -126,20 +126,13 @@ class LoginViewController: BaseViewController, ErrorHandling {
         container.addSubview(logoView)
         logoView.snp.makeConstraints { make in
             make.top.centerX.equalToSuperview()
-            make.width.equalTo(114)
-            make.height.equalTo(102)
-        }
-        
-        container.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(logoView.snp.bottom).offset(8)
-            make.centerX.equalToSuperview()
-            make.right.left.equalToSuperview()
+            make.width.equalTo(118)
+            make.height.equalTo(160)
         }
         
         container.addSubview(usernameTextField)
         usernameTextField.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(20)
+            make.top.equalTo(logoView.snp.bottom).offset(32)
             make.centerX.equalToSuperview()
             make.right.left.equalToSuperview()
         }
@@ -164,24 +157,20 @@ class LoginViewController: BaseViewController, ErrorHandling {
             make.right.equalToSuperview().inset(12)
         }
         
-        titleLabel.text = "login.screen.title".localized
+        view.addSubview(byIkem)
+        byIkem.snp.makeConstraints { make in
+            make.centerX.equalTo(safeArea)
+            make.bottom.equalTo(safeArea).inset(20)
+            make.width.equalTo(150)
+            make.height.equalTo(66)
+        }
     }
     
     private lazy var logoView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = #imageLiteral(resourceName: "ikemLogo")
+        imageView.image = #imageLiteral(resourceName: "zScanner_colored")
         imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = .white
-        imageView.backgroundColor = .primary
         return imageView
-    }()
-    
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .primary
-        label.font = .headline
-        label.textAlignment = .center
-        return label
     }()
     
     private lazy var usernameTextField: UITextField = {
@@ -217,5 +206,13 @@ class LoginViewController: BaseViewController, ErrorHandling {
     private lazy var container: UIView = {
         let view = UIView()
         return view
+    }()
+    
+    private lazy var byIkem: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = #imageLiteral(resourceName: "By Ikem").withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = .black
+        imageView.contentMode = .scaleAspectFit
+        return imageView
     }()
 }

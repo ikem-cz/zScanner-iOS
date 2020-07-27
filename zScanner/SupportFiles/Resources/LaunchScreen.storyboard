@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17132" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
     <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17105.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,21 +16,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Copyright © 2019 Institut klinické a experimentální medicíny. All rights reserved." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="obG-Y5-kRd">
-                                <rect key="frame" x="20" y="801.33333333333337" width="374" height="40.666666666666629"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.8862745098" green="0.0" blue="0.1019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="By Ikem" translatesAutoresizingMaskIntoConstraints="NO" id="W9x-KC-ltv">
-                                <rect key="frame" x="122" y="767.33333333333337" width="170" height="74.666666666666629"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" secondItem="W9x-KC-ltv" secondAttribute="height" multiplier="232:102" id="Nfs-45-s0c"/>
-                                    <constraint firstAttribute="width" constant="170" id="Rkc-gA-Aj2"/>
-                                </constraints>
-                            </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="zScanner_logo_white" translatesAutoresizingMaskIntoConstraints="NO" id="e0K-0Q-JHb">
                                 <rect key="frame" x="107" y="323" width="200" height="250"/>
                                 <constraints>
@@ -37,19 +23,25 @@
                                     <constraint firstAttribute="height" constant="250" id="GZG-nH-TUQ"/>
                                 </constraints>
                             </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="By Ikem" translatesAutoresizingMaskIntoConstraints="NO" id="W9x-KC-ltv">
+                                <rect key="frame" x="132" y="776" width="150" height="66"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="W9x-KC-ltv" secondAttribute="height" multiplier="232:102" id="Nfs-45-s0c"/>
+                                    <constraint firstAttribute="width" constant="150" id="Rkc-gA-Aj2"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                         <color key="backgroundColor" red="0.88627450980392153" green="0.0" blue="0.10196078431372549" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="W9x-KC-ltv" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="0Ig-UR-YgK"/>
                             <constraint firstItem="e0K-0Q-JHb" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="0qq-jG-Ehn"/>
-                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="centerX" secondItem="obG-Y5-kRd" secondAttribute="centerX" id="5cz-MP-9tL"/>
                             <constraint firstItem="W9x-KC-ltv" firstAttribute="bottom" secondItem="Bcu-3y-fUS" secondAttribute="bottom" constant="-20" id="97k-j9-UCw"/>
-                            <constraint firstItem="obG-Y5-kRd" firstAttribute="bottom" secondItem="Bcu-3y-fUS" secondAttribute="bottom" constant="-20" id="SJd-uy-RPm"/>
-                            <constraint firstItem="obG-Y5-kRd" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" constant="20" id="SfN-ll-jLj"/>
                             <constraint firstItem="e0K-0Q-JHb" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" priority="900" id="uhY-CB-YMz"/>
                             <constraint firstItem="W9x-KC-ltv" firstAttribute="top" relation="greaterThanOrEqual" secondItem="e0K-0Q-JHb" secondAttribute="bottom" constant="80" id="zoZ-px-sqZ"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
