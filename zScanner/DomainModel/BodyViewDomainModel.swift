@@ -13,6 +13,15 @@ struct BodyViewDomainModel: Decodable {
     let id: String
     let name: String
     let bodyParts: [BodyPartDomainModel]
+    
+    var position: Int {
+        switch id {
+            case "FRONT": return 0
+            case "BACK": return 1
+            case "HEAD": return 2
+            default: return 100
+        }
+    }
 }
 
 struct BodyPartDomainModel: Decodable {

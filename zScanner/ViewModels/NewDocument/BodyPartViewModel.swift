@@ -40,7 +40,7 @@ class BodyPartViewModel {
         self.networkManager = networkManager
         self.folder = folder
         self.bodyViews = database.loadObjects(BodyViewDatabaseModel.self)
-            .map({ $0.toDomainModel() })
+            .map({ $0.toDomainModel() }).sorted(by: \.position)
         self.selectedBodyPartId = selectedBodyPart
         self.newDefetcs = newDefetcs
         
