@@ -22,7 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
-        Realm.Configuration.defaultConfiguration.schemaVersion = 4
+        Realm.Configuration.defaultConfiguration.schemaVersion = 1
+        
         runApp()
         return true
     }
@@ -30,6 +31,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func runApp() {
         appCoordinator = AppCoordinator()
         appCoordinator?.begin()
-//        UIApplication.shared.windows.first?.layer.speed = 0.1
     }
 }
