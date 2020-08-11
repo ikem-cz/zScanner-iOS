@@ -160,6 +160,7 @@ class NewDocumentCoordinator: Coordinator {
     override func willPreventPop(for sender: BaseViewController) -> Bool {
         switch sender {
         case is MediaListViewController,
+             is MediaPreviewViewController,
              is NewDocumentTypeViewController,
              is NewDocumentFolderViewController:
             return true

@@ -9,6 +9,7 @@
 import UIKit
 import AVFoundation
 import Vision
+import ImageIO
 
 class Media {
     let id: String
@@ -28,16 +29,52 @@ class Media {
     var thumbnail: UIImage? {
         switch type {
         case .photo, .scan:
-            guard var ciImage = CIImage.load(from: url, applyingFilter: colorFilter) else { return nil }
-            
-            if let rectangle = cropRectangle {
-                ciImage = extractPerspectiveRect(rectangle, from: ciImage)
-            }
-            
-            return UIImage(ciImage: ciImage)
+            guard let source = CGImageSourceCreateWithURL((cropUrl ?? url) as CFURL, nil) else { return nil }
+            let options: [NSString: Any] = [
+                kCGImageSourceThumbnailMaxPixelSize: 300,
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceCreateThumbnailWithTransform: true
+            ]
+
+            let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
+            return cgImage.flatMap({ UIImage(cgImage: $0) })
 
         case .video:
             return makeVideoThumbnail()
+        }
+    }
+
+    var fullSize: UIImage? {
+        switch type {
+        case .photo, .scan:
+            guard let source = CGImageSourceCreateWithURL((cropUrl ?? url) as CFURL, nil) else { return nil }
+            let options: [NSString: Any] = [
+                kCGImageSourceThumbnailMaxPixelSize: 1280,
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceCreateThumbnailWithTransform: true
+            ]
+
+            let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
+            return cgImage.flatMap({ UIImage(cgImage: $0) })
+
+        case .video:
+            return makeVideoThumbnail()
+        }
+    }
+
+    var edited: UIImage? {
+        switch type {
+        case .photo, .scan:
+            guard var ciImage = CIImage.load(from: url, applyingFilter: colorFilter) else { return nil }
+
+            if let rectangle = cropRectangle {
+                ciImage = extractPerspectiveRect(rectangle, from: ciImage)
+            }
+
+            return UIImage(ciImage: ciImage)
+
+        case .video:
+            return nil
         }
     }
     
@@ -50,7 +87,7 @@ class Media {
         self.fromGallery = fromGallery
     }
     
-    convenience init(scanRectangle: VNRectangleObservation, correlationId: String, fromGallery: Bool) {
+    convenience init(scanRectangle: VNRectangleObservation?, correlationId: String, fromGallery: Bool) {
         self.init(type: .scan, correlationId: correlationId, fromGallery: fromGallery)
 
         self.cropRectangle = scanRectangle
@@ -69,7 +106,7 @@ class Media {
     }
     
     func saveCrop() {
-        guard let cropUrl = cropUrl, let cropData = thumbnail?.jpegData(compressionQuality: 1) else { return }
+        guard let cropUrl = cropUrl, let cropData = edited?.jpegData(compressionQuality: 0.8) else { return }
         do {
             try cropData.write(to: cropUrl)
         } catch let error {
@@ -83,7 +120,7 @@ class Media {
         image = image?.rotate(radians: .pi/2)
         
         do {
-            try image?.jpegData(compressionQuality: 1)?.write(to: url)
+            try image?.jpegData(compressionQuality: 0.8)?.write(to: url)
             cropRectangle = cropRectangle?.rotate()
         } catch {
             print(error)

@@ -53,6 +53,14 @@ class CroppingImageView: UIImageView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func viewWillAppear() {
+        setMode(mode)
+    }
+    
+    func viewWillDisappear() {
+        self.image = nil
+    }
+    
     private var oldBounds: CGRect = .zero
     
     override func layoutSubviews() {
@@ -83,12 +91,14 @@ class CroppingImageView: UIImageView {
             rectangleLayer?.removeFromSuperlayer()
             rectangleLayer = nil
             corners.forEach({ $0.removeFromSuperview() })
-            self.image = media.thumbnail
+            
+            self.image = media.fullSize
         }
     }
     
     func setFilter(_ filter: ColorFilter) {
         media.colorFilter = filter
+        media.saveCrop()
         setMode(mode)
     }
     

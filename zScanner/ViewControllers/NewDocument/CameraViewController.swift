@@ -450,7 +450,6 @@ class CameraViewController: BaseViewController {
                 }
             }
         }
-        
     }
     
     private var timerSubscription: Disposable?
@@ -611,18 +610,18 @@ class CameraViewController: BaseViewController {
 // MARK: - AVCapturePhotoCaptureDelegate implementation
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        stopCaptureSession()
+        
         guard let imageData = photo.fileDataRepresentation() else { return }
         
-        if let image = UIImage(data: imageData) {
-            
+        if let image = UIImage(data: imageData)?.normalizedImage() {
             if viewModel.currentMode.value == .scan {
-                let rectangle = capturedScanResult ?? .default
+                let rectangle = capturedScanResult
                 viewModel.saveScan(image: image, rectangle: rectangle, fromGallery: false)
-                coordinator.mediaCreated(viewModel.media!)
             } else {
                 viewModel.saveImage(image: image, fromGallery: false)
-                coordinator.mediaCreated(viewModel.media!)
             }
+            coordinator.mediaCreated(viewModel.media!)
         }
     }
 }
@@ -695,7 +694,7 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
     private func handleGalleryRectangles(request: VNRequest, error: Error?) {
         DispatchQueue.main.async {
             let result = request.results?.first as? VNRectangleObservation
-            self.viewModel.saveScan(image: self.galleryScanImage!, rectangle: result ?? .default, fromGallery: true)
+            self.viewModel.saveScan(image: self.galleryScanImage!, rectangle: result, fromGallery: true)
             self.coordinator.mediaCreated(self.viewModel.media!)
             self.galleryScanImage = nil
         }

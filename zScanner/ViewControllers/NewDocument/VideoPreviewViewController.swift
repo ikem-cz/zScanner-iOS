@@ -17,6 +17,8 @@ class VideoPreviewViewController: MediaPreviewViewController {
     
     // MARK: View setup
     override func setupView() {
+        super.setupView()
+        
         view.addSubview(videoViewController.view)
         videoViewController.view.snp.makeConstraints { make in
             make.top.width.equalTo(safeArea)

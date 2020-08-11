@@ -22,10 +22,18 @@ class PhotoPreviewViewController: MediaPreviewViewController {
         didSet {
             let buttons: [UIView]
             toolbar.arrangedSubviews.forEach({ $0.removeFromSuperview() })
+            buttonStackView.arrangedSubviews.forEach({
+                ($0 as? UIButton)?.isEnabled = false
+                $0.alpha = 0.5
+            })
             
             switch state {
             case .normal:
                 buttons = [textButton, bodyButton, cropButton, rotateButton]
+                buttonStackView.arrangedSubviews.forEach({
+                    ($0 as? UIButton)?.isEnabled = true
+                    $0.alpha = 1
+                })
                 
             case .cropping:
                 buttons = [removeCropButton, confirmCropButton]
@@ -77,6 +85,8 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     
     // MARK: View setup
     override func setupView() {
+        super.setupView()
+        
         view.addSubview(imageView)
         imageView.snp.makeConstraints { make in
             make.top.leading.trailing.equalTo(safeArea)
@@ -144,6 +154,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
     
     @objc private func rotateImage() {
         media.rotateImage()
+        media.saveCrop()
         imageView.setMode(imageView.mode)
     }
     

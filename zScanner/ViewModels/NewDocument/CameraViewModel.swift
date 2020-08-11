@@ -72,13 +72,14 @@ class CameraViewModel {
         }
     }
     
-    func saveScan(image: UIImage, rectangle: VNRectangleObservation, fromGallery: Bool) {
+    func saveScan(image: UIImage, rectangle: VNRectangleObservation?, fromGallery: Bool) {
         guard let data = image.jpegData(compressionQuality: 1) else { return }
         
         do {
             media = Media(scanRectangle: rectangle, correlationId: correlationId, fromGallery: fromGallery)
             createDocumentDirectory()
             try data.write(to: media!.url)
+            media?.saveCrop()
         } catch let error {
             print("error saving image with error", error)
         }

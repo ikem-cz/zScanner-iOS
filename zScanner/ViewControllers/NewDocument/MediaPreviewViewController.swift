@@ -33,28 +33,14 @@ class MediaPreviewViewController: BaseViewController {
         super.init(coordinator: coordinator, theme: .dark)
     }
     
-    override func loadView() {
-        super.loadView()
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        setupButtons()
         setupView()
-    }
-    
-    override func setupBackButton() {
-        // Prevent back button when going from camera screen
-        if mediaEditing {
-            super.setupBackButton()
-            nextPhotoButton.isHidden = true
-            againButton.isHidden = true
-        }
     }
     
     // MARK: View setup
     func setupView() {
-        fatalError("setupView function needs to override")
-    }
-    
-    func setupButtons() {
         view.backgroundColor = .black
         title = viewModel.folderName
         
@@ -79,6 +65,11 @@ class MediaPreviewViewController: BaseViewController {
         continueButton.snp.makeConstraints { make in
             make.height.equalTo(44)
         }
+        
+        if mediaEditing {
+            nextPhotoButton.isHidden = true
+            againButton.isHidden = true
+        }
     }
     
     // MARK: Helpers
@@ -100,7 +91,6 @@ class MediaPreviewViewController: BaseViewController {
     
     @objc func showMediaSelection() {
         stopPlayingVideo()
-        media.saveCrop()
         viewModel.addMedia(media)
         coordinator.finishEdit()
     }

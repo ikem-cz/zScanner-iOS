@@ -16,18 +16,40 @@ class ScanPreviewViewController: MediaPreviewViewController {
         case cropping
         case coloring
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        imageView.viewWillAppear()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        imageView.viewWillDisappear()
+    }
 
     // MARK: Instance part
     private var state: State = .normal {
         didSet {
             let buttons: [UIView]
             toolbar.arrangedSubviews.forEach({ $0.removeFromSuperview() })
+            buttonStackView.arrangedSubviews.forEach({
+                ($0 as? UIButton)?.isEnabled = false
+                $0.alpha = 0.5
+            })
             
             switch state {
             case .normal:
                 buttons = [colorButton, cropButton, rotateButton]
+                buttonStackView.arrangedSubviews.forEach({
+                    ($0 as? UIButton)?.isEnabled = true
+                    $0.alpha = 1
+                })
+                
             case .cropping:
                 buttons = [removeCropButton, confirmCropButton]
+                
             case .coloring:
                 buttons = [noFilterButton, grayscaleFilterButton, monoFilterButton, confirmFilterButton]
             }
@@ -38,6 +60,8 @@ class ScanPreviewViewController: MediaPreviewViewController {
     
     // MARK: View setup
     override func setupView() {
+        super.setupView()
+        
         view.addSubview(imageView)
         
         imageView.snp.makeConstraints { make in
@@ -67,7 +91,6 @@ class ScanPreviewViewController: MediaPreviewViewController {
     }
     
     @objc private func hideColoring() {
-        media.saveCrop()
         state = .normal
     }
     
@@ -85,6 +108,7 @@ class ScanPreviewViewController: MediaPreviewViewController {
     
     @objc private func rotateImage() {
         media.rotateImage()
+        media.saveCrop()
         imageView.setMode(imageView.mode)
     }
     
