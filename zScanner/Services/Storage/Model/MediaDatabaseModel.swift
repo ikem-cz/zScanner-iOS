@@ -26,7 +26,7 @@ class PageDatabaseModel: Object {
         self.index = media.index!
         self.relativePath = media.relativePath
         self.cropRelativePath = media.cropRelativePath
-        self.imageDescription = media.desription
+        self.imageDescription = media.description
         self.defect = media.defect.flatMap({ BodyDefectDatabaseModel(bodyDefect: $0) })
     }
     

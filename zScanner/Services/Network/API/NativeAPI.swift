@@ -139,7 +139,7 @@ struct NativeAPI: API {
                 headers: [:],
                 metadata: metadata
             )
-            upload?.setChunkSize(64 * 16_376)  // 16_376 is seacat frame size, to be
+            upload?.setChunkSize(64 * 16_376) // 16_376 is seacat frame size, to be
             upload?.progressBlock = progressBlock
             upload?.resultBlock = resultBlock
             upload?.failureBlock = failureBlock

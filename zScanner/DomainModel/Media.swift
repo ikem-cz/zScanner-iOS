@@ -19,7 +19,7 @@ class Media {
     let relativePath: String
     var cropRelativePath: String
     let fromGallery: Bool
-    var desription: String?
+    var description: String?
     var cropRectangle: VNRectangleObservation?
     var colorFilter: ColorFilter = .full
     var url: URL { URL(documentsWith: relativePath) }
@@ -101,7 +101,7 @@ class Media {
         self.relativePath = relativePath
         self.cropRelativePath = cropRelativePath
         self.fromGallery = false
-        self.desription = description
+        self.description = description
         self.defect = defect
     }
     

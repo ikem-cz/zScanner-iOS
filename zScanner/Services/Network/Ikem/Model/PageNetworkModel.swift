@@ -13,7 +13,7 @@ struct PageNetworkModel: Encodable {
     var filetype = "image/jpg"
     var correlation: String
     var pageIndex: Int
-    var decription: String? = nil
+    var description: String? = nil
     var defectId: String? = nil
     var defectName: String? = nil
     var bodyPartId: String? = nil
@@ -24,7 +24,7 @@ struct PageNetworkModel: Encodable {
         self.pageUrl = domainModel.cropUrl ?? domainModel.url
         self.pageIndex = domainModel.index!
         self.correlation = domainModel.correlationId
-        self.decription = domainModel.desription
+        self.description = domainModel.description
         
         if let defect = domainModel.defect {
             self.defectId = defect.id

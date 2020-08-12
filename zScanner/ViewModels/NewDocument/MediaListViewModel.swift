@@ -132,7 +132,7 @@ class MediaListViewModel {
         return picker
     }()
     private lazy var typePicker = ListPickerField<DocumentTypeDomainModel>(title: "form.listPicker.title".localized, list: [])
-    private lazy var titlePicker = TextInputField(title: "form.documentDecription.title".localized, validator: { _ in true })
+    private lazy var titlePicker = TextInputField(title: "form.documentDescription.title".localized, validator: { _ in true })
     private lazy var timePicker = DateTimePickerField(title: "form.dateTimePicker.title".localized, setDate: true, validator: { $0 != nil })
     private lazy var collectionView = CollectionViewField()
 }

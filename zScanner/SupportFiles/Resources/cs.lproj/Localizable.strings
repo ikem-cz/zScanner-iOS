@@ -89,7 +89,7 @@
 // MARK: - Form
 "form.listPicker.title" = "Typ dokumentu";
 "form.listPicker.unselected" = "Vybrat";
-"form.documentDecription.title" = "Název (nepovinný)";
+"form.documentDescription.title" = "Název (nepovinný)";
 "form.dateTimePicker.title" = "Datum vytvoření";
 "form.dateTimePicker.unselected" = "Vybrat";
 "form.segmentControl.unselected" = "Vybrat";

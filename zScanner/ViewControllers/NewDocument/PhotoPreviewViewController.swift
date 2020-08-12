@@ -148,7 +148,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
         toolbar.isHidden = false
         textbox.isHidden = true
         textInput.resignFirstResponder()
-        media.desription = textInput.text
+        media.description = textInput.text
         state = .normal
     }
     
@@ -227,7 +227,7 @@ class PhotoPreviewViewController: MediaPreviewViewController {
         let text = UITextField()
         text.placeholder = "Popisek"
         text.delegate = self
-        text.text = media.desription
+        text.text = media.description
         return text
     }()
     
