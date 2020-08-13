@@ -20,7 +20,7 @@
 		16D371FC246419F600B845B0 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D371FB246419F600B845B0 /* CameraViewModel.swift */; };
 		16D371FE24645E7A00B845B0 /* PhotoPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D371FD24645E7A00B845B0 /* PhotoPreviewViewController.swift */; };
 		16EB77FF2472940100B1CCF8 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EB77FE2472940100B1CCF8 /* Media.swift */; };
-		16EB78012472A30D00B1CCF8 /* MediumViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EB78002472A30D00B1CCF8 /* MediumViewModel.swift */; };
+		16EB78012472A30D00B1CCF8 /* MediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EB78002472A30D00B1CCF8 /* MediaViewModel.swift */; };
 		16EB78032472DB5100B1CCF8 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EB78022472DB5100B1CCF8 /* HeaderView.swift */; };
 		16EB78052472EBFA00B1CCF8 /* HambugerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EB78042472EBFA00B1CCF8 /* HambugerButton.swift */; };
 		16EC85FB246AF77200C525B9 /* MediaListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EC85FA246AF77200C525B9 /* MediaListViewController.swift */; };
@@ -206,7 +206,7 @@
 		16D371FB246419F600B845B0 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
 		16D371FD24645E7A00B845B0 /* PhotoPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewViewController.swift; sourceTree = "<group>"; };
 		16EB77FE2472940100B1CCF8 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
-		16EB78002472A30D00B1CCF8 /* MediumViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediumViewModel.swift; sourceTree = "<group>"; };
+		16EB78002472A30D00B1CCF8 /* MediaViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaViewModel.swift; sourceTree = "<group>"; };
 		16EB78022472DB5100B1CCF8 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 		16EB78042472EBFA00B1CCF8 /* HambugerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HambugerButton.swift; sourceTree = "<group>"; };
 		16EC85FA246AF77200C525B9 /* MediaListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaListViewController.swift; sourceTree = "<group>"; };
@@ -551,7 +551,7 @@
 			children = (
 				BD000CE022E4FB5A001EE38A /* FoldersListViewModel.swift */,
 				BD85C93722E502A3004DC76E /* DocumentViewModel.swift */,
-				16EB78002472A30D00B1CCF8 /* MediumViewModel.swift */,
+				16EB78002472A30D00B1CCF8 /* MediaViewModel.swift */,
 				16FA31BE2476659D0052C3DC /* FolderViewModel.swift */,
 			);
 			path = Documents;
@@ -1368,7 +1368,7 @@
 				BD59BBE724B10BDF004951EA /* BodyViewDatabaseModel.swift in Sources */,
 				BD59A0A822E380C400FA9CD0 /* LoginViewController.swift in Sources */,
 				BD59BBE024B102AA004951EA /* BodyViewDomainModel.swift in Sources */,
-				16EB78012472A30D00B1CCF8 /* MediumViewModel.swift in Sources */,
+				16EB78012472A30D00B1CCF8 /* MediaViewModel.swift in Sources */,
 				16EB78052472EBFA00B1CCF8 /* HambugerButton.swift in Sources */,
 				BD88F1592309537F00569D71 /* UploadPageRequest.swift in Sources */,
 				BD000CDB22E4AD61001EE38A /* PrimaryButton.swift in Sources */,

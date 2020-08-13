@@ -53,7 +53,7 @@ class NewDocumentCoordinator: Coordinator {
             popAll(animated: false)
         }
         
-        let viewModel = CameraViewModel(initialMode: mediaType, folderName: folder.name, correlationId: newDocument.id, mediaSourceTypes: mediaSourceTypes)
+        let viewModel = CameraViewModel(initialMode: mediaType, folder: folder, correlationId: newDocument.id, mediaSourceTypes: mediaSourceTypes)
         let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
         push(viewController, animated: true)
     }
@@ -146,9 +146,7 @@ class NewDocumentCoordinator: Coordinator {
     }
     
     private func deleteMedia() {
-        #warning("TODO")
-        // TODO: Create a folder structure `/FolderId/DocumentId/MediaId.jpg` and remove the document properly
-        let folderURL = URL(documentsWith: newDocument.id)
+        let folderURL = URL(documentsWith: "\(newDocument.id)")
         do {
             try FileManager.default.removeItem(at: folderURL)
         } catch let error as NSError {

@@ -30,6 +30,18 @@ final class FolderViewModel {
         documents.value.forEach({ $0.reupload() })
     }
     
+    func cleanUp() {
+        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 1) {
+            var newDocuments = self.documents.value
+            let finishedDocuments = newDocuments.filter({ $0.documentUploadStatus.value == .success })
+            for document in finishedDocuments {
+                _ = newDocuments.remove(document)
+                document.delete()
+            }
+            self.documents.accept(newDocuments)
+        }
+    }
+    
     private lazy var statusToProgress: ([UploadStatus]) -> UploadStatus = { [weak self] tasks in
         var progresses = [Double]()
         var inProgressCount = 0
@@ -46,8 +58,7 @@ final class FolderViewModel {
                 inProgressCount += 1
                 progresses.append(percentage)
             case .success:
-                break
-//                progresses.append(1)
+                progresses.append(1)
             case .failed(let e):
                 failed = true
                 error = e
@@ -63,6 +74,8 @@ final class FolderViewModel {
             }
         }
         
+        print(progresses)
+        
         let overallProgress = progresses.reduce(0, { $0 + $1 }) / Double(progresses.count)
         return .progress(overallProgress)
     }
@@ -75,13 +88,14 @@ final class FolderViewModel {
         documents.subscribe(onNext: { [weak self] documents in
             guard let self = self else { return }
             
-            let tasks = documents.map({
+            let tasks = documents.filter({ $0.documentUploadStatus.value != .success }).map({
                 $0.documentUploadStatus.asObservable()
             })
             
             self.folderStatusSubscription?.dispose()
             self.folderStatusSubscription = Observable
                 .combineLatest(tasks)
+                .skip(1)
                 .map(self.statusToProgress)
                 .subscribe(onNext: { [weak self] status in
                     self?.folderStatus.accept(status)

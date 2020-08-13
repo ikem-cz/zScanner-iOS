@@ -66,16 +66,9 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
     }
     
     private func setupBindings() {
-        Observable.combineLatest([
-                viewModel.activeFolders,
-                viewModel.sentFolders
-            ])
-            .distinctUntilChanged()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                self?.updateTableView()
-            })
-            .disposed(by: disposeBag)
+        viewModel.foldersUpdated = { [weak self] in
+            self?.updateTableView()
+        }
     }
     
     @objc private func openMenu() {
@@ -119,13 +112,13 @@ class FoldersListViewController: BottomSheetPresenting, ErrorHandling {
         let count = viewModel.folders.count
         tableView.backgroundView?.isHidden = count > 0
         
-        let active = viewModel.activeFolders.value
+        let active = viewModel.activeFolders
         if !active.isEmpty {
             snapshot.appendSections([.active])
             snapshot.appendItems(active, toSection: .active)
         }
         
-        let sent = viewModel.sentFolders.value
+        let sent = viewModel.sentFolders
         if !sent.isEmpty {
             snapshot.appendSections([.sent])
             snapshot.appendItems(sent, toSection: .sent)

@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import RxRelay
 
 class DocumentViewModel {
     enum UploadStatus: RawRepresentable, Equatable {
@@ -36,6 +37,22 @@ class DocumentViewModel {
                 case .failed: return 3
             }
         }
+        
+        var isInProgress: Bool {
+            if case .progress = self {
+                return true
+            }
+            return false
+        }
+        
+        static func == (lhs: UploadStatus, rhs: UploadStatus) -> Bool {
+            switch (lhs, rhs) {
+            case (.progress(let lp), .progress(let rp)):
+                return lp == rp
+            default:
+                return lhs.rawValue == rhs.rawValue
+            }
+        }
     }
     
     // MARK: Instance part
@@ -56,7 +73,15 @@ class DocumentViewModel {
         
         if let databaseModel = database.loadObjects(DocumentUploadStatusDatabaseModel.self).filter({ $0.documentId == document.id }).first {
             internalUploadStatus.onNext(databaseModel.uploadStatus == .success ? .success : .failed(nil))
-        }        
+        }
+        
+        Observable
+            .combineLatest(tasks)
+            .map(statusToProgress)
+            .subscribe(onNext: { [weak self] status in
+                self?.documentUploadStatus.accept(status)
+            })
+            .disposed(by: disposeBag)
     }
     
     // MARK: Interface
@@ -74,10 +99,20 @@ class DocumentViewModel {
         uploadDocument()
     }
     
-    lazy var documentUploadStatus: Observable<UploadStatus> = Observable
-        .combineLatest(tasks)
-        .map(statusToProgress)
-        .asObservable()
+    func delete() {
+        pages.forEach({ $0.delete() })
+        
+        let databaseDocument = DocumentDatabaseModel(document: document)
+        databaseDocument.deleteRichContent()
+        DispatchQueue.main.async {
+            if let object = self.database.loadObject(DocumentDatabaseModel.self, withId: databaseDocument.id) {
+                self.database.deleteObject(object)
+            }
+        }
+        
+    }
+    
+    var documentUploadStatus = BehaviorRelay<UploadStatus>(value: .awaitingInteraction)
     
     // MARK: Helpers
     private let disposeBag = DisposeBag()
@@ -93,7 +128,6 @@ class DocumentViewModel {
                 self.database.saveObject(databaseUploadStatus)
             })
             .disposed(by: disposeBag)
-
     }
     
     private func uploadInternalDocument() {
@@ -131,8 +165,8 @@ class DocumentViewModel {
     }
     
     private var tasks: [Observable<UploadStatus>] {
-        var tasks: [Observable<UploadStatus>] = pages.map({ $0.pageUploadStatus.asObservable() })
-        tasks.append(internalUploadStatus.asObservable())
+        var tasks: [Observable<UploadStatus>] = pages.map({ $0.pageUploadStatus.asObservable().distinctUntilChanged() })
+        tasks.append(internalUploadStatus.asObservable().distinctUntilChanged())
         return tasks
     }
     
@@ -180,10 +214,10 @@ class DocumentViewModel {
     
     private func checkUploadQueue() {
         var activeUploadsCount = pages.filter({ page in
-            return (try? page.pageUploadStatus.value()) == .progress(0)
+            (try? page.pageUploadStatus.value())?.isInProgress == true
         }).count
         
-        if (try? internalUploadStatus.value()) == .progress(0) {
+        if (try? internalUploadStatus.value())?.isInProgress == true {
             activeUploadsCount += 1
         }
         

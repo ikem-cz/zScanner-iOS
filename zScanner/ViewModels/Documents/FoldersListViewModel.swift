@@ -17,9 +17,11 @@ class FoldersListViewModel {
     private let networkManager: NetworkManager
     let login: LoginDomainModel
     
+    var foldersUpdated: EmptyClosure?
+    
     private(set) var folders: [FolderViewModel] = []
-    private(set) var activeFolders = BehaviorRelay<[FolderViewModel]>(value: [])
-    private(set) var sentFolders = BehaviorRelay<[FolderViewModel]>(value: [])
+    private(set) var activeFolders: [FolderViewModel] = []
+    private(set) var sentFolders: [FolderViewModel] = []
     
     private(set) var documentModes: [DocumentMode] = []
     
@@ -28,51 +30,62 @@ class FoldersListViewModel {
         self.login = login
         self.networkManager = ikemNetworkManager
         
-        updateFolders()
+        loadFolders()
         setupBindings()
     }
     
     //MARK: Interface
     func insertNewDocument(_ documentViewModel: DocumentViewModel) {
-        if let folder = activeFolders.value.first(where: { return $0.folder.id == documentViewModel.document.folderId }) {
+        if let folder = activeFolders.first(where: { return $0.folder.id == documentViewModel.document.folderId }) {
             folder.insertNewDocument(documentViewModel)
-        } else if let folder = sentFolders.value.first(where: { return $0.folder.id == documentViewModel.document.folderId }) {
+        } else if let folder = sentFolders.first(where: { return $0.folder.id == documentViewModel.document.folderId }) {
             folder.insertNewDocument(documentViewModel)
+            _ = sentFolders.remove(folder)
+            activeFolders.append(folder)
+            foldersUpdated?()
         } else {
             let databaseFolder = database.loadObject(FolderDatabaseModel.self, withId: documentViewModel.document.folderId)!
             let folder = FolderViewModel(folder: databaseFolder.toDomainModel(), documents: [documentViewModel])
-            folders.insert(folder, at: 0)
-            activeFolders.accept(folders.filter({ $0.folderStatus.value != .success }))
+            folders.append(folder)
+            activeFolders.append(folder)
+            subscribeFolderStatus(folder)
+            foldersUpdated?()
         }
-    }
-    
-    private func setupBindings() {
-        activeFolders
-            .subscribe(onNext: { foldersViewModel in
-                foldersViewModel.forEach { folderViewModel in
-                    self.createFolderStatusSubscription(folderViewModel: folderViewModel)
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        sentFolders
-            .subscribe(onNext: { foldersViewModel in
-                foldersViewModel.forEach { folderViewModel in
-                    self.createFolderStatusSubscription(folderViewModel: folderViewModel)
-                }
-            })
-            .disposed(by: disposeBag)
     }
     
     func updateFolders() {
         loadFolders()
-        
-        // Filter folders by status
-        activeFolders.accept(folders.filter({ $0.folderStatus.value != .success }))
-        sentFolders.accept(folders.filter({ $0.folderStatus.value == .success }))
+        foldersUpdated?()
     }
     
     //MARK: Helpers
+    private func setupBindings() {
+        folders.forEach { subscribeFolderStatus($0) }
+    }
+    
+    private func addActiveUpload(_ folder: FolderViewModel) {
+        folders.append(folder)
+        activeFolders.append(folder)
+        subscribeFolderStatus(folder)
+        foldersUpdated?()
+    }
+    
+    private func subscribeFolderStatus(_ folder: FolderViewModel) {
+        folder.folderStatus
+            .skip(1)
+            .distinctUntilChanged()
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self, weak folder] status in
+                if status == .success, let folder = folder {
+                    folder.cleanUp()
+                    _ = self?.activeFolders.remove(folder)
+                    self?.sentFolders.append(folder)
+                    self?.foldersUpdated?()
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
     private let disposeBag = DisposeBag()
     
     private func loadFolders() {
@@ -80,6 +93,17 @@ class FoldersListViewModel {
             .loadObjects(FolderDatabaseModel.self)
             .sorted(by: { $0.lastUsed > $1.lastUsed })
             .map({ FolderViewModel(folder: $0.toDomainModel(), documents: documents(for: $0.id)) })
+        
+        activeFolders = []
+        sentFolders = []
+        
+        for folder in folders {
+            if folder.folderStatus.value == .success {
+                sentFolders.append(folder)
+            } else {
+                activeFolders.append(folder)
+            }
+        }
     }
     
     private func documents(for folderId: String) -> [DocumentViewModel] {
@@ -88,7 +112,7 @@ class FoldersListViewModel {
         let activeUploadDocuments = existingDocuments.filter({
             var currentStatus: DocumentViewModel.UploadStatus?
             $0.documentUploadStatus.subscribe(onNext: { status in currentStatus = status }).disposed(by: disposeBag)
-            return currentStatus == .awaitingInteraction || currentStatus == .progress(0) // Any progress, parameter is not considered when comparing
+            return currentStatus == .awaitingInteraction || currentStatus?.isInProgress == true
         })
         
         var newDocuments = database
@@ -104,16 +128,5 @@ class FoldersListViewModel {
         }
         
         return newDocuments
-    }
-    
-    private func createFolderStatusSubscription(folderViewModel: FolderViewModel) {
-        folderViewModel.folderStatus
-            .skip(1)
-            .distinctUntilChanged()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] status in
-                    self?.updateFolders()
-            })
-            .disposed(by: disposeBag)
     }
 }

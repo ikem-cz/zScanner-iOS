@@ -17,15 +17,15 @@ class CameraViewModel {
     // MARK: Instance part
     let currentMode: BehaviorRelay<MediaType>
     
-    let folderName: String
+    let folder: FolderDomainModel
     let correlationId: String
     let mediaSourceTypes: [MediaType]
     
     var media: Media?
     
-    init(initialMode currentMode: MediaType, folderName: String, correlationId: String, mediaSourceTypes: [MediaType]) {
+    init(initialMode currentMode: MediaType, folder: FolderDomainModel, correlationId: String, mediaSourceTypes: [MediaType]) {
         self.currentMode = BehaviorRelay<MediaType>(value: currentMode)
-        self.folderName = folderName
+        self.folder = folder
         self.correlationId = correlationId
         self.mediaSourceTypes = mediaSourceTypes
     }

@@ -472,7 +472,7 @@ class CameraViewController: BaseViewController {
     
     private func setupView() {
         view.backgroundColor = .black
-        title = viewModel.folderName
+        title = viewModel.folder.name
         
         view.addSubview(captureButton)
         captureButton.snp.makeConstraints { make in
