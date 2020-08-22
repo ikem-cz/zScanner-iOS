@@ -41,13 +41,13 @@ class FoldersListViewModel {
         } else if let folder = sentFolders.first(where: { return $0.folder.id == documentViewModel.document.folderId }) {
             folder.insertNewDocument(documentViewModel)
             _ = sentFolders.remove(folder)
-            activeFolders.append(folder)
+            activeFolders.insert(folder, at: 0)
             foldersUpdated?()
         } else {
             let databaseFolder = database.loadObject(FolderDatabaseModel.self, withId: documentViewModel.document.folderId)!
             let folder = FolderViewModel(folder: databaseFolder.toDomainModel(), documents: [documentViewModel])
-            folders.append(folder)
-            activeFolders.append(folder)
+            folders.insert(folder, at: 0)
+            activeFolders.insert(folder, at: 0)
             subscribeFolderStatus(folder)
             foldersUpdated?()
         }
@@ -63,13 +63,6 @@ class FoldersListViewModel {
         folders.forEach { subscribeFolderStatus($0) }
     }
     
-    private func addActiveUpload(_ folder: FolderViewModel) {
-        folders.append(folder)
-        activeFolders.append(folder)
-        subscribeFolderStatus(folder)
-        foldersUpdated?()
-    }
-    
     private func subscribeFolderStatus(_ folder: FolderViewModel) {
         folder.folderStatus
             .skip(1)
@@ -79,7 +72,7 @@ class FoldersListViewModel {
                 if status == .success, let folder = folder {
                     folder.cleanUp()
                     _ = self?.activeFolders.remove(folder)
-                    self?.sentFolders.append(folder)
+                    self?.sentFolders.insert(folder, at: 0)
                     self?.foldersUpdated?()
                 }
             })
@@ -98,7 +91,7 @@ class FoldersListViewModel {
         sentFolders = []
         
         for folder in folders {
-            if folder.folderStatus.value == .success {
+            if folder.folderStatus.value == .success || folder.folderStatus.value == .awaitingInteraction {
                 sentFolders.append(folder)
             } else {
                 activeFolders.append(folder)

@@ -106,7 +106,7 @@ class FolderStatusTableViewCell: UITableViewCell {
                 
                 switch status {
                 case .awaitingInteraction:
-                    self.isStatusContainerVisible = true
+                    self.isStatusContainerVisible = false
                     self.loadingCircle.isHidden = true
                     self.successImageView.isHidden = true
                     self.retryButton.isHidden = true
@@ -138,24 +138,15 @@ class FolderStatusTableViewCell: UITableViewCell {
     
     private var isStatusContainerVisible: Bool = false {
         didSet {
-            // TODO: Temporary show upload status for every case. Uncomment when done.
-//            if isStatusContainerVisible {
-//                statusContainer.isHidden = false
-//                textToSuperview?.deactivate()
-//                textToStatus?.activate()
-//            } else {
-//                statusContainer.isHidden = true
-//                textToStatus?.deactivate()
-//                textToSuperview?.activate()
-//            }
-            
             if isStatusContainerVisible {
-                statusContainer.alpha = 1
+                statusContainer.isHidden = false
+                textToSuperview?.deactivate()
+                textToStatus?.activate()
             } else {
-                statusContainer.alpha = 0.3
+                statusContainer.isHidden = true
+                textToStatus?.deactivate()
+                textToSuperview?.activate()
             }
-            textToSuperview?.deactivate()
-            textToStatus?.activate()
         }
     }
     

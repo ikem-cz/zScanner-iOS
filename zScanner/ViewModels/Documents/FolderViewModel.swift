@@ -74,8 +74,6 @@ final class FolderViewModel {
             }
         }
         
-        print(progresses)
-        
         let overallProgress = progresses.reduce(0, { $0 + $1 }) / Double(progresses.count)
         return .progress(overallProgress)
     }
