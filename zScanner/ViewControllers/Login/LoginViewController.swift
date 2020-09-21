@@ -177,6 +177,7 @@ class LoginViewController: BaseViewController, ErrorHandling {
         let textField = UITextField()
         textField.textContentType = .username
         textField.autocapitalizationType = .none
+        textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         textField.setBottomBorder()
         textField.font = .body
         return textField
@@ -216,4 +217,8 @@ class LoginViewController: BaseViewController, ErrorHandling {
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
+    
+    @objc func textFieldDidChange(textField: UITextField) {
+        textField.text = textField.text?.lowercased()
+    }
 }
