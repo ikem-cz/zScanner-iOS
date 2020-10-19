@@ -102,9 +102,7 @@ class LoginViewModel {
                 switch status {
                 case .success(data: let data):
                     let state = data.status
-                    if state.cert && SeaCatClient.isReady() {
-                        self?.success()
-                    } else if !(state.cert || state.username || state.password) {
+                    if !(state.cert || state.username || state.password) {
                         self?.error(RequestError(.logicError, message: "login.failed.message".localized))
                     }
                 default:
@@ -126,8 +124,7 @@ class LoginViewModel {
                 self.success()
             }
         }
-        // Temporarily disable network check until we find a better way to check wrong credentials.
-//        checkSeaCatStatus()
+        checkSeaCatStatus()
     }
     
     @objc private func timeout() {
