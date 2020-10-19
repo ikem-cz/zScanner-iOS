@@ -115,8 +115,8 @@ SPEC REPOS:
     - UPCarouselFlowLayout
 
 SPEC CHECKSUMS:
-  Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
-  Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
+  Crashlytics: 9220f5bc89e7a618df411b4f639389dbfb0e03d2
+  Fabric: ea977e3cd9c20425516d3dafd3bf8c941c51223f
   Firebase: afa030f17f5421810f379a42b0e5d3302d27eb26
   FirebaseAnalytics: a4d98464f455f5056063932123fa441025322f30
   FirebaseCore: 1d697bb944bf2af5fc248f1a66e165c9dd88bf97

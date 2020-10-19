@@ -81,6 +81,7 @@ class MediaViewModel {
         pageUploadStatus
             .asObservable()
             .observeOn(MainScheduler.instance)
+            .do(afterCompleted: { [weak self] in self?.page.deleteImage() })
             .subscribe(onNext: { [weak self]  status in
                 guard let `self` = self else { return }
                 let pageUploadStatus = PageUploadStatusDatabaseModel(pageId: self.page.id, status: status)
