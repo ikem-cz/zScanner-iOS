@@ -128,7 +128,6 @@ class DocumentViewModel {
                 self.database.saveObject(databaseUploadStatus)
             })
             .disposed(by: disposeBag)
-
     }
     
     private func uploadInternalDocument() {
