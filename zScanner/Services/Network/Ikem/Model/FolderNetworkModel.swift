@@ -12,6 +12,7 @@ struct FolderNetworkModel: Decodable {
     var externalId : String
     var internalId : String
     var name: String
+    var type: String?
 }
 
 extension FolderNetworkModel {
@@ -19,7 +20,8 @@ extension FolderNetworkModel {
         return FolderDomainModel(
             externalId: externalId,
             id: internalId,
-            name: name
+            name: name,
+            type: type.flatMap({ SearchType(rawValue: $0) })
         )
     }
 }

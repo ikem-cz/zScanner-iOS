@@ -42,17 +42,32 @@ class IkemNetworkManager: NetworkManager {
     }
     
     func searchFolders(with query: String) -> Observable<RequestStatus<[FolderNetworkModel]>> {
-        let request = SearchFoldersRequest(query: query)
+        let request = SearchFoldersRequest(with: QueryNetworkModel(query: query))
         return observe(request)
     }
     
     func getFolder(with id: String) -> Observable<RequestStatus<FolderNetworkModel>> {
-        let request = GetFolderRequest(with: id)
+        let request = GetFolderRequest(with: QueryNetworkModel(query: id))
         return observe(request)
     }
     
     func uploadPage(_ page: PageNetworkModel) -> Observable<RequestStatus<EmptyResponse>> {
         let request = UploadPageReuest(with: page)
+        return observe(request)
+    }
+    
+    func getBodyParts() -> Observable<RequestStatus<[BodyViewNetworkModel]>> {
+        let request = GetBodyPartsRequest()
+        return observe(request)
+    }
+    
+    func getBodyImage(id: String) -> Observable<RequestStatus<BodyImageNetworkModel>> {
+        let request = GetBodyViewImageRequest(id: id)
+        return observe(request)
+    }
+    
+    func getFolderDefects(folderId: String) -> Observable<RequestStatus<[BodyDefectNetworkModel]>> {
+        let request = GetFolderDefectsRequest(folderId: folderId)
         return observe(request)
     }
     

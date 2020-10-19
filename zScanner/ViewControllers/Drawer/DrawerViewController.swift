@@ -59,8 +59,15 @@ class DrawerViewController: BaseViewController {
     private func setupView() {
         view.addSubview(topView)
         topView.addSubview(logo)
-        topView.addSubview(drawerTopLabel)
         topView.addSubview(usernameLabel)
+        
+        view.addSubview(byIkem)
+        byIkem.snp.makeConstraints { make in
+            make.centerX.equalTo(safeArea)
+            make.bottom.equalTo(safeArea).inset(20)
+            make.width.equalTo(150)
+            make.height.equalTo(66)
+        }
         
         view.addSubview(menuStackView)
         menuStackView.addArrangedSubview(logoutButton)
@@ -72,19 +79,14 @@ class DrawerViewController: BaseViewController {
         }
 
         logo.snp.makeConstraints { make in
-            make.width.equalTo(114)
-            make.height.equalTo(102)
+            make.width.equalTo(118)
+            make.height.equalTo(160)
             make.top.equalTo(topView.safeAreaLayoutGuide.snp.top).offset(40)
-            make.left.equalToSuperview().offset(20)
-        }
-        
-        drawerTopLabel.snp.makeConstraints { make in
-            make.top.equalTo(logo.snp.bottom).offset(8)
-            make.left.right.equalToSuperview().inset(20)
+            make.centerX.equalToSuperview()
         }
         
         usernameLabel.snp.makeConstraints { make in
-            make.top.equalTo(drawerTopLabel.snp.bottom).offset(20)
+            make.top.equalTo(logo.snp.bottom).offset(20)
             make.left.right.bottom.equalToSuperview().inset(20)
         }
         
@@ -96,19 +98,11 @@ class DrawerViewController: BaseViewController {
     
     private lazy var logo: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = #imageLiteral(resourceName: "ikemLogo")
+        imageView.image = #imageLiteral(resourceName: "zScanner_colored").withRenderingMode(.alwaysTemplate)
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = .white
         imageView.backgroundColor = .primary
         return imageView
-    }()
-
-    private lazy var drawerTopLabel: UILabel = {
-        let label = UILabel()
-        label.text = "drawer.header.title".localized
-        label.textColor = .white
-        label.font = .headline
-        return label
     }()
 
     private lazy var usernameLabel: UILabel = {
@@ -153,5 +147,13 @@ class DrawerViewController: BaseViewController {
         stackView.spacing = 10
         stackView.distribution = .fill
         return stackView
+    }()
+    
+    private lazy var byIkem: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = #imageLiteral(resourceName: "By Ikem").withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = .black
+        imageView.contentMode = .scaleAspectFit
+        return imageView
     }()
 }

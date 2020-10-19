@@ -25,7 +25,7 @@ class DrawerMenuButton: UIButton {
     private func setup() {
         contentHorizontalAlignment = .left
         titleLabel?.font = .body
-        setTitleColor(.primary, for: .normal)
+        setTitleColor(.black, for: .normal)
     }
 }
 

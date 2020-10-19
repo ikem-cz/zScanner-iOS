@@ -6,7 +6,7 @@
 //  Copyright © 2019 Institut klinické a experimentální medicíny. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 protocol Request {
     associatedtype DataType: Any
@@ -30,13 +30,12 @@ extension ParametersURLEncoded where Self: Request {
     var encodedUrl: String {
         var url = endpoint.url
         
-        // Add parameters to url
-        if let parameters = parameters as? [String: Any] {
-            let parameters = parameters.compactMap({ (key, value) -> String? in
+        if let properties = parameters?.properties() {
+            let encodedProperties = properties.compactMap({ (key, value) -> String? in
                 guard let value = String(describing: value).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
                 return String(format: "%@=%@", key, value)
             }).joined(separator: "&")
-            url += "?" + parameters
+            url += "?" + encodedProperties
         }
         
         return url
@@ -45,6 +44,12 @@ extension ParametersURLEncoded where Self: Request {
 
 // MARK: -
 protocol ParametersJsonEncoded {}
+
+// MARK: -
+protocol ImageConverting {
+    init(image: UIImage)
+}
+
 
 // MARK: -
 protocol FileUploading {

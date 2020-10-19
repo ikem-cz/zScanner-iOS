@@ -30,11 +30,11 @@ class DocumentDatabaseModel: Object {
         self.date = document.date
         self.name = document.name
         self.notes = document.notes
+        self.pages.append(objectsIn: document.pages.map({ PageDatabaseModel(media: $0) }))
         
         let realm = try! Realm()
-        self.folder = realm.loadObject(FolderDatabaseModel.self, withId: document.folder.id) ?? FolderDatabaseModel(folder: document.folder)
+        self.folder = realm.loadObject(FolderDatabaseModel.self, withId: document.folderId)!
         
-        self.pages.append(objectsIn: document.pages.map({ PageDatabaseModel(page: $0) }))
     }
     
     override class func primaryKey() -> String {
@@ -47,7 +47,7 @@ extension DocumentDatabaseModel {
     func toDomainModel() -> DocumentDomainModel {
         return DocumentDomainModel(
             id: id,
-            folder: folder!.toDomainModel(),
+            folderId: folder!.id,
             type: DocumentTypeDomainModel(
                 id: documentType,
                 name: documentTypeName,

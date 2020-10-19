@@ -20,7 +20,7 @@ class LoginCoordinator: Coordinator {
     init(flowDelegate: LoginFlowDelegate, window: UIWindow) {
         self.flowDelegate = flowDelegate
         
-        super.init(window: window)
+        super.init(flowDelegate: flowDelegate, window: window)
     }
     
     //MARK: Interface

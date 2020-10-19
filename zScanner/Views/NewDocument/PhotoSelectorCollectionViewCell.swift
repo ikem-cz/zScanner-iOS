@@ -9,16 +9,18 @@
 import UIKit
 
 protocol PhotoSelectorCellDelegate: class {
-    func delete(image: UIImage)
+    func edit(media: Media)
+    func delete(media: Media)
 }
 
 // MARK: -
 class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     
     // MARK: Instance part
-    private var image: UIImage? {
+    private(set) var element: Media? {
         didSet {
-            imageView.image = image
+            imageView.image = element?.thumbnail
+            bodyIcon.isHidden = element?.defect == nil
         }
     }
     
@@ -36,21 +38,26 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        image = nil
+        element = nil
     }
     
     // MARK: Interface
-    func setup(with image: UIImage, delegate: PhotoSelectorCellDelegate) {
-        self.image = image
+    func setup(with element: Media, delegate: PhotoSelectorCellDelegate) {
+        self.element = element
         self.delegate = delegate
     }
     
     // MARK: Helpers
     private weak var delegate: PhotoSelectorCellDelegate?
     
-    @objc private func deleteImage() {
-        guard let image = image else { return }
-        delegate?.delete(image: image)
+    @objc private func editMedia() {
+        guard let element = element else { return }
+        delegate?.edit(media: element)
+    }
+    
+    @objc private func deleteMedia() {
+        guard let element = element else { return }
+        delegate?.delete(media: element)
     }
     
     private func setupView() {
@@ -61,11 +68,21 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(deleteButton)
         deleteButton.snp.makeConstraints { make in
-            make.width.height.equalTo(25)
-            make.top.right.equalToSuperview().inset(4)
+            make.height.equalTo(26)
+            make.top.right.equalToSuperview().inset(6)
         }
         
-        deleteButton.addTarget(self, action: #selector(deleteImage), for: .touchUpInside)
+        contentView.addSubview(bodyIcon)
+        bodyIcon.snp.makeConstraints { make in
+            make.height.width.equalTo(28)
+            make.bottom.left.equalToSuperview().inset(6)
+        }
+        
+        deleteButton.addTarget(self, action: #selector(deleteMedia), for: .touchUpInside)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(editMedia))
+        addGestureRecognizer(tap)
+        isUserInteractionEnabled = true
     }
     
     private var imageView: UIImageView = {
@@ -75,12 +92,29 @@ class PhotoSelectorCollectionViewCell: UICollectionViewCell {
         return image
     }()
     
+    private var bodyIcon: UIImageView = {
+        let imageView = UIImageView(image: #imageLiteral(resourceName: "bodyIcon"))
+        imageView.tintColor = .white
+        imageView.dropShadow()
+        return imageView
+    }()
+    
     private var deleteButton: UIButton = {
         let button = UIButton()
-        button.setImage(#imageLiteral(resourceName: "delete").withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = .white
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 16, weight: .light, scale: .large)
+        button.setImage(UIImage(systemName: "xmark.circle.fill", withConfiguration: imageConfig)?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .gray
+
+        button.setTitle("Odstranit", for: .normal)
+        button.setTitleColor(.gray, for: .normal)
+        button.titleLabel?.font = .footnote
+
+        button.contentEdgeInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 16)
+        button.imageEdgeInsets = UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0)
+        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: -4)
+        button.backgroundColor = UIColor.white.withAlphaComponent(0.8)
+        button.layer.cornerRadius = 13
         button.dropShadow()
         return button
     }()
 }
-

@@ -70,6 +70,7 @@ class SeaCatSplashViewController: BaseViewController, ErrorHandling {
    
     private func initializeSeaCat() {
         SeaCatClient.configure(with: nil)
+        SeaCatClient.setLogMask(SCLogFlag(rawValue: 0))
         
         infoLabel.text = "splash.waitingForSeaCat.message".localized
         
@@ -98,12 +99,12 @@ class SeaCatSplashViewController: BaseViewController, ErrorHandling {
     }
     
     private func setupView() {
-        guard let copyright = view.subviews.last(where: { $0 is UILabel }) else { return }
+        guard let byIkem = view.subviews.last(where: { $0 is UIImageView }) else { return }
         
         view.addSubview(container)
         container.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(copyright.snp.top).offset(-30)
+            make.bottom.equalTo(byIkem.snp.top).offset(-30)
         }
         
         container.addSubview(infoLabel)
@@ -122,13 +123,14 @@ class SeaCatSplashViewController: BaseViewController, ErrorHandling {
     
     private lazy var infoLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .black
+        label.textColor = .white
         label.font = .footnote
         return label
     }()
     
     private lazy var loading: UIActivityIndicatorView = {
-        let loading = UIActivityIndicatorView(style: .gray)
+        let loading = UIActivityIndicatorView(style: .medium)
+        loading.color = .white
         loading.startAnimating()
         return loading
     }()

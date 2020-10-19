@@ -9,9 +9,14 @@
 import UIKit
 import RxSwift
 
+
+struct FolderSelection {
+    let folder: FolderDomainModel
+    let searchMode: SearchMode
+}
+
 protocol NewDocumentFolderCoordinator: BaseCoordinator {
-    func saveFolder(_ folder: FolderDomainModel, searchMode: SearchMode)
-    func showNextStep()
+    func folderSelected(_ folderSelection: FolderSelection)
 }
 
 // MARK: -
@@ -43,7 +48,9 @@ class NewDocumentFolderViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.setFocusToSearchBar()
+        if parent == nil {
+            self.setFocusToSearchBar()
+        }
     }
 
     override var rightBarButtonItems: [UIBarButtonItem] {
@@ -53,20 +60,32 @@ class NewDocumentFolderViewController: BaseViewController {
     }
     
     // MARK: Helpers
+    class NewFolderDataSource: UITableViewDiffableDataSource<Section, FolderDomainModel> {
+
+        override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+            let section = self.snapshot().sectionIdentifiers[section]
+            return section.title
+        }
+    }
+    
     enum Section: String {
         case searchResults
-        case history
+        case suggestedResult
         
         var title: String {
             switch self {
                 case .searchResults: return "newDocumentFolder.searchResults.title".localized
-                case .history: return "newDocumentFolder.searchHistory.title".localized
+                case .suggestedResult: return "newDocumentFolder.suggestedResults.title".localized
             }
         }
     }
     
-    private var sections: [Section] = []
     private let disposeBag = DisposeBag()
+    
+    private func clearSearchResults() {
+        searchBar.text = ""
+        viewModel.search(query: "")
+    }
     
     private func setFocusToSearchBar() {
         searchBar.becomeFirstResponder()
@@ -76,36 +95,50 @@ class NewDocumentFolderViewController: BaseViewController {
         presentScanner()
     }
     
-    private func showSearchResult(_ show: Bool) {
-        if show {
-            // Insert section if missing
-            if sections.contains(.searchResults) == false {
-                let index = 0
-                sections.insert(.searchResults, at: index)
-                tableView.insertSections([index], with: .fade)
-            }
-        } else {
-            // Remove section if present
-            if let index = sections.firstIndex(of: .searchResults) {
-                sections.remove(at: index)
-                tableView.deleteSections([index], with: .fade)
-            }
-        }
-    }
-    
     private func setupBindings() {
-        viewModel.searchResults
+        Observable
+            .combineLatest(viewModel.suggestedResults, viewModel.searchResults)
             .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                guard let section = self?.sections.firstIndex(of: .searchResults) else { return }
-                self?.tableView.reloadSections([section], with: .fade)
-            }).disposed(by: disposeBag)
+            .subscribe(onNext: { [weak self] sugested, other in
+                self?.updateTableView(suggested: sugested, other: other)
+                
+                if self?.viewModel.lastUsedSearchMode == .scan, let folder = other.first {
+                    self?.coordinator.folderSelected(FolderSelection(folder: folder, searchMode: .scan))
+                }
+            })
+            .disposed(by: disposeBag)
         
         viewModel.isLoading
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] loading in
                 self?.searchBar.isLoading = loading
             }).disposed(by: disposeBag)
+    }
+    
+    private func updateTableView(suggested: [FolderDomainModel], other: [FolderDomainModel]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, FolderDomainModel>()
+        
+        tableView.backgroundView?.isHidden = !suggested.isEmpty || !other.isEmpty
+        
+        if !suggested.isEmpty {
+            snapshot.appendSections([.suggestedResult])
+        }
+        
+        if !other.isEmpty {
+            snapshot.appendSections([.searchResults])
+            snapshot.appendItems(other, toSection: .searchResults)
+        }
+        
+        // TODO: temporarily append items to suggested section later.
+        // SOmetimes items are coming doubled from BE and we want to prioritise suggested results in the filter.
+        // And DIffableDatasrouce is allowing only one appearance which is the later inserted.
+        // Merge with the first condition when fixed on BE
+        if !suggested.isEmpty {
+            snapshot.appendItems(suggested, toSection: .suggestedResult)
+        }
+
+
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     private func presentScanner() {
@@ -115,11 +148,36 @@ class NewDocumentFolderViewController: BaseViewController {
     }
     
     private func setupView() {
-        navigationItem.title = "newDocumentFolder.screen.title".localized
+        
+        if parent == nil {
+            navigationItem.title = "newDocumentFolder.screen.title".localized
+        } else {
+            view.addSubview(presentedNavigationBar)
+            presentedNavigationBar.snp.makeConstraints { make in
+                make.top.equalToSuperview().offset(21)
+                make.leading.trailing.equalToSuperview()
+            }
+            
+            presentedNavigationBar.addSubview(presentedTitle)
+            presentedTitle.snp.makeConstraints { make in
+                make.top.leading.bottom.equalToSuperview().inset(8)
+            }
+            
+            presentedNavigationBar.addSubview(presentedScanButton)
+            presentedScanButton.snp.makeConstraints { make in
+                make.top.trailing.bottom.equalToSuperview().inset(8)
+                make.leading.greaterThanOrEqualTo(presentedTitle.snp.trailing).offset(16).priority(999)
+            }
+        }
         
         view.addSubview(searchBar)
         searchBar.snp.makeConstraints { make in
-            make.top.right.left.equalTo(safeArea)
+            if parent == nil {
+                make.top.equalTo(safeArea)
+            } else {
+                make.top.equalTo(presentedNavigationBar.snp.bottom)
+            }
+            make.right.left.equalTo(safeArea)
             make.height.equalTo(56) // Default searchBar height
         }
         
@@ -129,10 +187,7 @@ class NewDocumentFolderViewController: BaseViewController {
             make.right.bottom.left.equalToSuperview()
         }
         
-        if !viewModel.history.isEmpty {
-            sections.append(.history)
-        }
-        
+        tableView.dataSource = dataSource
         tableView.backgroundView = emptyView
         
         emptyView.addSubview(emptyViewLabel)
@@ -146,14 +201,29 @@ class NewDocumentFolderViewController: BaseViewController {
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: CGRect.zero, style: .grouped)
-        tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44
         tableView.tableFooterView = UIView()
         tableView.backgroundColor = .white
         tableView.registerCell(FolderTableViewCell.self)
+        
+        let estimatedKeyboardHeight: CGFloat = 250
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: estimatedKeyboardHeight, right: 0)
         return tableView
+    }()
+    
+    private lazy var dataSource: NewFolderDataSource = {
+        let dataSource = NewFolderDataSource(
+            tableView: self.tableView,
+            cellProvider: { (tableView, indexPath, folder) in
+                let cell = tableView.dequeueCell(FolderTableViewCell.self)
+                cell.setup(with: folder)
+                return cell
+            }
+        )
+        dataSource.defaultRowAnimation = .fade
+        return dataSource
     }()
     
     private lazy var searchBar: UISearchBar = {
@@ -161,6 +231,7 @@ class NewDocumentFolderViewController: BaseViewController {
         search.delegate = self
         search.placeholder = "newDocumentFolder.searchBar.title".localized
         search.sizeToFit()
+        search.setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
         return search
     }()
     
@@ -175,93 +246,78 @@ class NewDocumentFolderViewController: BaseViewController {
         label.textAlignment = .center
         return label
     }()
+    
+    private lazy var presentedNavigationBar = UIView()
+    
+    private lazy var presentedTitle: UILabel = {
+        let label = UILabel()
+        label.text = "newDocumentFolder.screen.title".localized
+        label.textColor = .black
+        label.numberOfLines = 1
+        label.font = .headline
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private lazy var presentedScanButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(systemName: "qrcode.viewfinder", withConfiguration: UIImage.SymbolConfiguration(pointSize: 28)), for: .normal)
+        button.setTitle("newDocumentFolder.scanButton.title".localized, for: .normal)
+        button.setTitleColor(button.tintColor, for: .normal)
+        button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 4)
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 0)
+        button.addTarget(self, action: #selector(scanBarcode), for: .touchUpInside)
+        return button
+    }()
 }
 
-// MARK: - UITableViewDataSource implementation
-extension NewDocumentFolderViewController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        let count = sections.count
-        tableView.backgroundView?.isHidden = count > 0
-        return count
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let section = sections[section]
-        switch section {
-        case .searchResults:
-            return viewModel.searchResults.value.count
-        case .history:
-            return viewModel.history.count
+// MARK: - Presentable implementation
+extension NewDocumentFolderViewController: Presentable {
+    func willDismiss(afterCompleted: Bool) {
+        searchBar.resignFirstResponder()
+        if afterCompleted {
+            clearSearchResults()
         }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let section = sections[indexPath.section]
-        
-        let folder: FolderDomainModel
-        
-        switch section {
-        case .searchResults:
-            folder = viewModel.searchResults.value[indexPath.row]
-        case .history:
-            folder = viewModel.history[indexPath.row]
-        }
-        
-        let cell = tableView.dequeueCell(FolderTableViewCell.self)
-        cell.setup(with: folder)
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sections[section].title
+    func willExpand() {
+        // Nothing to do here
     }
 }
 
 // MARK: - UITableViewDelegate implementation
 extension NewDocumentFolderViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let section = sections[indexPath.section]
+        guard let item = dataSource.itemIdentifier(for: indexPath), item != .notFound else { return }
         
-        let item: FolderDomainModel
-        let searchMode: SearchMode
-        
-        switch section {
-        case .searchResults:
-            item = viewModel.searchResults.value[indexPath.row]
-            searchMode = viewModel.lastUsedSearchMode
-        case .history:
-            item = viewModel.history[indexPath.row]
-            searchMode = .history
-        }
-        
-        guard item != .notFound else { return }
-        
-        coordinator.saveFolder(item, searchMode: searchMode)
-        coordinator.showNextStep()
+        coordinator.folderSelected(FolderSelection(folder: item, searchMode: viewModel.lastUsedSearchMode))
+        searchBar.endEditing(true)
     }
 }
 
 // MARK: - UISearchBarDelegate implementation
 extension NewDocumentFolderViewController: UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        (parent as? BottomSheetPresenting)?.expandBottomSheet()
+    }
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        var searchText = searchText
+        let searchText = searchText.length < Config.minimumSearchLength ? "" : searchText
+        viewModel.search(query: searchText)
         
-        if searchText.length >= Config.minimumSearchLength {
-            viewModel.search(query: searchText)
-        } else {
-            searchText = ""
+        if searchText.isEmpty {
+            updateTableView(suggested: [], other: [])
         }
-        
-        showSearchResult(!searchText.isEmpty)
     }
 }
 
 // MARK: - ScannerDelegate implementation
 extension NewDocumentFolderViewController: ScannerDelegate {
     func close() {
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: false, completion: nil)
         if viewModel.lastUsedSearchMode == .scan {
-            showSearchResult(true)
+            (parent as? BottomSheetPresenting)?.expandBottomSheet()
+            updateTableView(suggested: [], other: [])
         }
     }
     

@@ -21,21 +21,21 @@ class NewDocumentFolderViewModel {
         self.database = database
         self.networkManager = networkManager
         self.tracker = tracker
-        
-        history = database
-            .loadObjects(FolderDatabaseModel.self)
-            .sorted(by: { $0.lastUsed > $1.lastUsed })
-            .prefix(Config.folderUsageHistoryCount)
-            .map({ $0.toDomainModel() })
     }
     
     // MARK: Interface
-    let history: [FolderDomainModel]
+    let suggestedResults = BehaviorRelay<[FolderDomainModel]>(value: [])
     let searchResults = BehaviorRelay<[FolderDomainModel]>(value: [])
     let isLoading = BehaviorRelay<Bool>(value: false)
-    private(set) var lastUsedSearchMode: SearchMode = .history
+    private(set) var lastUsedSearchMode: SearchMode = .search
     
     func search(query: String) {
+        if query.isEmpty {
+            searchResults.accept([])
+            suggestedResults.accept([])
+            return
+        }
+        
         lastUsedSearchMode = .search
         activeSearch = networkManager.searchFolders(with: query)
     }
@@ -43,6 +43,7 @@ class NewDocumentFolderViewModel {
     func getFolder(with id: String) {
         lastUsedSearchMode = .scan
         searchResults.accept([])
+        suggestedResults.accept([])
         let id = id.trimmingCharacters(in: CharacterSet.decimalDigits.inverted)
         activeSearch = networkManager.getFolder(with: id).map({ (result) -> RequestStatus<[FolderNetworkModel]> in
             switch result {
@@ -68,7 +69,8 @@ class NewDocumentFolderViewModel {
                         self?.tracker.track(.userNotFound)
                         folders.append(.notFound)
                     }
-                    self?.searchResults.accept(folders)
+                    self?.searchResults.accept(folders.filter({ $0.type != .suggested }).unique())
+                    self?.suggestedResults.accept(folders.filter({ $0.type == .suggested }).unique())
                 case .error:
                     self?.tracker.track(.userNotFound)
                     self?.isLoading.accept(false)
@@ -83,5 +85,20 @@ class NewDocumentFolderViewModel {
             oldValue?.dispose()
             activeSearchDisposable?.disposed(by: disposeBag)
         }
+    }
+}
+
+extension Array where Element: Hashable {
+    func unique() -> [Element] {
+        var set = Set<Element>() //the unique list kept in a Set for fast retrieval
+        var arrayOrdered = [Element]() //keeping the unique list of elements but ordered
+        for value in self {
+            if !set.contains(value) {
+                set.insert(value)
+                arrayOrdered.append(value)
+            }
+        }
+
+        return arrayOrdered
     }
 }

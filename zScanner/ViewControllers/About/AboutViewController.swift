@@ -28,9 +28,16 @@ class AboutViewController: BaseViewController {
     // MARK: Helpers
     private func setupView() {
         navigationItem.title = "drawer.aboutApp.title".localized
+        
+        view.addSubview(byIkem)
+        byIkem.snp.makeConstraints { make in
+            make.centerX.equalTo(safeArea)
+            make.bottom.equalTo(safeArea).inset(20)
+            make.width.equalTo(150)
+            make.height.equalTo(66)
+        }
       
         stackView.addArrangedSubview(drawerLogo)
-        stackView.addArrangedSubview(aboutHeader)
         stackView.addArrangedSubview(aboutParagraph)
         stackView.addArrangedSubview(aboutCopyright)
         stackView.addArrangedSubview(versionLabel)
@@ -45,26 +52,16 @@ class AboutViewController: BaseViewController {
         }
         
         drawerLogo.snp.makeConstraints { make in
-            make.height.equalTo(102)
-            make.width.equalTo(114)
+            make.width.equalTo(118)
+            make.height.equalTo(180)
         }
     }
     
     private lazy var drawerLogo: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = #imageLiteral(resourceName: "ikemLogo")
+        imageView.image = #imageLiteral(resourceName: "zScanner_colored")
         imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = .white
-        imageView.backgroundColor = .primary
         return imageView
-    }()
-    
-    private lazy var aboutHeader: UILabel = {
-        let label = UILabel()
-        label.text = "about.header.title".localized
-        label.textColor = .primary
-        label.font = .headline
-        return label
     }()
     
     private lazy var aboutParagraph: UILabel = {
@@ -73,7 +70,7 @@ class AboutViewController: BaseViewController {
         label.numberOfLines = 0
         label.textAlignment = .center
         label.font = .body
-        label.textColor = .primary
+        label.textColor = .black
         return label
     }()
     
@@ -81,7 +78,7 @@ class AboutViewController: BaseViewController {
         let label = UILabel()
         label.text = "about.copyright.title".localized
         label.textAlignment = .center
-        label.textColor = .primary
+        label.textColor = .black
         label.font = .footnote
         return label
     }()
@@ -98,8 +95,16 @@ class AboutViewController: BaseViewController {
         let label = UILabel()
         label.text = Bundle.main.formattedVersion
         label.textAlignment = .center
-        label.textColor = .primary
+        label.textColor = .black
         label.font = .footnote
         return label
+    }()
+    
+    private lazy var byIkem: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = #imageLiteral(resourceName: "By Ikem").withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = .black
+        imageView.contentMode = .scaleAspectFit
+        return imageView
     }()
 }

@@ -50,10 +50,10 @@ class NewDocumentTypeViewModel {
         case .document, .examination, .ext:
             return [
                 ListPickerField<DocumentTypeDomainModel>(title: "form.listPicker.title".localized, list: documentTypes),
-                TextInputField(title: "form.documentDecription.title".localized, validator: { _ in true }),
+                TextInputField(title: "form.documentDescription.title".localized, validator: { _ in true }),
                 DateTimePickerField(title: "form.dateTimePicker.title".localized, validator: { $0 != nil }),
             ]
-        case .photo, .undefined:
+        case .photo, .video, .undefined:
             return []
         }
     }

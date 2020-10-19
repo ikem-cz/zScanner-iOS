@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import RxRelay
 
 class DocumentViewModel {
     enum UploadStatus: RawRepresentable, Equatable {
@@ -36,13 +37,29 @@ class DocumentViewModel {
                 case .failed: return 3
             }
         }
+        
+        var isInProgress: Bool {
+            if case .progress = self {
+                return true
+            }
+            return false
+        }
+        
+        static func == (lhs: UploadStatus, rhs: UploadStatus) -> Bool {
+            switch (lhs, rhs) {
+            case (.progress(let lp), .progress(let rp)):
+                return lp == rp
+            default:
+                return lhs.rawValue == rhs.rawValue
+            }
+        }
     }
     
     // MARK: Instance part
     private var networkManager: NetworkManager
     private var database: Database
-    private let internalUploadStatus = BehaviorSubject<DocumentViewModel.UploadStatus>(value: .awaitingInteraction)
-    private let pages: [PageViewModel]
+    private let internalUploadStatus = BehaviorSubject<UploadStatus>(value: .awaitingInteraction)
+    private let pages: [MediaViewModel]
 
     let document: DocumentDomainModel
     
@@ -52,17 +69,24 @@ class DocumentViewModel {
         self.networkManager = networkManager
         self.database = database
         
-        pages = document.pages.map({ PageViewModel(page: $0, networkManager: networkManager, database: database) })
+        pages = document.pages.map({ MediaViewModel(page: $0, networkManager: networkManager, database: database) })
         
         if let databaseModel = database.loadObjects(DocumentUploadStatusDatabaseModel.self).filter({ $0.documentId == document.id }).first {
             internalUploadStatus.onNext(databaseModel.uploadStatus == .success ? .success : .failed(nil))
-        }        
+        }
+        
+        Observable
+            .combineLatest(tasks)
+            .map(statusToProgress)
+            .subscribe(onNext: { [weak self] status in
+                self?.documentUploadStatus.accept(status)
+            })
+            .disposed(by: disposeBag)
     }
     
     // MARK: Interface
     func uploadDocument() {
         uploadInternalDocument()
-        checkUploadQueue()
     }
     
     func reupload() {
@@ -75,10 +99,20 @@ class DocumentViewModel {
         uploadDocument()
     }
     
-    lazy var documentUploadStatus: Observable<UploadStatus> = Observable
-        .combineLatest(tasks)
-        .map(statusToProgress)
-        .asObservable()
+    func delete() {
+        pages.forEach({ $0.delete() })
+        
+        let databaseDocument = DocumentDatabaseModel(document: document)
+        databaseDocument.deleteRichContent()
+        DispatchQueue.main.async {
+            if let object = self.database.loadObject(DocumentDatabaseModel.self, withId: databaseDocument.id) {
+                self.database.deleteObject(object)
+            }
+        }
+        
+    }
+    
+    var documentUploadStatus = BehaviorRelay<UploadStatus>(value: .awaitingInteraction)
     
     // MARK: Helpers
     private let disposeBag = DisposeBag()
@@ -132,13 +166,12 @@ class DocumentViewModel {
     }
     
     private var tasks: [Observable<UploadStatus>] {
-        var tasks: [Observable<UploadStatus>] = pages.map({ $0.pageUploadStatus.asObservable() })
-        tasks.append(internalUploadStatus.asObservable())
+        var tasks: [Observable<UploadStatus>] = pages.map({ $0.pageUploadStatus.asObservable().distinctUntilChanged() })
+        tasks.append(internalUploadStatus.asObservable().distinctUntilChanged())
         return tasks
     }
     
     private lazy var statusToProgress: ([UploadStatus]) -> UploadStatus = { [weak self] tasks in
-        
         var progresses = [Double]()
         var inProgressCount = 0
         var awaitingCount = 0
@@ -182,10 +215,10 @@ class DocumentViewModel {
     
     private func checkUploadQueue() {
         var activeUploadsCount = pages.filter({ page in
-            return (try? page.pageUploadStatus.value()) == .progress(0)
+            (try? page.pageUploadStatus.value())?.isInProgress == true
         }).count
         
-        if (try? internalUploadStatus.value()) == .progress(0) {
+        if (try? internalUploadStatus.value())?.isInProgress == true {
             activeUploadsCount += 1
         }
         
@@ -199,8 +232,12 @@ class DocumentViewModel {
     }
 }
 
-extension DocumentViewModel: Equatable {
+extension DocumentViewModel: Hashable {
     static func == (lhs: DocumentViewModel, rhs: DocumentViewModel) -> Bool {
-        return lhs.document == rhs.document
+        return lhs.document.id == rhs.document.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(document.id)
     }
 }

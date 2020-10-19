@@ -10,45 +10,37 @@ import UIKit
 
 protocol NewDocumentFlowDelegate: FlowDelegate {
     func newDocumentCreated(_ documentViewModel: DocumentViewModel)
+    func documentDeleted()
 }
 
 class NewDocumentCoordinator: Coordinator {
-    enum Step: Equatable {
-        case folder
-        case documentType
-        case photos
-    }
-    
+
     // MARK: Instance part
     unowned private let flowDelegate: NewDocumentFlowDelegate
     private var newDocument = DocumentDomainModel.emptyDocument
-    private let mode: DocumentMode
-    private let steps: [Step]
-    private var currentStep: Step
+    private var folder: FolderDomainModel
+    private var mediaViewModel: MediaListViewModel?
+    private let defaultMediaType = MediaType.photo
+    private let mediaSourceTypes = [
+        MediaType.photo,
+        MediaType.video,
+        MediaType.scan
+    ]
     
-    init?(for mode: DocumentMode, flowDelegate: NewDocumentFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
-        guard mode != .undefined else { return nil }
-
+    init?(folderSelection: FolderSelection, flowDelegate: NewDocumentFlowDelegate, window: UIWindow, navigationController: UINavigationController? = nil) {
         self.flowDelegate = flowDelegate
+        self.folder = folderSelection.folder
+        newDocument.folderId = folderSelection.folder.id
         
-        self.mode = mode
-        self.steps = NewDocumentCoordinator.steps(for: mode)
+        super.init(flowDelegate: flowDelegate, window: window, navigationController: navigationController)
         
-        // If mode is .photo the step for setting documentType is skipped, but the documentMode is needed later.
-        // The documentMode is set now to prevent unexpected behavior.
-        if mode == .photo {
-            newDocument.type.mode = .photo
-        }
-        
-        guard let firstStep = steps.first else { return nil }
-        self.currentStep = firstStep
-        
-        super.init(window: window, navigationController: navigationController)
+        FolderDatabaseModel.updateLastUsage(of: folderSelection.folder)
+        tracker.track(.userFoundBy(folderSelection.searchMode))
     }
     
     // MARK: Interface
     func begin() {
-        showCurrentStep()
+        showNewMediaScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
     }
     
     // MARK: Helepers
@@ -56,33 +48,48 @@ class NewDocumentCoordinator: Coordinator {
     private let networkManager: NetworkManager = IkemNetworkManager(api: NativeAPI())
     private let tracker: Tracker = FirebaseAnalytics()
     
-    private func showCurrentStep() {
-        switch currentStep {
-        case .folder:
-            showFolderSelectionScreen()
-        case .documentType:
-            showDocumentTypeSelectionScreen()
-        case .photos:
-            showPhotosSelectionScreen()
+    private func showNewMediaScreen(mediaType: MediaType, mediaSourceTypes: [MediaType]) {
+        if !(viewControllers.first is CameraViewController) {
+            popAll(animated: false)
+        }
+        
+        let viewModel = CameraViewModel(initialMode: mediaType, folder: folder, correlationId: newDocument.id, mediaSourceTypes: mediaSourceTypes)
+        let viewController = CameraViewController(viewModel: viewModel, coordinator: self)
+        push(viewController, animated: true)
+    }
+    
+    private func showPreviewScreen(for media: Media, editing: Bool = false) {
+        let viewController = mediaScreen(for: media, editing: editing)
+        push(viewController, animated: true)
+    }
+    
+    private func mediaScreen(for media: Media, editing: Bool) -> MediaPreviewViewController {
+        if mediaViewModel == nil {
+            mediaViewModel = MediaListViewModel(database: database, folderName: folder.name, mediaType: media.type, tracker: tracker)
+        }
+        if mediaViewModel?.mediaArray.value.isEmpty == true {
+            mediaViewModel?.updateMediaType(to: media.type)
+        }
+        let viewModel = mediaViewModel!
+
+        switch media.type {
+        case .photo:
+            return PhotoPreviewViewController(media: media, viewModel: viewModel, coordinator: self, editing: editing)
+        case .video:
+            return VideoPreviewViewController(media: media, viewModel: viewModel, coordinator: self, editing: editing)
+        case .scan:
+            return ScanPreviewViewController(media: media, viewModel: viewModel, coordinator: self, editing: editing)
         }
     }
     
-    private func showFolderSelectionScreen() {
-        let viewModel = NewDocumentFolderViewModel(database: database, networkManager: networkManager, tracker: tracker)
-        let viewController = NewDocumentFolderViewController(viewModel: viewModel, coordinator: self)
-        push(viewController)
-    }
-    
-    private func showDocumentTypeSelectionScreen() {
-        let viewModel = NewDocumentTypeViewModel(documentMode: mode, database: database)
-        let viewController = NewDocumentTypeViewController(viewModel: viewModel, coordinator: self)
-        push(viewController)
-    }
-    
-    private func showPhotosSelectionScreen() {
-        let viewModel = NewDocumentPhotosViewModel(tracker: tracker)
-        let viewController = NewDocumentPhotosViewController(viewModel: viewModel, coordinator: self)
-        push(viewController)
+    private func showMediaListScreen() {
+        if let mediaListViewController = navigationController?.viewControllers.first(where: { $0 is MediaListViewController }) as? BaseViewController {
+            pop(to: mediaListViewController)
+        } else {
+            guard let mediaViewModel = mediaViewModel else { return }
+            let viewController = MediaListViewController(viewModel: mediaViewModel, coordinator: self)
+            push(viewController)
+        }
     }
     
     private func showListItemSelectionScreen<T: ListItem>(for list: ListPickerField<T>) {
@@ -90,8 +97,33 @@ class NewDocumentCoordinator: Coordinator {
         push(viewController)
     }
     
+    private func runBodyPartSelectionFlow(media: Media) {
+        let newDefects = mediaViewModel?.mediaArray.value.compactMap({ $0.defect }).filter({ $0.isNew }) ?? []
+        let coordinator = BodyPartDefectCoordinator(
+            media: media,
+            folder: folder,
+            newDefects: newDefects,
+            flowDelegate: self,
+            window: window,
+            navigationController: navigationController
+        )
+        addChildCoordinator(coordinator)
+        coordinator.begin()
+    }
+    
     private func finish() {
-
+        switch mediaViewModel?.mediaType {
+        case .photo:
+            newDocument.type.mode = DocumentMode.photo
+        case .video:
+            newDocument.type.mode = DocumentMode.video
+        case .scan:
+            // Will get from SegmentControllField
+            break
+        default:
+            print("Unknown mediaType.")
+        }
+        
         let databaseDocument = DocumentDatabaseModel(document: newDocument)
         database.saveObject(databaseDocument)
         
@@ -103,69 +135,34 @@ class NewDocumentCoordinator: Coordinator {
         flowDelegate.coordinatorDidFinish(self)
     }
     
-    private func resolveNextStep() {
-        guard let index = steps.firstIndex(of: currentStep) else {
-            fatalError("Current step is not present in list of steps")
-        }
-        
-        let nextIndex = index + 1
-        
-        if nextIndex >= steps.count {
-            finish()
-            return
-        }
-        
-        currentStep = steps[nextIndex]
-        showCurrentStep()
-    }
-    
-    private func resolvePreviousStep() {
-        guard let index = steps.firstIndex(of: currentStep) else {
-            fatalError("Current step is not present in list of steps")
-        }
-        
-        let prevIndex = index - 1
-        
-        if prevIndex < 0 {
-            pop()
-            flowDelegate.coordinatorDidFinish(self)
-            return
-        }
-        
-        currentStep = steps[prevIndex]
-        pop()
-    }
-    
-    private func savePagesToDocument(_ pages: [UIImage]) {
-
-        // Store images
-        pages
+    private func saveMediaToDocument(_ media: [Media]) {
+        // Store media
+        media
             .enumerated()
-            .forEach({ (index, image) in
-                let page = PageDomainModel(image: image, index: index, correlationId: newDocument.id)
-                newDocument.pages.append(page)
+            .forEach({ (index, media) in
+                media.index = index
+                newDocument.pages.append(media)
             })
-        }
+    }
     
-    private static func steps(for mode: DocumentMode) -> [Step] {
-        switch mode {
-            case .document, .examination, .ext:
-                return [.folder, .documentType, .photos]
-            case .photo: 
-                return [.folder, .photos]
-            case .undefined:
-                return []
+    private func deleteMedia() {
+        let folderURL = URL(documentsWith: "\(newDocument.id)")
+        do {
+            try FileManager.default.removeItem(at: folderURL)
+        } catch let error as NSError {
+            print("Error: \(error.domain)")
         }
     }
     
     // MARK: - BaseCordinator implementation
     override func willPreventPop(for sender: BaseViewController) -> Bool {
         switch sender {
-        case
-        is NewDocumentPhotosViewController,
-        is NewDocumentTypeViewController,
-        is NewDocumentFolderViewController:
+        case is MediaListViewController,
+             is NewDocumentTypeViewController,
+             is NewDocumentFolderViewController:
             return true
+        case let preview as MediaPreviewViewController:
+            return !preview.mediaEditing
         default:
             return false
         }
@@ -174,13 +171,13 @@ class NewDocumentCoordinator: Coordinator {
     override func backButtonPressed(sender: BaseViewController) {
         if willPreventPop(for: sender) {
             showPopConfirmationDialog(presentOn: sender, popHandler: { [unowned self] in
-                self.resolvePreviousStep()
+                self.pop()
             })
         } else {
             super.backButtonPressed(sender: sender)
         }
     }
-    
+
     private func showPopConfirmationDialog(presentOn viewController: BaseViewController, popHandler: @escaping EmptyClosure) {
         let alert = UIAlertController(title: "newDocument.popAlert.title".localized, message: "newDocument.popAlert.message".localized, preferredStyle: .alert)
         
@@ -191,52 +188,78 @@ class NewDocumentCoordinator: Coordinator {
     }
 }
 
-// MARK: - NewDocumentTypeCoordinator implementation
-extension NewDocumentCoordinator: NewDocumentFolderCoordinator {
-    func showNextStep() {
-        resolveNextStep()
-    }
-    
-    func saveFolder(_ folder: FolderDomainModel, searchMode: SearchMode) {
-        newDocument.folder = folder
-        let databaseFolder = FolderDatabaseModel(folder: folder)
-        FolderDatabaseModel.updateLastUsage(of: databaseFolder)
-        tracker.track(.userFoundBy(searchMode))
+// MARK: - CameraCoordinator implementation
+extension NewDocumentCoordinator: CameraCoordinator {
+    func mediaCreated(_ media: Media) {
+        showPreviewScreen(for: media)
     }
 }
 
-// MARK: - NewDocumentTypeCoordinator implementation
-extension NewDocumentCoordinator: NewDocumentTypeCoordinator {
+// MARK: - MediaPreviewCoordinator implementation
+extension NewDocumentCoordinator: MediaPreviewCoordinator {
+    func createNewMedia() {
+        guard let mediaViewModel = mediaViewModel else { return }
+        if mediaViewModel.mediaArray.value.isEmpty {
+            showNewMediaScreen(mediaType: defaultMediaType, mediaSourceTypes: mediaSourceTypes)
+        } else {
+            showNewMediaScreen(mediaType: mediaViewModel.mediaType, mediaSourceTypes: [mediaViewModel.mediaType])
+        }
+    }
+    
+    func finishEdit() {
+        showMediaListScreen()
+    }
+    
+    func selectBodyPart(media: Media) {
+        runBodyPartSelectionFlow(media: media)
+    }
+}
+
+// MARK: - NewDocumentMediaCoordinator implementation
+extension NewDocumentCoordinator: MediaListCoordinator {
     func showSelector<T: ListItem>(for list: ListPickerField<T>) {
         showListItemSelectionScreen(for: list)
     }
     
-    func saveFields(_ fields: [FormField]) {
-        for field in fields {
-            switch field {
-            case let textField as TextInputField:
-                newDocument.notes = textField.text.value
-            case let datePicker as DateTimePickerField:
-                if let date = datePicker.date.value {
-                    newDocument.date = date
+    func upload(_ fields: [[FormField]]) {
+        for section in fields {
+            for field in section {
+                switch field {
+                case let segmentControl as SegmentPickerField<DocumentMode>:
+                    segmentControl.selected.value.flatMap({ newDocument.type.mode = $0 })
+                case let textField as TextInputField:
+                    newDocument.notes = textField.text.value
+                case let datePicker as DateTimePickerField:
+                    datePicker.date.value.flatMap({ newDocument.date = $0 })
+                case let listPicker as ListPickerField<DocumentTypeDomainModel>:
+                    listPicker.selected.value.flatMap({ newDocument.type = $0 })
+                default:
+                    break
                 }
-            case let listPicker as ListPickerField<DocumentTypeDomainModel>:
-                if let type = listPicker.selected.value {
-                    newDocument.type = type
-                }
-            default:
-                break
             }
         }
+        
+        saveMediaToDocument((mediaViewModel?.mediaArray.value)!)
+        finish()
+    }
+    
+    func reeditMedia(media: Media) {
+        showPreviewScreen(for: media, editing: true)
+    }
+    
+    func deleteDocument() {
+        deleteMedia()
+        popAll()
+        flowDelegate.documentDeleted()
+        flowDelegate.coordinatorDidFinish(self)
     }
 }
 
 // MARK: - ListItemSelectionCoordinator implementation
-extension NewDocumentCoordinator: ListItemSelectionCoordinator {}
-
-// MARK: - ListItemSelectionCoordinator implementation
-extension NewDocumentCoordinator: NewDocumentPhotosCoordinator {
-    func savePhotos(_ photos: [UIImage]) {
-        savePagesToDocument(photos)
+extension NewDocumentCoordinator: ListItemSelectionCoordinator {
+    func selected() {
+        pop()
     }
 }
+
+extension NewDocumentCoordinator: BodyPartDefectFlowDelegate {}

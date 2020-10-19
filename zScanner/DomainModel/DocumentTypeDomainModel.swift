@@ -8,12 +8,34 @@
 
 import Foundation
 
-enum DocumentMode: String {
-    case ext = "ext"
+enum MediaType: String, Equatable {
+    case photo
+    case video
+    case scan
+    
+    var description: String {
+        switch self {
+            case .photo: return "newDocumentPhotos.mediaType.photo".localized
+            case .video: return "newDocumentPhotos.mediaType.video".localized
+            case .scan: return "newDocumentPhotos.mediaType.scan".localized
+        }
+    }
+    
+    var suffix: String {
+        switch self {
+        case .photo, .scan: return ".jpg"
+        case .video: return ".mp4"
+        }
+    }
+}
+
+enum DocumentMode: String, SegmentItem {
+    case ext
     case document = "doc"
     case examination = "exam"
-    case photo = "photo"
-    case undefined = "undefined"
+    case photo
+    case video
+    case undefined
     
     var title: String {
         return "documentMode.\(self.rawValue).name".localized
