@@ -124,7 +124,6 @@ class MediaListViewModel {
             .subscribe(onNext: { [weak self] selectedMode in
                 self?.typePicker.list = self?.allDocumentTypes
                     .filter({ $0.mode == selectedMode })
-                    .sorted(by: { $0.name < $1.name })
                     ?? []
                 self?.typePicker.selected.accept(nil)
             })
