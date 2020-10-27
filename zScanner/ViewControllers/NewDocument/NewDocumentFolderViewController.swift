@@ -102,7 +102,7 @@ class NewDocumentFolderViewController: BaseViewController {
             .subscribe(onNext: { [weak self] sugested, other in
                 self?.updateTableView(suggested: sugested, other: other)
                 
-                if self?.viewModel.lastUsedSearchMode == .scan, let folder = other.first {
+                if self?.viewModel.lastUsedSearchMode == .scan, let folder = other.first, folder != .notFound  {
                     self?.coordinator.folderSelected(FolderSelection(folder: folder, searchMode: .scan))
                 }
             })
@@ -130,7 +130,7 @@ class NewDocumentFolderViewController: BaseViewController {
         }
         
         // TODO: temporarily append items to suggested section later.
-        // SOmetimes items are coming doubled from BE and we want to prioritise suggested results in the filter.
+        // Sometimes items are coming doubled from BE and we want to prioritise suggested results in the filter.
         // And DIffableDatasrouce is allowing only one appearance which is the later inserted.
         // Merge with the first condition when fixed on BE
         if !suggested.isEmpty {
