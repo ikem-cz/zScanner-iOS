@@ -1,7 +1,4 @@
 PODS:
-  - Crashlytics (3.14.0):
-    - Fabric (~> 1.10.2)
-  - Fabric (1.10.2)
   - Firebase/Analytics (6.32.0):
     - Firebase/Core
   - Firebase/Core (6.32.0):
@@ -9,6 +6,9 @@ PODS:
     - FirebaseAnalytics (= 6.8.1)
   - Firebase/CoreOnly (6.32.0):
     - FirebaseCore (= 6.10.2)
+  - Firebase/Crashlytics (6.32.0):
+    - Firebase/CoreOnly
+    - FirebaseCrashlytics (~> 4.6.0)
   - FirebaseAnalytics (6.8.1):
     - FirebaseCore (~> 6.10)
     - FirebaseInstallations (~> 1.6)
@@ -27,6 +27,12 @@ PODS:
     - GoogleUtilities/Environment (~> 6.7)
     - GoogleUtilities/Logger (~> 6.7)
     - nanopb (~> 1.30906.0)
+  - FirebaseCrashlytics (4.6.2):
+    - FirebaseCore (~> 6.10)
+    - FirebaseInstallations (~> 1.6)
+    - GoogleDataTransport (~> 7.2)
+    - nanopb (~> 1.30906.0)
+    - PromisesObjC (~> 1.2)
   - FirebaseInstallations (1.7.0):
     - FirebaseCore (~> 6.10)
     - GoogleUtilities/Environment (~> 6.7)
@@ -81,9 +87,8 @@ PODS:
   - UPCarouselFlowLayout (1.1.2)
 
 DEPENDENCIES:
-  - Crashlytics
-  - Fabric
   - Firebase/Analytics
+  - Firebase/Crashlytics
   - RealmSwift
   - RxCocoa (~> 5)
   - RxSwift (~> 5)
@@ -93,12 +98,11 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Crashlytics
-    - Fabric
     - Firebase
     - FirebaseAnalytics
     - FirebaseCore
     - FirebaseCoreDiagnostics
+    - FirebaseCrashlytics
     - FirebaseInstallations
     - GoogleAppMeasurement
     - GoogleDataTransport
@@ -115,12 +119,11 @@ SPEC REPOS:
     - UPCarouselFlowLayout
 
 SPEC CHECKSUMS:
-  Crashlytics: 9220f5bc89e7a618df411b4f639389dbfb0e03d2
-  Fabric: ea977e3cd9c20425516d3dafd3bf8c941c51223f
   Firebase: afa030f17f5421810f379a42b0e5d3302d27eb26
   FirebaseAnalytics: a4d98464f455f5056063932123fa441025322f30
   FirebaseCore: 1d697bb944bf2af5fc248f1a66e165c9dd88bf97
   FirebaseCoreDiagnostics: 7415bfb3883b3500c5a95c42b6ba66baae78f600
+  FirebaseCrashlytics: 1a747c9cc084a24dc6d9511c991db1cd078154eb
   FirebaseInstallations: 466c7b4d1f58fe16707693091da253726a731ed2
   GoogleAppMeasurement: e3618c6e9f5166a6b320b03b759da3b04ec2a101
   GoogleDataTransport: e85fb700c9b027079ce182c3d08e12e0f9618bb4
@@ -136,6 +139,6 @@ SPEC CHECKSUMS:
   TUSKit: 4bcc2fe13e1b4d6c3bfbaca57d64e64c1be31201
   UPCarouselFlowLayout: 4c7d2c43a10ebb1597bde502a53699d378341dad
 
-PODFILE CHECKSUM: 20493c837f1a6eec0e17cdfc9e13bc5c2e527047
+PODFILE CHECKSUM: a1992b0e06a45cea917061ef02b92a95d0490cd3
 
 COCOAPODS: 1.9.3
