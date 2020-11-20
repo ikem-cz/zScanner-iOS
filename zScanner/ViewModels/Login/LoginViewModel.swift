@@ -83,11 +83,11 @@ class LoginViewModel {
     }
     
     private func startCheckingSeaCatStatus() {
-        SeaCatClient.addObserver(self, selector: #selector(onStateChanged), name: SeaCat_Notification_StateChanged)
-        seaCatTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.onStateChanged), userInfo: nil, repeats: true)
-        onStateChanged()
+        SeaCatClient.addObserver(self, selector: #selector(seaCatStateChanged), name: SeaCat_Notification_StateChanged)
+        seaCatTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(seaCatStateChanged), userInfo: nil, repeats: true)
+        timeoutTimer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(timeout), userInfo: nil, repeats: false)
+        seaCatStateChanged()
         
-        timeoutTimer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(timeout), userInfo: nil, repeats: false)
     }
     
     private var statusCheckRunning = false
@@ -102,9 +102,7 @@ class LoginViewModel {
                 switch status {
                 case .success(data: let data):
                     let state = data.status
-                    if state.cert && SeaCatClient.isReady() {
-                        self?.success()
-                    } else if !(state.cert || state.username || state.password) {
+                    if !(state.cert || state.username || state.password) {
                         self?.error(RequestError(.logicError, message: "login.failed.message".localized))
                     }
                 default:
@@ -118,9 +116,11 @@ class LoginViewModel {
             .disposed(by: disposeBag)
     }
     
-    @objc private func onStateChanged() {
-        DispatchQueue.main.async {
-            if SeaCatClient.isReady() {
+    @objc private func seaCatStateChanged() {
+        guard let state = SeaCatClient.getState() else { return }
+       
+        if state[4] == "N" || SeaCatClient.isReady() {            
+            DispatchQueue.main.async {
                 self.success()
             }
         }
