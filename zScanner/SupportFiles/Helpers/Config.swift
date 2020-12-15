@@ -13,7 +13,7 @@ enum Config {
     static let testingURL: String = "https://tempra.ikem.seacat/api-zscanner-new"
     static let authUrl: String = "http://auth.ikem.seacat"
     
-    static let currentEnvironment: Environment = .production
+    static let currentEnvironment: Environment = .testing
     static let folderUsageHistoryCount = 3
     static let minimumSearchLength = 3
     static let maximumNumberOfConcurentUploads = 4
