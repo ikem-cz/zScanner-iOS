@@ -22,16 +22,17 @@ enum IkemEndpoint: Endpoint {
     
     var rawValue: String {
         switch self {
-            case .documentTypes: return "/documenttypes"
-            case .submitDocument: return "/documents/summary"
-            case .uploadPage: return "/upload"
-            case .folderSearch: return "/folders/search"
-            case .folderDecode: return "/folders/decode"
             case .submitPassword: return "/password"
             case .seaCatStatus: return "/status"
-            case .bodyViews: return "/bodyparts/views"
-            case .bodyViewImage(let viewId): return "/bodyparts/views/\(viewId)/image"
-            case .folderDefects(let folderId): return "/folders/\(folderId)/defects"
+      
+            case .documentTypes: return "/v3/documenttypes"
+            case .submitDocument: return "/v3/documents/summary"
+            case .folderSearch: return "/v3/folders/search"
+            case .folderDecode: return "/v3/folders/decode"
+            case .bodyViews: return "/v3/bodyparts/views"
+            case .bodyViewImage(let viewId): return "/v3/bodyparts/views/\(viewId)/image"
+            case .folderDefects(let folderId): return "/v3/folders/\(folderId)/defects"
+            case .uploadPage: return "/upload"
         }
     }
     
@@ -39,8 +40,6 @@ enum IkemEndpoint: Endpoint {
         switch self {
         case .submitPassword, .seaCatStatus:
             return authUrl + self.rawValue
-        case .uploadPage:
-            return "https://tempra.ikem.seacat/api-zscanner/upload"
         default:
             return baseUrl + self.rawValue
         }

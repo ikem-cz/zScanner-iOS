@@ -9,8 +9,8 @@
 import Foundation
 
 enum Config {
-    static let productionURL: String = "https://tempra.ikem.seacat/api-zscanner/v3"
-    static let testingURL: String = "https://zscanner.ikem.dev.bindworks.eu/api-zscanner/v3"
+    static let productionURL: String = "https://tempra.ikem.seacat/api-zscanner"
+    static let testingURL: String = "https://tempra.ikem.seacat/api-zscanner-new"
     static let authUrl: String = "http://auth.ikem.seacat"
     
     static let currentEnvironment: Environment = .production
@@ -34,9 +34,6 @@ enum Environment {
     }
     
     var authUrl: String {
-        switch self {
-            case .production: return Config.authUrl
-            case .testing: return ""
-        }
+        Config.authUrl
     }
 }
