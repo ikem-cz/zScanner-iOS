@@ -320,12 +320,4 @@ extension NewDocumentFolderViewController: ScannerDelegate {
             updateTableView(suggested: [], other: [])
         }
     }
-    
-    func failed() {
-        dismiss(animated: true) { [weak self] in
-            let alert = UIAlertController(title: "newDocumentFolder.scanFailedAlert.title".localized, message: "newDocumentFolder.scanFailedAlert.message".localized, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "alert.okButton.title".localized, style: .default))
-            self?.present(alert, animated: true)
-        }
-    }
 }

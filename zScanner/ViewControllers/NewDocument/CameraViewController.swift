@@ -73,6 +73,25 @@ class CameraViewController: BaseViewController {
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        switch status {
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(
+                for: .video,
+                completionHandler: { [weak self] enabled in
+                    if !enabled {
+                        DispatchQueue.main.async {
+                            self?.cameraDenied()
+                        }
+                    }
+                }
+            )
+        case .restricted, .denied:
+            cameraDenied()
+        default:
+            break
+        }
 
         setupCaptureSession()
         setupView()
@@ -82,6 +101,8 @@ class CameraViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        
         
         if !captureSession.isRunning {
             runCaptureSession(for: viewModel.currentMode.value)
@@ -101,6 +122,29 @@ class CameraViewController: BaseViewController {
                 self.runCaptureSession(for: type)
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func cameraDenied() {
+        let alert = UIAlertController(title: "newDocumentPhotos.cameraFailed.title".localized, message: "newDocumentPhotos.cameraFailed.message".localized, preferredStyle: .alert)
+        alert.addAction(
+            UIAlertAction(
+                title: "alert.cancelButton.title".localized,
+                style: .cancel
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: "alert.settingsButton.title".localized,
+                style: .default,
+                handler: { _ in
+                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                }
+            )
+        )
+        self.present(alert, animated: true)
+        
+        self.middleCaptureButton.isEnabled = false
+        self.middleRecordButton.isEnabled = false
     }
     
     // MARK: Setup media session
@@ -173,27 +217,34 @@ class CameraViewController: BaseViewController {
         
         if captureSession.isRunning { captureSession.stopRunning() }
         
+        captureSession.beginConfiguration()
+        captureSession.inputs.forEach { captureSession.removeInput($0) }
+        captureSession.outputs.forEach { captureSession.removeOutput($0) }
+
         do {
             let audioInput = try AVCaptureDeviceInput(device: audioDevice)
-            let videoInput = try AVCaptureDeviceInput(device: videoDevice)
             
-            captureSession.beginConfiguration()
-            captureSession.inputs.forEach { captureSession.removeInput($0) }
-            captureSession.outputs.forEach { captureSession.removeOutput($0) }
-            
-            if captureSession.canAddInput(audioInput) && captureSession.canAddInput(videoInput) && captureSession.canAddOutput(videoOutput) {
-                captureSession.addInput(videoInput)
+            if captureSession.canAddInput(audioInput)  {
                 captureSession.addInput(audioInput)
-                captureSession.addOutput(videoOutput)
             }
-            
-            captureSession.sessionPreset = .high
-            
-            captureSession.commitConfiguration()
-            captureSession.startRunning()
         } catch(let error) {
             print("Error Unable to initialize video with audio:  \(error.localizedDescription).")
         }
+        
+        do {
+            let videoInput = try AVCaptureDeviceInput(device: videoDevice)
+            
+            if captureSession.canAddInput(videoInput) && captureSession.canAddOutput(videoOutput) {
+                captureSession.addInput(videoInput)
+                captureSession.addOutput(videoOutput)
+            }
+        } catch(let error) {
+            print("Error Unable to initialize video with audio:  \(error.localizedDescription).")
+        }
+        
+        captureSession.sessionPreset = .high
+        captureSession.commitConfiguration()
+        captureSession.startRunning()
         
         navigationItem.rightBarButtonItem = torchButton
     }

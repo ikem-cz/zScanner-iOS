@@ -11,7 +11,6 @@ import AVFoundation
 
 protocol ScannerDelegate: class {
     func close()
-    func failed()
 }
 
 // MARK: -
@@ -50,6 +49,24 @@ class ScannerViewController: UIViewController {
         navigationController?.navigationBar.isTranslucent = true
         navigationController?.view.backgroundColor = .clear
         
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        switch status {
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(
+                for: .video,
+                completionHandler: { [weak self] enabled in
+                    if !enabled {
+                        DispatchQueue.main.async {
+                            self?.failed()
+                        }
+                    }
+                }
+            )
+        case .restricted, .denied:
+            failed()
+        default:
+            break
+        }
         
         guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else { return }
         let videoInput: AVCaptureDeviceInput
@@ -57,6 +74,7 @@ class ScannerViewController: UIViewController {
         do {
             videoInput = try AVCaptureDeviceInput(device: videoCaptureDevice)
         } catch {
+            failed()
             return
         }
         
@@ -118,9 +136,23 @@ class ScannerViewController: UIViewController {
     }()
     
     private func failed() {
-        let ac = UIAlertController(title: "newDocumentFolder.scanFailedAlert.title".localized, message: "newDocumentFolder.scanFailedAlert.message".localized, preferredStyle: .alert)
-        ac.addAction(UIAlertAction(title: "alert.okButton.title".localized, style: .default))
-        present(ac, animated: true)
+        let alert = UIAlertController(title: "newDocumentFolder.cameraFailed.title".localized, message: "newDocumentFolder.cameraFailed.message".localized, preferredStyle: .alert)
+        alert.addAction(
+            UIAlertAction(
+                title: "alert.cancelButton.title".localized,
+                style: .cancel
+            )
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: "alert.settingsButton.title".localized,
+                style: .default,
+                handler: { _ in
+                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                }
+            )
+        )
+        self.present(alert, animated: true)
     }
     
     func found(code: String) {

@@ -8,6 +8,8 @@
 
 // MARK: - Alert
 "alert.okButton.title" = "OK";
+"alert.settingsButton.title" = "Nastavení";
+"alert.cancelButton.title" = "Zrušit";
 
 // MARK: - Splash
 "splash.waitingForInternet.message" = "Čekám na internet";
@@ -42,8 +44,8 @@
 "newDocumentFolder.searchBar.title" = "Rodné číslo, příjmení nebo jméno..";
 "newDocumentFolder.suggestedResults.title" = "Již jste pracovali s";
 "newDocumentFolder.searchResults.title" = "Ostatní shody";
-"newDocumentFolder.scanFailedAlert.title" = "Chyba kamery";
-"newDocumentFolder.scanFailedAlert.message" = "Kamera není dostupná, zkontrolujte prosím nastavení.";
+"newDocumentFolder.cameraFailed.title" = "Chyba kamery";
+"newDocumentFolder.cameraFailed.message" = "Kamera není dostupná, zkontrolujte prosím nastavení.";
 "newDocumentFolder.emptyView.title" = "Zadejte alespoň tři znaky pro zahájení vyhledávání.";
 "newDocumentFolder.scanButton.title" = "Skenovat";
 
@@ -70,6 +72,8 @@
 "newDocumentPhotos.filter.full" = "Barva";
 "newDocumentPhotos.filter.grayscale" = "St. šedi";
 "newDocumentPhotos.filter.mono" = "Černobíle";
+"newDocumentPhotos.cameraFailed.title" = "Chyba kamery";
+"newDocumentPhotos.cameraFailed.message" = "Kamera není dostupná, zkontrolujte prosím nastavení.";
 
 "newDocument.popAlert.title" = "Opravdu chcete jít o krok zpět?";
 "newDocument.popAlert.message" = "Změny provedené na této obrazovce nebudou uloženy.";
